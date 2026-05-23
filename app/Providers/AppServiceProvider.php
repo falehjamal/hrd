@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Auth\TenantAwareUserProvider;
 use App\Models\User;
 use App\Observers\UserObserver;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         User::observe(UserObserver::class);
 
         Auth::provider('tenant-aware-eloquent', function ($app, array $config) {

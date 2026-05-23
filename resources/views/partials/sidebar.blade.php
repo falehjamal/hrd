@@ -17,5 +17,28 @@
                 <div>Dashboard</div>
             </a>
         </li>
+
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Master Data</span></li>
+
+        <li class="menu-item {{ request()->routeIs('shifts.*') ? 'active' : '' }}">
+            <a href="{{ route('shifts.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-time"></i>
+                <div>Data Shift</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('employees.*', 'employees.salaries.*') ? 'active' : '' }}">
+            <a href="{{ route('employees.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div>Data Karyawan</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('salaries.*') ? 'active' : '' }}">
+            <a href="{{ route('salaries.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-wallet"></i>
+                <div>Master Gaji</div>
+            </a>
+        </li>
     </ul>
 </aside>
