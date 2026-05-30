@@ -2,9 +2,9 @@
 
 namespace App\Models\Central;
 
+use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Tenant;
 
 class TenantUser extends Model
 {
@@ -14,7 +14,15 @@ class TenantUser extends Model
         'tenant_id',
         'email',
         'username',
+        'last_login_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'last_login_at' => 'datetime',
+        ];
+    }
 
     public function tenant(): BelongsTo
     {

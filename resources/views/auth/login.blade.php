@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <div class="app-brand justify-content-center mb-2">
                         <a href="{{ route('login') }}" class="app-brand-link">
-                            <span class="app-brand-text demo text-body fw-bolder fs-4">{{ config('app.name') }}</span>
+                            <span class="app-brand-text demo text-body fw-bolder fs-4">{{ tenant_app_name() }}</span>
                         </a>
                     </div>
 
@@ -50,6 +50,10 @@
                             <button class="btn btn-primary d-grid w-100" type="submit">Masuk</button>
                         </div>
                     </form>
+
+                    <p class="text-center mb-0">
+                        <a href="{{ route('platform.login') }}" class="text-muted small">Login admin platform</a>
+                    </p>
                 </div>
             </div>
         </div>

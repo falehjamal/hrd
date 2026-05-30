@@ -21,6 +21,13 @@ class TenantSeeder extends Seeder
     {
         $tenant = Tenant::query()->find(self::DEMO_TENANT_ID);
 
+        if ($tenant) {
+            $tenant->update([
+                'app_title' => 'HRD Demo',
+                'status' => Tenant::STATUS_ACTIVE,
+            ]);
+        }
+
         if (! $tenant) {
             // migrate:fresh menghapus record di central, tapi DB tenant lama masih ada.
             $this->dropTenantDatabaseIfExists(self::DEMO_TENANT_ID);
@@ -29,6 +36,8 @@ class TenantSeeder extends Seeder
                 'id' => self::DEMO_TENANT_ID,
                 'name' => 'Demo Company',
                 'slug' => 'demo',
+                'app_title' => 'HRD Demo',
+                'status' => Tenant::STATUS_ACTIVE,
             ]);
         }
 

@@ -59,6 +59,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (! $tenant->isActive()) {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'login' => 'Perusahaan ini sedang dinonaktifkan. Hubungi administrator platform.',
+            ]);
+        }
+
         tenancy()->initialize($tenant);
 
         $credentials = filter_var($login, FILTER_VALIDATE_EMAIL)
@@ -75,6 +83,10 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        Auth::guard('platform')->logout();
+
+        $tenantUser->update(['last_login_at' => now()]);
 
         $this->session()->put('tenant_id', $tenant->id);
     }

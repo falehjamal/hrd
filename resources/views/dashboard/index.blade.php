@@ -11,7 +11,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary">Selamat datang, {{ auth()->user()->name }}!</h5>
                         <p class="mb-4">
-                            Anda telah berhasil masuk ke sistem <strong>{{ config('app.name') }}</strong>.
+                            Anda telah berhasil masuk ke sistem <strong>{{ tenant_app_name() }}</strong>.
                             Kelola data karyawan, shift, dan gaji dari menu Master Data.
                         </p>
                         <a href="{{ route('employees.index') }}" class="btn btn-sm btn-primary">Lihat Karyawan</a>
