@@ -5,10 +5,10 @@ namespace App\Services;
 use App\Models\Central\TenantUser;
 use App\Models\Tenant;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Throwable;
 
 class TenantProvisionerService
 {
@@ -24,7 +24,11 @@ class TenantProvisionerService
             throw new InvalidArgumentException('Tenant dengan ID tersebut sudah ada.');
         }
 
-        return DB::connection('central')->transaction(function () use ($tenantData, $adminData, $tenantId) {
+        // Jangan bungkus Tenant::create dalam DB::transaction — event TenantCreated
+        // menjalankan CREATE DATABASE yang di MySQL meng-commit transaksi implisit.
+        $tenant = null;
+
+        try {
             $tenant = Tenant::query()->create([
                 'id' => $tenantId,
                 'name' => $tenantData['name'],
@@ -58,6 +62,12 @@ class TenantProvisionerService
             }
 
             return $tenant->fresh();
-        });
+        } catch (Throwable $e) {
+            if ($tenant !== null) {
+                $tenant->delete();
+            }
+
+            throw $e;
+        }
     }
 }
