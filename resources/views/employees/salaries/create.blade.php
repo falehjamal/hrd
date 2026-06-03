@@ -3,7 +3,7 @@
 @section('title', 'Tambah Gaji')
 
 @section('content')
-<div class="card">
+<div class="card card-modern">
     <div class="card-header">
         <h5 class="mb-0">Tambah Gaji — {{ $employee->name }}</h5>
         <small class="text-muted">{{ $employee->employee_code }}</small>

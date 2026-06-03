@@ -2,33 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\EmployeeDataTable;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
 use App\Models\Shift;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
     {
-        $employees = Employee::query()
-            ->with(['shift', 'activeSalary'])
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = $request->string('search')->toString();
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('employee_code', 'like', "%{$search}%");
-                });
-            })
-            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
-            ->orderBy('name')
-            ->paginate(15)
-            ->withQueryString();
+        return view('employees.index');
+    }
 
-        return view('employees.index', compact('employees'));
+    public function data(EmployeeDataTable $dataTable): JsonResponse
+    {
+        return $dataTable->json();
     }
 
     public function create(): View
@@ -47,7 +39,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
-        $employee->load(['shift', 'salaries' => fn ($q) => $q->orderByDesc('effective_date')]);
+        $employee->load(['shift']);
 
         return view('employees.show', compact('employee'));
     }

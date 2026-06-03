@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Platform;
 
+use App\DataTables\TenantDataTable;
+use App\DataTables\TenantUserDataTable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Platform\StoreTenantRequest;
 use App\Http\Requests\Platform\UpdateTenantRequest;
-use App\Models\Central\TenantUser;
 use App\Models\Tenant;
 use App\Services\TenantMetricsService;
 use App\Services\TenantProvisionerService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use InvalidArgumentException;
@@ -22,20 +24,17 @@ class TenantController extends Controller
 
     public function index(): View
     {
-        $tenants = Tenant::query()
-            ->withCount('tenantUsers')
-            ->orderBy('name')
-            ->get()
-            ->map(function (Tenant $tenant) {
-                $metrics = $this->metrics->forTenant($tenant);
+        return view('platform.tenants.index');
+    }
 
-                return (object) [
-                    'tenant' => $tenant,
-                    'metrics' => $metrics,
-                ];
-            });
+    public function data(TenantDataTable $dataTable): JsonResponse
+    {
+        return $dataTable->json();
+    }
 
-        return view('platform.tenants.index', compact('tenants'));
+    public function usersData(Tenant $tenant): JsonResponse
+    {
+        return (new TenantUserDataTable($tenant->id))->json();
     }
 
     public function create(): View
@@ -73,12 +72,7 @@ class TenantController extends Controller
     {
         $metrics = $this->metrics->forTenant($tenant);
 
-        $tenantUsers = TenantUser::query()
-            ->where('tenant_id', $tenant->id)
-            ->orderByDesc('last_login_at')
-            ->get();
-
-        return view('platform.tenants.show', compact('tenant', 'metrics', 'tenantUsers'));
+        return view('platform.tenants.show', compact('tenant', 'metrics'));
     }
 
     public function edit(Tenant $tenant): View

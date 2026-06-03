@@ -5,7 +5,7 @@
 @section('content')
 @include('partials.alerts')
 
-<div class="card">
+<div class="card card-modern">
     <div class="card-header"><h5 class="mb-0">Buat Tenant Baru</h5></div>
     <div class="card-body">
         <form method="POST" action="{{ route('platform.tenants.store') }}">

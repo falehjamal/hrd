@@ -19,9 +19,14 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('employees/data', [EmployeeController::class, 'data'])->name('employees.data');
+    Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
+    Route::get('salaries/data', [EmployeeSalaryController::class, 'dataAll'])->name('salaries.data');
+    Route::get('employees/{employee}/salaries/data', [EmployeeSalaryController::class, 'dataForEmployee'])->name('employees.salaries.data');
+
     Route::resource('shifts', ShiftController::class);
     Route::resource('employees', EmployeeController::class);
-    Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show'])->shallow();
+    Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
     Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

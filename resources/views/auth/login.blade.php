@@ -6,7 +6,7 @@
 <div class="container-xxl">
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">
-            <div class="card">
+            <div class="card card-modern border-0 shadow-sm">
                 <div class="card-body">
                     <div class="app-brand justify-content-center mb-2">
                         <a href="{{ route('login') }}" class="app-brand-link">

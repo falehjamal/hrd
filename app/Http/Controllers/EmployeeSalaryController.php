@@ -2,40 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\EmployeeSalaryDataTable;
 use App\Http\Requests\StoreEmployeeSalaryRequest;
 use App\Http\Requests\UpdateEmployeeSalaryRequest;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class EmployeeSalaryController extends Controller
 {
-    public function indexAll(Request $request): View
+    public function indexAll(): View
     {
-        $salaries = EmployeeSalary::query()
-            ->with('employee')
-            ->when($request->boolean('active_only', true), fn ($q) => $q->where('is_active', true))
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = $request->string('search')->toString();
-                $query->whereHas('employee', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('employee_code', 'like', "%{$search}%");
-                });
-            })
-            ->orderByDesc('effective_date')
-            ->paginate(15)
-            ->withQueryString();
-
-        return view('salaries.index', compact('salaries'));
+        return view('salaries.index');
     }
 
-    public function index(Employee $employee): View
+    public function dataAll(): JsonResponse
     {
-        $salaries = $employee->salaries()->orderByDesc('effective_date')->paginate(15);
+        return (new EmployeeSalaryDataTable)->json();
+    }
 
-        return view('employees.salaries.index', compact('employee', 'salaries'));
+    public function dataForEmployee(Employee $employee): JsonResponse
+    {
+        return (new EmployeeSalaryDataTable($employee->id))->json();
     }
 
     public function create(Employee $employee): View

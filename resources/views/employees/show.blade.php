@@ -7,7 +7,7 @@
 
 <div class="row">
     <div class="col-lg-5 mb-4">
-        <div class="card h-100">
+        <div class="card card-modern h-100">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Profil Karyawan</h5>
                 <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit</a>
@@ -43,59 +43,46 @@
         </div>
     </div>
     <div class="col-lg-7 mb-4">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Riwayat Gaji</h5>
+        <x-datatable-card tableId="employee-salaries-table" title="Riwayat Gaji">
+            <x-slot:headerActions>
                 <a href="{{ route('employees.salaries.create', $employee) }}" class="btn btn-sm btn-primary">
                     <i class="bx bx-plus me-1"></i> Tambah Gaji
                 </a>
-            </div>
-            <div class="table-responsive text-nowrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Berlaku</th>
-                            <th>Gaji Pokok</th>
-                            <th>Tunjangan</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($employee->salaries as $salary)
-                            <tr>
-                                <td>{{ $salary->effective_date->format('d/m/Y') }}</td>
-                                <td>{{ format_rupiah($salary->basic_salary) }}</td>
-                                <td>{{ format_rupiah($salary->fixed_allowance) }}</td>
-                                <td><strong>{{ format_rupiah($salary->total_salary) }}</strong></td>
-                                <td>
-                                    @if ($salary->is_active)
-                                        <span class="badge bg-label-success">Aktif</span>
-                                    @else
-                                        <span class="badge bg-label-secondary">Arsip</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('salaries.edit', $salary) }}" class="btn btn-sm btn-icon btn-outline-primary"><i class="bx bx-edit-alt"></i></a>
-                                    <form action="{{ route('salaries.destroy', $salary) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data gaji ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-icon btn-outline-danger"><i class="bx bx-trash"></i></button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-3">Belum ada data gaji.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            </x-slot:headerActions>
+            <thead>
+                <tr>
+                    <th>Berlaku</th>
+                    <th>Gaji Pokok</th>
+                    <th>Tunjangan</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th class="no-export">Aksi</th>
+                </tr>
+            </thead>
+        </x-datatable-card>
     </div>
 </div>
 
 <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary">Kembali</a>
 @endsection
+
+@push('datatable-scripts')
+<script type="module">
+    window.initServerDataTable('#employee-salaries-table', {
+        ajax: {
+            url: '{{ route('employees.salaries.data', $employee) }}',
+            data: (d) => { d.active_only = '0'; },
+        },
+        order: [[0, 'desc']],
+        buttons: [],
+        columns: [
+            { data: 'effective_date_display', name: 'effective_date' },
+            { data: 'basic_display', name: 'basic_salary' },
+            { data: 'allowance_display', name: 'fixed_allowance' },
+            { data: 'total_display', name: 'basic_salary', orderable: false, searchable: false },
+            { data: 'status_badge', name: 'is_active', searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+    });
+</script>
+@endpush

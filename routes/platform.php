@@ -15,6 +15,9 @@ Route::prefix('platform')->name('platform.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+        Route::get('tenants/data', [TenantController::class, 'data'])->name('tenants.data');
+        Route::get('tenants/{tenant}/users/data', [TenantController::class, 'usersData'])->name('tenants.users.data');
+
         Route::get('tenants', [TenantController::class, 'index'])->name('tenants.index');
         Route::get('tenants/create', [TenantController::class, 'create'])->name('tenants.create');
         Route::post('tenants', [TenantController::class, 'store'])->name('tenants.store');

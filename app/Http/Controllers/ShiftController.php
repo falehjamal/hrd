@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\ShiftDataTable;
 use App\Http\Requests\StoreShiftRequest;
 use App\Http\Requests\UpdateShiftRequest;
 use App\Models\Shift;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -12,12 +14,12 @@ class ShiftController extends Controller
 {
     public function index(): View
     {
-        $shifts = Shift::query()
-            ->withCount('employees')
-            ->orderBy('code')
-            ->paginate(15);
+        return view('shifts.index');
+    }
 
-        return view('shifts.index', compact('shifts'));
+    public function data(ShiftDataTable $dataTable): JsonResponse
+    {
+        return $dataTable->json();
     }
 
     public function create(): View
@@ -52,10 +54,6 @@ class ShiftController extends Controller
 
     public function destroy(Shift $shift): RedirectResponse
     {
-        if ($shift->employees()->exists()) {
-            return back()->with('error', 'Shift tidak dapat dihapus karena masih digunakan karyawan.');
-        }
-
         $shift->delete();
 
         return redirect()->route('shifts.index')->with('success', 'Shift berhasil dihapus.');

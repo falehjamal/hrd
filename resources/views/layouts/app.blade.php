@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('sneat/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    @vite(['resources/css/app.css', 'resources/js/datatables.js'])
     <script src="{{ asset('sneat/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('sneat/js/config.js') }}"></script>
     @stack('styles')
@@ -41,12 +42,15 @@
         <div class="layout-overlay layout-menu-toggle"></div>
     </div>
 
+    @include('partials.delete-modal')
+
     <script src="{{ asset('sneat/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('sneat/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('sneat/js/main.js') }}"></script>
+    @stack('datatable-scripts')
     @stack('scripts')
 </body>
 </html>

@@ -11,6 +11,20 @@ if (! function_exists('tenant_app_name')) {
     }
 }
 
+if (! function_exists('tenant_sidebar_title')) {
+    function tenant_sidebar_title(): string
+    {
+        return mb_strtoupper(tenant_app_name(), 'UTF-8');
+    }
+}
+
+if (! function_exists('platform_sidebar_title')) {
+    function platform_sidebar_title(): string
+    {
+        return mb_strtoupper((string) config('platform.name', config('app.name')), 'UTF-8');
+    }
+}
+
 if (! function_exists('format_rupiah')) {
     function format_rupiah(float|int|string|null $amount): string
     {

@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('sneat/vendor/css/theme-default.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    @vite(['resources/css/app.css', 'resources/js/datatables.js'])
     <script src="{{ asset('sneat/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('sneat/js/config.js') }}"></script>
     @stack('styles')
@@ -25,7 +26,7 @@
             <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                 <div class="app-brand demo">
                     <a href="{{ route('platform.dashboard') }}" class="app-brand-link">
-                        <span class="app-brand-text demo menu-text fw-bolder">{{ config('platform.name') }}</span>
+                        <span class="app-brand-text demo menu-text fw-bolder sidebar-brand-uppercase">{{ platform_sidebar_title() }}</span>
                     </a>
                 </div>
                 <div class="menu-inner-shadow"></div>
@@ -49,10 +50,8 @@
                 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
                     <div class="navbar-nav-right d-flex align-items-center w-100 justify-content-end" id="navbar-collapse">
                         <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <span class="nav-link dropdown-toggle hide-arrow">
-                                    <span class="fw-medium me-2">{{ auth('platform')->user()->name }}</span>
-                                </span>
+                            <li class="nav-item">
+                                <span class="fw-medium me-2">{{ auth('platform')->user()->name }}</span>
                             </li>
                             <li class="nav-item ms-2">
                                 <form method="POST" action="{{ route('platform.logout') }}">
@@ -81,12 +80,15 @@
         </div>
     </div>
 
+    @include('partials.delete-modal')
+
     <script src="{{ asset('sneat/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('sneat/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('sneat/js/main.js') }}"></script>
+    @stack('datatable-scripts')
     @stack('scripts')
 </body>
 </html>

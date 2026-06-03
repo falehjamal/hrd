@@ -3,7 +3,7 @@
 @section('title', 'Edit Shift')
 
 @section('content')
-<div class="card">
+<div class="card card-modern">
     <div class="card-header"><h5 class="mb-0">Edit Shift</h5></div>
     <div class="card-body">
         <form action="{{ route('shifts.update', $shift) }}" method="POST">
