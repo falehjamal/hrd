@@ -111,8 +111,9 @@ div.dt-buttons .dt-button {
     margin-right: 0.35rem;
 }
 
-.sidebar-brand-uppercase {
-    text-transform: uppercase;
+/* Override Sneat demo.css (.app-brand-text.demo { text-transform: lowercase }) */
+.app-brand-text.demo.sidebar-brand-uppercase {
+    text-transform: uppercase !important;
     letter-spacing: 0.06em;
     font-size: 1.05rem;
 }
