@@ -18,6 +18,7 @@
             </a>
         </li>
 
+        @if (!auth()->user()->employee)
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Master Data</span></li>
 
         <li class="menu-item {{ request()->routeIs('shifts.*') ? 'active' : '' }}">
@@ -38,6 +39,41 @@
             <a href="{{ route('salaries.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-wallet"></i>
                 <div>Master Gaji</div>
+            </a>
+        </li>
+        @endif
+
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Operasional</span></li>
+
+        @if (auth()->user()->employee)
+        <li class="menu-item {{ request()->routeIs('attendances.check-in*') ? 'active' : '' }}">
+            <a href="{{ route('attendances.check-in') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-current-location"></i>
+                <div>Absen Saya</div>
+            </a>
+        </li>
+        @endif
+
+        @if (!auth()->user()->employee)
+        <li class="menu-item {{ request()->routeIs('attendances.*') && !request()->routeIs('attendances.check-in*') ? 'active' : '' }}">
+            <a href="{{ route('attendances.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar-check"></i>
+                <div>Absensi</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('work-locations.*') ? 'active' : '' }}">
+            <a href="{{ route('work-locations.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-map"></i>
+                <div>Lokasi Kerja</div>
+            </a>
+        </li>
+        @endif
+
+        <li class="menu-item {{ request()->routeIs('overtime-requests.*') ? 'active' : '' }}">
+            <a href="{{ route('overtime-requests.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-time-five"></i>
+                <div>Lembur</div>
             </a>
         </li>
     </ul>

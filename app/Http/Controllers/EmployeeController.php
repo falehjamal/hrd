@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EmployeeDataTable;
+use App\Http\Requests\StoreEmployeeAccountRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
 use App\Models\Shift;
+use App\Services\EmployeeAccountService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -39,9 +41,20 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
-        $employee->load(['shift']);
+        $employee->load(['shift', 'user']);
 
         return view('employees.show', compact('employee'));
+    }
+
+    public function storeAccount(StoreEmployeeAccountRequest $request, Employee $employee): RedirectResponse
+    {
+        try {
+            app(EmployeeAccountService::class)->createForEmployee($employee, $request->validated());
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back()->with('success', 'Akun login karyawan berhasil dibuat.');
     }
 
     public function edit(Employee $employee): View

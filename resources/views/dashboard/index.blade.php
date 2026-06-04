@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-2">Sistem {{ tenant_app_name() }}</h5>
                         <p class="mb-4 text-muted">
-                            Kelola data karyawan, shift, dan gaji dari menu Master Data.
+                            Kelola karyawan, absensi, dan lembur dari menu sidebar.
                         </p>
                         <a href="{{ route('employees.index') }}" class="btn btn-primary">
                             <i class="bx bx-user me-1"></i> Lihat Karyawan
@@ -72,11 +72,17 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <span class="fw-semibold d-block mb-1 text-muted">Hadir Hari Ini</span>
-                        <h3 class="card-title mb-0">—</h3>
+                        <h3 class="card-title mb-0">{{ $presentToday }}</h3>
                     </div>
                     <span class="badge bg-label-warning rounded p-2"><i class="bx bx-calendar bx-sm"></i></span>
                 </div>
-                <small class="text-muted">Modul absensi belum tersedia</small>
+                <small class="text-muted">
+                    @if (auth()->user()->employee)
+                        <a href="{{ route('attendances.check-in') }}">Absen saya</a>
+                    @else
+                        <a href="{{ route('attendances.index') }}">Lihat absensi</a>
+                    @endif
+                </small>
             </div>
         </div>
     </div>

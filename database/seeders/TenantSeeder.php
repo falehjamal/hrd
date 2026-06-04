@@ -8,6 +8,7 @@ use App\Models\EmployeeSalary;
 use App\Models\Shift;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\WorkLocation;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -70,6 +71,7 @@ class TenantSeeder extends Seeder
 
         $this->migrateLegacyUsers($tenant);
         $this->seedMasterData();
+        $this->seedOperationalData();
 
         tenancy()->end();
     }
@@ -189,6 +191,46 @@ class TenantSeeder extends Seeder
                 'is_active' => true,
                 'notes' => 'Gaji awal seed demo',
             ]);
+        }
+    }
+
+    protected function seedOperationalData(): void
+    {
+        if (! WorkLocation::query()->exists()) {
+            WorkLocation::query()->create([
+                'name' => 'Kantor Pusat Demo',
+                'latitude' => -6.2000000,
+                'longitude' => 106.8166667,
+                'radius_meters' => 200,
+                'is_active' => true,
+                'is_default' => true,
+            ]);
+        }
+
+        $employee = Employee::query()->where('employee_code', 'EMP001')->first();
+
+        if ($employee && ! $employee->user_id) {
+            $user = User::query()->firstOrCreate(
+                ['email' => 'budi@demo.test'],
+                [
+                    'name' => $employee->name,
+                    'username' => 'budi',
+                    'password' => Hash::make('password'),
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            $employee->update(['user_id' => $user->id]);
+
+            TenantUser::query()->updateOrCreate(
+                [
+                    'tenant_id' => tenant('id'),
+                    'email' => $user->email,
+                ],
+                [
+                    'username' => $user->username,
+                ]
+            );
         }
     }
 

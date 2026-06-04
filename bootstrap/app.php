@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureLinkedEmployee;
 use App\Http\Middleware\EnsureTenantIsActive;
 use App\Http\Middleware\InitializeTenancyFromSession;
 use Illuminate\Foundation\Application;
@@ -44,6 +45,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
             return route('dashboard');
         });
+
+        $middleware->alias([
+            'employee.linked' => EnsureLinkedEmployee::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

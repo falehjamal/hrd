@@ -8,6 +8,8 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/datatables.js',
+                'resources/js/attendance-camera.js',
+                'resources/js/attendance-check-in.js',
             ],
             refresh: true,
         }),

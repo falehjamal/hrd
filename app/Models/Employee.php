@@ -52,6 +52,16 @@ class Employee extends Model
         return $this->hasOne(EmployeeSalary::class)->where('is_active', true);
     }
 
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function overtimeRequests(): HasMany
+    {
+        return $this->hasMany(OvertimeRequest::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
 use App\Models\Shift;
@@ -16,6 +17,7 @@ class DashboardController extends Controller
             'activeEmployees' => Employee::query()->active()->count(),
             'totalShifts' => Shift::query()->active()->count(),
             'activeSalaries' => EmployeeSalary::query()->active()->count(),
+            'presentToday' => Attendance::query()->presentToday()->count(),
         ]);
     }
 }
