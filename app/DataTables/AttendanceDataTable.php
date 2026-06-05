@@ -22,6 +22,13 @@ class AttendanceDataTable
             ->addColumn('date_display', fn (Attendance $row) => $row->date->format('d/m/Y'))
             ->addColumn('check_in_display', fn (Attendance $row) => $row->check_in_at?->format('H:i') ?? '-')
             ->addColumn('check_out_display', fn (Attendance $row) => $row->check_out_at?->format('H:i') ?? '-')
+            ->addColumn('shift_display', function (Attendance $row) {
+                if ($row->shift) {
+                    return e($row->shift->code);
+                }
+
+                return '-';
+            })
             ->addColumn('source_badge', function (Attendance $row) {
                 $label = $row->source === Attendance::SOURCE_GPS ? 'GPS' : 'Manual';
 
@@ -66,7 +73,7 @@ class AttendanceDataTable
     protected function query(): Builder
     {
         return Attendance::query()
-            ->with('employee')
+            ->with(['employee', 'shift'])
             ->when(request()->filled('date_from'), fn ($q) => $q->whereDate('date', '>=', request('date_from')))
             ->when(request()->filled('date_to'), fn ($q) => $q->whereDate('date', '<=', request('date_to')))
             ->when(request()->filled('status'), fn ($q) => $q->where('status', request('status')))

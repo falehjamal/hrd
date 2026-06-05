@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAttendanceCheckInRequest;
 use App\Models\Attendance;
 use App\Services\AttendanceGeofenceService;
 use App\Services\AttendanceService;
+use App\Services\EmployeeShiftResolverService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
@@ -13,7 +14,8 @@ class AttendanceCheckInController extends Controller
 {
     public function __construct(
         protected AttendanceService $attendanceService,
-        protected AttendanceGeofenceService $geofence
+        protected AttendanceGeofenceService $geofence,
+        protected EmployeeShiftResolverService $shiftResolver
     ) {}
 
     public function create(): View
@@ -25,8 +27,10 @@ class AttendanceCheckInController extends Controller
             ->first();
 
         $location = $this->geofence->defaultLocation();
+        $todayShiftLabel = $this->shiftResolver->shiftLabelForDate($employee, today());
+        $isDayOff = $this->shiftResolver->isDayOff($employee, today());
 
-        return view('attendances.check-in', compact('employee', 'todayAttendance', 'location'));
+        return view('attendances.check-in', compact('employee', 'todayAttendance', 'location', 'todayShiftLabel', 'isDayOff'));
     }
 
     public function store(StoreAttendanceCheckInRequest $request): RedirectResponse

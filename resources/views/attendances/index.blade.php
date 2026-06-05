@@ -48,6 +48,7 @@
         <tr>
             <th>Karyawan</th>
             <th>Tanggal</th>
+            <th>Shift</th>
             <th>Masuk</th>
             <th>Pulang</th>
             <th>Sumber</th>
@@ -75,6 +76,7 @@
         columns: [
             { data: 'employee_display', name: 'employee.name' },
             { data: 'date_display', name: 'date' },
+            { data: 'shift_display', name: 'shift_id', searchable: false },
             { data: 'check_in_display', name: 'check_in_at', searchable: false },
             { data: 'check_out_display', name: 'check_out_at', searchable: false },
             { data: 'source_badge', name: 'source', searchable: false },

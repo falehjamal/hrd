@@ -14,7 +14,8 @@ class AttendanceService
     public const LATE_TOLERANCE_MINUTES = 15;
 
     public function __construct(
-        protected AttendanceGeofenceService $geofence
+        protected AttendanceGeofenceService $geofence,
+        protected EmployeeShiftResolverService $shiftResolver
     ) {}
 
     public function storeManual(array $data, ?UploadedFile $checkInPhoto, ?UploadedFile $checkOutPhoto, int $userId): Attendance
@@ -24,11 +25,13 @@ class AttendanceService
         $employee = Employee::query()->with('shift')->findOrFail($data['employee_id']);
         $checkInAt = $this->parseDateTime($data['date'], $data['check_in_time'] ?? null);
         $checkOutAt = $this->parseDateTime($data['date'], $data['check_out_time'] ?? null);
+        $shift = $this->shiftResolver->shiftForDate($employee, $data['date']);
 
         $status = $data['status'] ?? $this->resolveStatus($employee, $checkInAt);
 
         $attendance = Attendance::query()->create([
             'employee_id' => $employee->id,
+            'shift_id' => $shift?->id,
             'date' => $data['date'],
             'check_in_at' => $checkInAt,
             'check_out_at' => $checkOutAt,
@@ -66,10 +69,12 @@ class AttendanceService
         $employee = Employee::query()->with('shift')->findOrFail($employeeId);
         $checkInAt = $this->parseDateTime($date, $data['check_in_time'] ?? null);
         $checkOutAt = $this->parseDateTime($date, $data['check_out_time'] ?? null);
+        $shift = $this->shiftResolver->shiftForDate($employee, $date);
         $status = $data['status'] ?? $this->resolveStatus($employee, $checkInAt);
 
         $attendance->update([
             'employee_id' => $employeeId,
+            'shift_id' => $shift?->id,
             'date' => $date,
             'check_in_at' => $checkInAt,
             'check_out_at' => $checkOutAt,
@@ -113,12 +118,22 @@ class AttendanceService
             throw new \InvalidArgumentException('Anda sudah absen masuk. Gunakan absen pulang.');
         }
 
+        if ($this->shiftResolver->isDayOff($employee, $today)) {
+            $message = $this->shiftResolver->scheduleSource($employee, $today) === 'libur_perusahaan'
+                ? 'Hari ini libur perusahaan, tidak dapat melakukan absensi.'
+                : 'Hari ini adalah hari libur sesuai jadwal shift.';
+
+            throw new \InvalidArgumentException($message);
+        }
+
         $employee->load('shift');
         $now = now();
+        $shift = $this->shiftResolver->shiftForDate($employee, $today);
         $status = $this->resolveStatus($employee, $now);
 
         if ($attendance) {
             $attendance->update([
+                'shift_id' => $shift?->id,
                 'check_in_at' => $now,
                 'check_in_latitude' => $latitude,
                 'check_in_longitude' => $longitude,
@@ -130,6 +145,7 @@ class AttendanceService
         } else {
             $attendance = Attendance::query()->create([
                 'employee_id' => $employee->id,
+                'shift_id' => $shift?->id,
                 'date' => $today,
                 'check_in_at' => $now,
                 'check_in_latitude' => $latitude,
@@ -186,15 +202,22 @@ class AttendanceService
 
     public function resolveStatus(?Employee $employee, ?Carbon $checkInAt): string
     {
-        if (! $checkInAt) {
+        if (! $checkInAt || ! $employee) {
             return Attendance::STATUS_ABSENT;
         }
 
-        if (! $employee?->shift) {
+        $shift = $this->shiftResolver->shiftForDate($employee, $checkInAt);
+
+        if (! $shift) {
             return Attendance::STATUS_PRESENT;
         }
 
-        $shiftStart = Carbon::parse($checkInAt->format('Y-m-d').' '.$employee->shift->start_time);
+        $shiftStart = $this->shiftResolver->shiftStartForCheckIn($shift, $checkInAt);
+
+        if (! $shiftStart) {
+            return Attendance::STATUS_PRESENT;
+        }
+
         $lateThreshold = $shiftStart->copy()->addMinutes(self::LATE_TOLERANCE_MINUTES);
 
         return $checkInAt->greaterThan($lateThreshold)

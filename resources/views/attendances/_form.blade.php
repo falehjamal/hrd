@@ -31,6 +31,10 @@
         @error('check_out_time')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
+        <label class="form-label">Shift Ter-resolve</label>
+        <p id="resolved-shift-label" class="form-control-plaintext text-muted mb-0 small">Pilih karyawan dan tanggal</p>
+    </div>
+    <div class="col-md-6">
         <label class="form-label" for="status">Status</label>
         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
             @foreach ($statuses as $value => $label)
@@ -67,3 +71,31 @@
         @error('notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>
+
+@push('scripts')
+<script>
+    (function () {
+        const employeeSelect = document.getElementById('employee_id');
+        const dateInput = document.getElementById('date');
+        const labelEl = document.getElementById('resolved-shift-label');
+        const url = '{{ route('attendances.resolved-shift') }}';
+
+        const refresh = () => {
+            const employeeId = employeeSelect?.value;
+            const date = dateInput?.value;
+            if (!employeeId || !date || !labelEl) return;
+            labelEl.textContent = 'Memuat...';
+            fetch(url + '?employee_id=' + encodeURIComponent(employeeId) + '&date=' + encodeURIComponent(date), {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            })
+                .then((r) => r.json())
+                .then((data) => { labelEl.textContent = data.label || '-'; })
+                .catch(() => { labelEl.textContent = 'Gagal memuat shift'; });
+        };
+
+        employeeSelect?.addEventListener('change', refresh);
+        dateInput?.addEventListener('change', refresh);
+        refresh();
+    })();
+</script>
+@endpush

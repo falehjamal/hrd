@@ -30,7 +30,7 @@
         @error('position')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="shift_id">Shift Default</label>
+        <label class="form-label" for="shift_id">Shift Default (cadangan)</label>
         <select class="form-select @error('shift_id') is-invalid @enderror" id="shift_id" name="shift_id">
             <option value="">-- Pilih Shift --</option>
             @foreach ($shifts as $shift)

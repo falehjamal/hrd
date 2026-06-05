@@ -26,7 +26,7 @@
                     <dd class="col-sm-8">{{ $employee->department ?? '-' }}</dd>
                     <dt class="col-sm-4">Jabatan</dt>
                     <dd class="col-sm-8">{{ $employee->position ?? '-' }}</dd>
-                    <dt class="col-sm-4">Shift</dt>
+                    <dt class="col-sm-4">Shift Default</dt>
                     <dd class="col-sm-8">{{ $employee->shift ? $employee->shift->code.' - '.$employee->shift->name : '-' }}</dd>
                     <dt class="col-sm-4">Bergabung</dt>
                     <dd class="col-sm-8">{{ $employee->join_date?->format('d/m/Y') ?? '-' }}</dd>
@@ -43,6 +43,31 @@
         </div>
     </div>
     <div class="col-lg-7 mb-4">
+        <div class="card card-modern mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pola Shift Mingguan</h5>
+                <a href="{{ route('employees.weekly-shifts.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Pola</a>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (\App\Models\EmployeeWeeklyShift::DAY_LABELS as $day => $label)
+                        @php
+                            $shiftId = $weeklyShifts[$day] ?? null;
+                            $weeklyRow = $employee->weeklyShifts->firstWhere('day_of_week', $day);
+                        @endphp
+                        <span class="badge bg-label-primary" title="{{ $label }}">
+                            {{ $label }}:
+                            @if ($weeklyRow?->shift)
+                                {{ $weeklyRow->shift->code }}
+                            @else
+                                <span class="text-muted">default</span>
+                            @endif
+                        </span>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
         <div class="card card-modern mb-4">
             <div class="card-header"><h5 class="mb-0">Akun Login</h5></div>
             <div class="card-body">

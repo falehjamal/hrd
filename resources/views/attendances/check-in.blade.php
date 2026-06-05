@@ -10,7 +10,14 @@
         <div class="card card-modern">
             <div class="card-body text-center py-4">
                 <h5 class="mb-1">{{ $employee->name }}</h5>
-                <p class="text-muted mb-3">{{ $employee->employee_code }} · {{ today()->translatedFormat('l, d F Y') }}</p>
+                <p class="text-muted mb-2">{{ $employee->employee_code }} · {{ today()->translatedFormat('l, d F Y') }}</p>
+                <p class="mb-3">
+                    <span class="badge bg-label-info"><i class="bx bx-time-five me-1"></i> Shift hari ini: {{ $todayShiftLabel }}</span>
+                </p>
+
+                @if ($isDayOff)
+                    <div class="alert alert-secondary">Hari ini libur sesuai jadwal. Absensi tidak diperlukan.</div>
+                @endif
 
                 @if ($location)
                     <p class="small text-muted mb-3">
@@ -32,7 +39,7 @@
                     </div>
                 @endif
 
-                @if ($location && !($todayAttendance?->check_in_at && $todayAttendance?->check_out_at))
+                @if ($location && ! $isDayOff && !($todayAttendance?->check_in_at && $todayAttendance?->check_out_at))
                     <div id="absen-ready-banner" class="alert alert-warning text-start small mb-3">
                         <i class="bx bx-info-circle me-1"></i>
                         Pertama kali: pilih <strong>Izinkan</strong> untuk kamera & lokasi.

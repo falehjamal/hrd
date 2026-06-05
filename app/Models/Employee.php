@@ -52,6 +52,16 @@ class Employee extends Model
         return $this->hasOne(EmployeeSalary::class)->where('is_active', true);
     }
 
+    public function weeklyShifts(): HasMany
+    {
+        return $this->hasMany(EmployeeWeeklyShift::class);
+    }
+
+    public function shiftOverrides(): HasMany
+    {
+        return $this->hasMany(EmployeeShiftOverride::class);
+    }
+
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);

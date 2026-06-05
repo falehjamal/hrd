@@ -5,9 +5,12 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeSalaryController;
+use App\Http\Controllers\EmployeeWeeklyShiftController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CompanyHolidayController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\ShiftOverrideController;
 use App\Http\Controllers\WorkLocationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,12 +27,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('employees/data', [EmployeeController::class, 'data'])->name('employees.data');
+    Route::get('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
     Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
     Route::get('salaries/data', [EmployeeSalaryController::class, 'dataAll'])->name('salaries.data');
     Route::get('employees/{employee}/salaries/data', [EmployeeSalaryController::class, 'dataForEmployee'])->name('employees.salaries.data');
 
     Route::get('work-locations/data', [WorkLocationController::class, 'data'])->name('work-locations.data');
     Route::get('attendances/data', [AttendanceController::class, 'data'])->name('attendances.data');
+    Route::get('attendances/resolved-shift', [AttendanceController::class, 'resolvedShift'])->name('attendances.resolved-shift');
+    Route::get('shift-overrides/calendar', [ShiftOverrideController::class, 'calendar'])->name('shift-overrides.calendar');
+    Route::get('shift-overrides/day-detail', [ShiftOverrideController::class, 'dayDetail'])->name('shift-overrides.day-detail');
+    Route::get('shift-overrides/data', [ShiftOverrideController::class, 'data'])->name('shift-overrides.data');
+    Route::get('company-holidays/data', [CompanyHolidayController::class, 'index'])->name('company-holidays.data');
+    Route::post('company-holidays', [CompanyHolidayController::class, 'store'])->name('company-holidays.store');
+    Route::put('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'update'])->name('company-holidays.update');
+    Route::delete('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'destroy'])->name('company-holidays.destroy');
     Route::get('attendances/{attendance}/photo/{type}', [AttendanceController::class, 'photo'])
         ->name('attendances.photo')
         ->where('type', 'check-in|check-out');
@@ -47,6 +59,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('overtime-requests/{overtime_request}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime-requests.reject');
 
     Route::post('employees/{employee}/account', [EmployeeController::class, 'storeAccount'])->name('employees.account.store');
+    Route::get('employees/{employee}/weekly-shifts/edit', [EmployeeWeeklyShiftController::class, 'edit'])->name('employees.weekly-shifts.edit');
+    Route::put('employees/{employee}/weekly-shifts', [EmployeeWeeklyShiftController::class, 'update'])->name('employees.weekly-shifts.update');
+
+    Route::resource('shift-overrides', ShiftOverrideController::class)->except(['show']);
 
     Route::resource('shifts', ShiftController::class);
     Route::resource('employees', EmployeeController::class);

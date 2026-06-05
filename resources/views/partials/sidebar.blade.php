@@ -28,7 +28,7 @@
             </a>
         </li>
 
-        <li class="menu-item {{ request()->routeIs('employees.*', 'employees.salaries.*') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->routeIs('employees.*', 'employees.salaries.*', 'employees.weekly-shifts.*') ? 'active' : '' }}">
             <a href="{{ route('employees.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div>Data Karyawan</div>
@@ -66,6 +66,13 @@
             <a href="{{ route('work-locations.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-map"></i>
                 <div>Lokasi Kerja</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('shift-overrides.*') ? 'active' : '' }}">
+            <a href="{{ route('shift-overrides.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar-event"></i>
+                <div>Jadwal Shift</div>
             </a>
         </li>
         @endif

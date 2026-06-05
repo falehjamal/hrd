@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/datatables.js',
                 'resources/js/attendance-camera.js',
                 'resources/js/attendance-check-in.js',
+                'resources/js/shift-calendar.js',
             ],
             refresh: true,
         }),

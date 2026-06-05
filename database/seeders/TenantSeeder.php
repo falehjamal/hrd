@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use App\Models\Central\TenantUser;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
+use App\Models\CompanyHoliday;
+use App\Models\EmployeeShiftOverride;
+use App\Models\EmployeeWeeklyShift;
 use App\Models\Shift;
 use App\Models\Tenant;
 use App\Models\User;
@@ -72,6 +75,7 @@ class TenantSeeder extends Seeder
         $this->migrateLegacyUsers($tenant);
         $this->seedMasterData();
         $this->seedOperationalData();
+        $this->seedShiftSchedule();
 
         tenancy()->end();
     }
@@ -232,6 +236,59 @@ class TenantSeeder extends Seeder
                 ]
             );
         }
+    }
+
+    protected function seedShiftSchedule(): void
+    {
+        $employee = Employee::query()->where('employee_code', 'EMP003')->first();
+        $shiftSiang = Shift::query()->where('code', 'SIANG')->first();
+        $shiftMalam = Shift::query()->where('code', 'MALAM')->first();
+
+        if (! $employee || ! $shiftSiang) {
+            return;
+        }
+
+        foreach (range(1, 5) as $day) {
+            EmployeeWeeklyShift::query()->updateOrCreate(
+                ['employee_id' => $employee->id, 'day_of_week' => $day],
+                ['shift_id' => $shiftSiang->id]
+            );
+        }
+
+        if ($shiftMalam) {
+            EmployeeWeeklyShift::query()->updateOrCreate(
+                ['employee_id' => $employee->id, 'day_of_week' => 6],
+                ['shift_id' => $shiftMalam->id]
+            );
+        }
+
+        EmployeeShiftOverride::query()->firstOrCreate(
+            [
+                'employee_id' => $employee->id,
+                'date' => now()->addDays(3)->toDateString(),
+            ],
+            [
+                'shift_id' => null,
+                'notes' => 'Libur demo (override)',
+            ]
+        );
+
+        CompanyHoliday::query()->firstOrCreate(
+            ['date' => now()->startOfMonth()->addDays(14)->toDateString()],
+            [
+                'name' => 'Libur Nasional Demo',
+                'notes' => 'Contoh libur perusahaan',
+                'is_active' => true,
+            ]
+        );
+
+        CompanyHoliday::query()->firstOrCreate(
+            ['date' => now()->startOfMonth()->addDays(27)->toDateString()],
+            [
+                'name' => 'Cuti Bersama Demo',
+                'is_active' => true,
+            ]
+        );
     }
 
     protected function dropTenantDatabaseIfExists(string $tenantId): void
