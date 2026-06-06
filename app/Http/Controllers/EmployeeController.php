@@ -13,6 +13,7 @@ use App\Services\EmployeeWeeklyShiftService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
@@ -60,9 +61,18 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request): RedirectResponse
     {
-        Employee::query()->create($request->validated());
+        $result = DB::transaction(function () use ($request) {
+            $employee = Employee::query()->create($request->validated());
 
-        return redirect()->route('employees.index')->with('success', 'Karyawan berhasil ditambahkan.');
+            return app(EmployeeAccountService::class)->createAutoForEmployee($employee);
+        });
+
+        return redirect()
+            ->route('employees.index')
+            ->with(
+                'success',
+                'Karyawan berhasil ditambahkan. Akun login: '.$result['user']->username.' | Password sementara: '.$result['password'],
+            );
     }
 
     public function show(Employee $employee): View
@@ -93,7 +103,16 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
     {
-        $employee->update($request->validated());
+        $validated = $request->validated();
+        $employee->update($validated);
+
+        if ($employee->user) {
+            $employee->user->update([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'username' => $validated['employee_code'],
+            ]);
+        }
 
         return redirect()->route('employees.index')->with('success', 'Karyawan berhasil diperbarui.');
     }

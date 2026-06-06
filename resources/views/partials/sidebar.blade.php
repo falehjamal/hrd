@@ -83,5 +83,16 @@
                 <div>Lembur</div>
             </a>
         </li>
+
+        @if (!auth()->user()->employee)
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Sistem</span></li>
+
+        <li class="menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+            <a href="{{ route('settings.edit') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div>Pengaturan</div>
+            </a>
+        </li>
+        @endif
     </ul>
 </aside>

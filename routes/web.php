@@ -2,13 +2,14 @@
 
 use App\Http\Controllers\AttendanceCheckInController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\CompanyHolidayController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeSalaryController;
 use App\Http\Controllers\EmployeeWeeklyShiftController;
 use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CompanyHolidayController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\ShiftOverrideController;
 use App\Http\Controllers\WorkLocationController;
@@ -68,6 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('employees', EmployeeController::class);
     Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
     Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
+
+    Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
