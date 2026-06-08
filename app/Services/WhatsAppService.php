@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
+    public function __construct(
+        private readonly WhatsAppGatewayService $gateway,
+    ) {}
+
     public function send(string $phone, string $message): bool
     {
         if (! tenant_whatsapp_is_configured()) {
@@ -14,14 +18,15 @@ class WhatsAppService
             return false;
         }
 
-        Log::info('WhatsApp pesan (stub — integrasi menyusul)', [
-            'phone' => $phone,
-            'message' => $message,
-            'provider' => tenant_setting('wa_provider'),
-            'base_url' => tenant_setting('wa_base_url'),
-            'sender' => tenant_setting('wa_sender'),
-        ]);
+        $sent = $this->gateway->send($phone, $message);
 
-        return true;
+        if (! $sent) {
+            Log::warning('Gagal mengirim pesan WhatsApp.', [
+                'phone' => $phone,
+                'instance_key' => $this->gateway->instanceKey(),
+            ]);
+        }
+
+        return $sent;
     }
 }

@@ -20,9 +20,6 @@ class SettingController extends Controller
         'mail_from_address' => null,
         'mail_from_name' => null,
         'wa_enabled' => '0',
-        'wa_provider' => null,
-        'wa_base_url' => null,
-        'wa_token' => null,
         'wa_sender' => null,
     ];
 
@@ -31,8 +28,10 @@ class SettingController extends Controller
         abort_if(auth()->user()->employee, 403);
 
         $settings = Setting::getMany(array_keys(self::DEFAULTS), self::DEFAULTS);
+        $waGatewayConfigured = filled(config('services.whatsapp_gateway.url'))
+            && filled(config('services.whatsapp_gateway.key'));
 
-        return view('settings.edit', compact('settings'));
+        return view('settings.edit', compact('settings', 'waGatewayConfigured'));
     }
 
     public function update(UpdateSettingRequest $request): RedirectResponse
@@ -48,22 +47,12 @@ class SettingController extends Controller
             'mail_from_address' => $validated['mail_from_address'] ?? null,
             'mail_from_name' => $validated['mail_from_name'] ?? null,
             'wa_enabled' => $request->boolean('wa_enabled') ? '1' : '0',
-            'wa_provider' => $validated['wa_provider'] ?? null,
-            'wa_base_url' => $validated['wa_base_url'] ?? null,
-            'wa_token' => $validated['wa_token'] ?? null,
-            'wa_sender' => $validated['wa_sender'] ?? null,
         ];
 
         if (filled($validated['mail_password'] ?? null)) {
             $data['mail_password'] = $validated['mail_password'];
         } else {
             $data['mail_password'] = Setting::get('mail_password');
-        }
-
-        if (filled($validated['wa_token'] ?? null)) {
-            $data['wa_token'] = $validated['wa_token'];
-        } else {
-            $data['wa_token'] = Setting::get('wa_token');
         }
 
         Setting::setMany($data);

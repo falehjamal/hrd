@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\ShiftOverrideController;
+use App\Http\Controllers\WhatsAppSessionController;
 use App\Http\Controllers\WorkLocationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +73,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/whatsapp/connect', [WhatsAppSessionController::class, 'connect'])->name('settings.wa.connect');
+    Route::get('/settings/whatsapp/status', [WhatsAppSessionController::class, 'status'])->name('settings.wa.status');
+    Route::delete('/settings/whatsapp/disconnect', [WhatsAppSessionController::class, 'disconnect'])->name('settings.wa.disconnect');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

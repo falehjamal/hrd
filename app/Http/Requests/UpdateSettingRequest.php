@@ -24,10 +24,6 @@ class UpdateSettingRequest extends FormRequest
             'mail_from_address' => ['nullable', 'email', 'max:150'],
             'mail_from_name' => ['nullable', 'string', 'max:150'],
             'wa_enabled' => ['nullable', 'boolean'],
-            'wa_provider' => ['nullable', 'string', 'max:50'],
-            'wa_base_url' => ['nullable', 'string', 'max:255'],
-            'wa_token' => ['nullable', 'string', 'max:255'],
-            'wa_sender' => ['nullable', 'string', 'max:50'],
         ];
     }
 }

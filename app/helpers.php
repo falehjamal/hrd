@@ -86,8 +86,8 @@ if (! function_exists('tenant_whatsapp_is_configured')) {
             return false;
         }
 
-        return filled(tenant_setting('wa_base_url'))
-            && filled(tenant_setting('wa_token'));
+        return filled(config('services.whatsapp_gateway.url'))
+            && filled(config('services.whatsapp_gateway.key'));
     }
 }
 

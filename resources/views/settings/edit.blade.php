@@ -85,41 +85,13 @@
                 </div>
 
                 <div class="tab-pane fade" id="panel-wa" role="tabpanel">
-                    <div class="alert alert-info mb-3">
-                        <i class="bx bx-info-circle me-1"></i>
-                        Integrasi gateway WhatsApp akan dihubungkan ke server yang sudah ada. Simpan konfigurasi di bawah agar notifikasi WA siap digunakan.
-                    </div>
-
                     <div class="row g-3">
                         <div class="col-12">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="wa_enabled" name="wa_enabled" value="1" @checked(old('wa_enabled', $settings['wa_enabled']) == '1')>
                                 <label class="form-check-label" for="wa_enabled">Aktifkan notifikasi WhatsApp</label>
                             </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-label" for="wa_provider">Provider</label>
-                            <input type="text" class="form-control @error('wa_provider') is-invalid @enderror" id="wa_provider" name="wa_provider" value="{{ old('wa_provider', $settings['wa_provider']) }}" placeholder="Contoh: internal">
-                            @error('wa_provider')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-8">
-                            <label class="form-label" for="wa_base_url">Base URL Gateway</label>
-                            <input type="text" class="form-control @error('wa_base_url') is-invalid @enderror" id="wa_base_url" name="wa_base_url" value="{{ old('wa_base_url', $settings['wa_base_url']) }}" placeholder="https://wa.example.com/api">
-                            @error('wa_base_url')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="wa_token">Token / API Key</label>
-                            <input type="password" class="form-control @error('wa_token') is-invalid @enderror" id="wa_token" name="wa_token" placeholder="{{ filled($settings['wa_token']) ? '•••••••• (kosongkan jika tidak diubah)' : 'Masukkan token gateway' }}">
-                            @error('wa_token')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="wa_sender">Nomor Pengirim</label>
-                            <input type="text" class="form-control @error('wa_sender') is-invalid @enderror" id="wa_sender" name="wa_sender" value="{{ old('wa_sender', $settings['wa_sender']) }}" placeholder="62812xxxxxxx">
-                            @error('wa_sender')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div class="form-text">Notifikasi WA hanya dikirim jika fitur ini aktif dan nomor WhatsApp tenant sudah terhubung.</div>
                         </div>
                     </div>
                 </div>
@@ -131,4 +103,63 @@
         </form>
     </div>
 </div>
+
+<div class="card card-modern mt-4" id="wa-scan-panel"
+    data-connect-url="{{ route('settings.wa.connect') }}"
+    data-status-url="{{ route('settings.wa.status') }}"
+    data-disconnect-url="{{ route('settings.wa.disconnect') }}">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h5 class="mb-0"><i class="bx bxl-whatsapp me-1"></i> Koneksi WhatsApp</h5>
+        <span id="wa-status-badge" class="badge bg-secondary">Memuat...</span>
+    </div>
+    <div class="card-body">
+        @unless ($waGatewayConfigured)
+            <div class="alert alert-warning mb-0">
+                <i class="bx bx-error-circle me-1"></i>
+                Gateway WhatsApp belum dikonfigurasi di server. Hubungi administrator untuk mengisi <code>WA_GATEWAY_URL</code> dan <code>WA_GATEWAY_KEY</code> di file <code>.env</code>.
+            </div>
+        @else
+            <div id="wa-alert" class="alert alert-danger mb-3 d-none" role="alert"></div>
+
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-7">
+                    <p class="text-muted mb-2">Setiap tenant memiliki sesi WhatsApp terpisah. Scan QR code dengan aplikasi WhatsApp di ponsel untuk menghubungkan nomor pengirim notifikasi.</p>
+
+                    <div class="mb-3">
+                        <span class="text-muted">Status:</span>
+                        <strong id="wa-status-label">Memuat...</strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <span class="text-muted">Nomor terhubung:</span>
+                        <strong id="wa-phone-display" class="{{ filled($settings['wa_sender']) ? '' : 'd-none' }}">{{ $settings['wa_sender'] }}</strong>
+                        <span class="text-muted {{ filled($settings['wa_sender']) ? 'd-none' : '' }}" id="wa-phone-empty">Belum terhubung</span>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-primary" id="wa-btn-connect">
+                            <i class="bx bx-qr-scan me-1"></i> Hubungkan / Scan Ulang
+                        </button>
+                        <button type="button" class="btn btn-outline-danger d-none" id="wa-btn-disconnect">
+                            <i class="bx bx-unlink me-1"></i> Putuskan
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div id="wa-qr-container" class="border rounded p-3 text-center d-none">
+                        <p id="wa-qr-hint" class="small text-muted mb-3">Scan QR code dengan WhatsApp di ponsel Anda.</p>
+                        <img id="wa-qr-image" src="" alt="QR Code WhatsApp" class="img-fluid" style="max-width: 260px;">
+                    </div>
+                </div>
+            </div>
+        @endunless
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+@if ($waGatewayConfigured)
+@vite(['resources/js/wa-scan.js'])
+@endif
+@endpush
