@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/attendance-camera.js',
                 'resources/js/attendance-check-in.js',
                 'resources/js/shift-calendar.js',
+                'resources/js/ui-preferences.js',
             ],
             refresh: true,
         }),

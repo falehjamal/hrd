@@ -16,11 +16,19 @@
     <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/css/pages/page-auth.css') }}" />
+    @include('partials.theme-boot')
+    @vite(['resources/css/app.css'])
     <script src="{{ asset('sneat/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('sneat/js/config.js') }}"></script>
     @stack('styles')
 </head>
 <body>
+    <div class="auth-theme-toggle">
+        <ul class="navbar-nav">
+            @include('partials.theme-toggle')
+        </ul>
+    </div>
+
     @yield('content')
 
     <script src="{{ asset('sneat/vendor/libs/jquery/jquery.js') }}"></script>
@@ -29,6 +37,7 @@
     <script src="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('sneat/js/main.js') }}"></script>
+    @vite(['resources/js/ui-preferences.js'])
     @stack('scripts')
 </body>
 </html>

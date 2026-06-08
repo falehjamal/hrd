@@ -30,6 +30,15 @@ if (! function_exists('platform_sidebar_title')) {
     }
 }
 
+if (! function_exists('sidebar_brand_initial')) {
+    function sidebar_brand_initial(?string $name = null): string
+    {
+        $name = $name ?? tenant_app_name();
+
+        return mb_strtoupper(mb_substr(trim($name), 0, 1, 'UTF-8'), 'UTF-8');
+    }
+}
+
 if (! function_exists('format_rupiah')) {
     function format_rupiah(float|int|string|null $amount): string
     {

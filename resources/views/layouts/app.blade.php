@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{{ asset('sneat/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    @include('partials.theme-boot')
     @vite(['resources/css/app.css', 'resources/js/datatables.js'])
     <script src="{{ asset('sneat/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('sneat/js/config.js') }}"></script>
@@ -50,6 +51,7 @@
     <script src="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('sneat/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('sneat/js/main.js') }}"></script>
+    @vite(['resources/js/ui-preferences.js'])
     @stack('datatable-scripts')
     @stack('scripts')
 </body>
