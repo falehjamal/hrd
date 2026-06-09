@@ -15,6 +15,41 @@
         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
         <div class="form-text">Dipakai untuk akun login karyawan.</div>
     </div>
+    <div class="col-12">
+        <hr class="my-1">
+        <h6 class="mb-0 text-muted">Akun Login</h6>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username" value="{{ old('username', isset($employee) ? ($employee->user?->username ?? '') : '') }}" placeholder="Kosongkan = bagian sebelum @ dari email" />
+        @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <div class="form-text">Opsional. Default: bagian sebelum @ dari email.</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="{{ isset($employee) && $employee->exists ? 'Kosongkan jika tidak ingin mengubah' : 'Kosongkan = 1234' }}" />
+        @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <div class="form-text">
+            @if (isset($employee) && $employee->exists)
+                Opsional. Kosongkan jika tidak ingin mengubah password.
+            @else
+                Opsional. Default: 1234.
+            @endif
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
+        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" />
+    </div>
+    <div class="col-12">
+        <input type="hidden" name="send_notification" value="0">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input @error('send_notification') is-invalid @enderror" id="send_notification" name="send_notification" value="1" @checked(old('send_notification', '1') == '1') />
+            <label class="form-check-label" for="send_notification">Kirim notifikasi</label>
+            @error('send_notification')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="form-text">Email ke alamat karyawan, WhatsApp ke nomor telepon (jika dikonfigurasi).</div>
+    </div>
     <div class="col-md-6">
         <label class="form-label" for="phone">Telepon</label>
         <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $employee->phone ?? '') }}" />

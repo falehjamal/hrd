@@ -69,7 +69,10 @@
         </div>
 
         <div class="card card-modern mb-4">
-            <div class="card-header"><h5 class="mb-0">Akun Login</h5></div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Akun Login</h5>
+                <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit Akun</a>
+            </div>
             <div class="card-body">
                 @if ($employee->user)
                     <dl class="row mb-0">
@@ -82,32 +85,8 @@
                     </dl>
                     <p class="small text-muted mb-0 mt-2">Karyawan dapat login dan menggunakan menu <strong>Absen Saya</strong>.</p>
                 @else
-                    <p class="text-muted small">Buat akun agar karyawan dapat absen GPS via web.</p>
-                    <form action="{{ route('employees.account.store', $employee) }}" method="POST" class="row g-3">
-                        @csrf
-                        <div class="col-md-6">
-                            <label class="form-label" for="account_email">Email Login</label>
-                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="account_email" name="email" value="{{ old('email', $employee->email) }}" required />
-                            @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="account_username">Username</label>
-                            <input type="text" class="form-control @error('username') is-invalid @enderror" id="account_username" name="username" value="{{ old('username', strtolower($employee->employee_code)) }}" required />
-                            @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="account_password">Password</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="account_password" name="password" required />
-                            @error('password')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="account_password_confirmation">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="account_password_confirmation" name="password_confirmation" required />
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-sm">Buat Akun Login</button>
-                        </div>
-                    </form>
+                    <p class="text-muted small mb-2">Karyawan belum memiliki akun login.</p>
+                    <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-primary">Buat Akun via Edit</a>
                 @endif
             </div>
         </div>

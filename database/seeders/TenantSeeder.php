@@ -3,15 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\Central\TenantUser;
+use App\Models\CompanyHoliday;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
-use App\Models\CompanyHoliday;
 use App\Models\EmployeeShiftOverride;
 use App\Models\EmployeeWeeklyShift;
 use App\Models\Shift;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkLocation;
+use App\Services\EmployeeAccountService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -195,6 +196,10 @@ class TenantSeeder extends Seeder
                 'is_active' => true,
                 'notes' => 'Gaji awal seed demo',
             ]);
+
+            if (! $employee->user_id) {
+                app(EmployeeAccountService::class)->createAutoForEmployee($employee, sendNotification: false);
+            }
         }
     }
 
@@ -211,31 +216,6 @@ class TenantSeeder extends Seeder
             ]);
         }
 
-        $employee = Employee::query()->where('employee_code', 'EMP001')->first();
-
-        if ($employee && ! $employee->user_id) {
-            $user = User::query()->firstOrCreate(
-                ['email' => 'budi@demo.test'],
-                [
-                    'name' => $employee->name,
-                    'username' => 'budi',
-                    'password' => Hash::make('password'),
-                    'email_verified_at' => now(),
-                ]
-            );
-
-            $employee->update(['user_id' => $user->id]);
-
-            TenantUser::query()->updateOrCreate(
-                [
-                    'tenant_id' => tenant('id'),
-                    'email' => $user->email,
-                ],
-                [
-                    'username' => $user->username,
-                ]
-            );
-        }
     }
 
     protected function seedShiftSchedule(): void

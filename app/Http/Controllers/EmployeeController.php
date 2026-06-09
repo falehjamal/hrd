@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EmployeeDataTable;
-use App\Http\Requests\StoreEmployeeAccountRequest;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
@@ -13,11 +12,24 @@ use App\Services\EmployeeWeeklyShiftService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
+    private const EMPLOYEE_FIELDS = [
+        'employee_code',
+        'name',
+        'email',
+        'phone',
+        'department',
+        'position',
+        'shift_id',
+        'join_date',
+        'status',
+    ];
+
     public function index(): View
     {
         return view('employees.index');
@@ -61,18 +73,30 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request): RedirectResponse
     {
-        $result = DB::transaction(function () use ($request) {
-            $employee = Employee::query()->create($request->validated());
+        $validated = $request->validated();
 
-            return app(EmployeeAccountService::class)->createAutoForEmployee($employee);
+        $sendNotification = $validated['send_notification'] ?? true;
+
+        $result = DB::transaction(function () use ($validated, $sendNotification) {
+            $employee = Employee::query()->create(Arr::only($validated, self::EMPLOYEE_FIELDS));
+
+            return app(EmployeeAccountService::class)->createAutoForEmployee(
+                $employee,
+                $validated['username'] ?? null,
+                $validated['password'] ?? null,
+                $sendNotification,
+            );
         });
+
+        $message = 'Karyawan berhasil ditambahkan. Akun login: '.$result['user']->username.' | Password: '.$result['password'];
+
+        if ($sendNotification) {
+            $message .= ' Notifikasi telah dikirim.';
+        }
 
         return redirect()
             ->route('employees.index')
-            ->with(
-                'success',
-                'Karyawan berhasil ditambahkan. Akun login: '.$result['user']->username.' | Password sementara: '.$result['password'],
-            );
+            ->with('success', $message);
     }
 
     public function show(Employee $employee): View
@@ -83,19 +107,9 @@ class EmployeeController extends Controller
         return view('employees.show', compact('employee', 'weeklyShifts'));
     }
 
-    public function storeAccount(StoreEmployeeAccountRequest $request, Employee $employee): RedirectResponse
-    {
-        try {
-            app(EmployeeAccountService::class)->createForEmployee($employee, $request->validated());
-        } catch (\InvalidArgumentException $e) {
-            return back()->with('error', $e->getMessage());
-        }
-
-        return back()->with('success', 'Akun login karyawan berhasil dibuat.');
-    }
-
     public function edit(Employee $employee): View
     {
+        $employee->load('user');
         $shifts = Shift::query()->active()->orderBy('name')->get();
 
         return view('employees.edit', compact('employee', 'shifts'));
@@ -104,22 +118,35 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
     {
         $validated = $request->validated();
-        $employee->update($validated);
+        $sendNotification = $validated['send_notification'] ?? true;
 
-        if ($employee->user) {
-            $employee->user->update([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'username' => $validated['employee_code'],
-            ]);
+        DB::transaction(function () use ($employee, $validated, $sendNotification) {
+            $employee->update(Arr::only($validated, self::EMPLOYEE_FIELDS));
+
+            app(EmployeeAccountService::class)->createOrSyncForEmployee(
+                $employee->refresh(),
+                $validated['username'] ?? null,
+                $validated['password'] ?? null,
+                $sendNotification,
+            );
+        });
+
+        $message = 'Karyawan berhasil diperbarui.';
+
+        if ($sendNotification) {
+            $message .= ' Notifikasi telah dikirim.';
         }
 
-        return redirect()->route('employees.index')->with('success', 'Karyawan berhasil diperbarui.');
+        return redirect()->route('employees.index')->with('success', $message);
     }
 
     public function destroy(Employee $employee): RedirectResponse
     {
-        $employee->delete();
+        DB::transaction(function () use ($employee) {
+            $user = $employee->user;
+            $employee->delete();
+            $user?->delete();
+        });
 
         return redirect()->route('employees.index')->with('success', 'Karyawan berhasil dihapus.');
     }

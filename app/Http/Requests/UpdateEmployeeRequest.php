@@ -4,12 +4,20 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateEmployeeRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'send_notification' => $this->boolean('send_notification'),
+        ]);
     }
 
     public function rules(): array
@@ -22,7 +30,6 @@ class UpdateEmployeeRequest extends FormRequest
                 'string',
                 'max:50',
                 Rule::unique('employees', 'employee_code')->ignore($employee),
-                Rule::unique('users', 'username')->ignore($employee->user_id),
             ],
             'name' => ['required', 'string', 'max:150'],
             'email' => [
@@ -37,6 +44,14 @@ class UpdateEmployeeRequest extends FormRequest
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'join_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
+            'username' => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::unique('users', 'username')->ignore($employee->user_id),
+            ],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
+            'send_notification' => ['nullable', 'boolean'],
         ];
     }
 }
