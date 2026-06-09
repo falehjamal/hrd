@@ -10,22 +10,32 @@ use Illuminate\Validation\Rule;
 class ProfileUpdateRequest extends FormRequest
 {
     /**
-     * Get the validation rules that apply to the request.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
+        $rules = [
+            'name' => ['required', 'string', 'max:150'],
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
-                'max:255',
+                'max:150',
+                Rule::unique(User::class)->ignore($this->user()->id),
+            ],
+            'username' => [
+                'required',
+                'string',
+                'max:50',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
         ];
+
+        if ($this->user()->employee) {
+            $rules['phone'] = ['nullable', 'string', 'max:30'];
+        }
+
+        return $rules;
     }
 }
