@@ -16,14 +16,16 @@ class OvertimeRequestController extends Controller
 {
     public function index(): View
     {
-        $isEmployee = (bool) auth()->user()->employee;
+        $isEmployee = ! auth()->user()->isHrUser();
 
         return view('overtime-requests.index', compact('isEmployee'));
     }
 
     public function data(): JsonResponse
     {
-        $employeeId = auth()->user()->employee?->id;
+        $employeeId = auth()->user()->isHrUser()
+            ? null
+            : auth()->user()->employee?->id;
 
         return (new OvertimeRequestDataTable($employeeId))->json();
     }
@@ -31,9 +33,9 @@ class OvertimeRequestController extends Controller
     public function create(): View
     {
         $user = auth()->user();
-        $employees = $user->employee
-            ? collect()
-            : Employee::query()->active()->orderBy('name')->get();
+        $employees = $user->isHrUser()
+            ? Employee::query()->active()->orderBy('name')->get()
+            : collect();
 
         return view('overtime-requests.create', [
             'employees' => $employees,
@@ -44,7 +46,9 @@ class OvertimeRequestController extends Controller
     public function store(StoreOvertimeRequest $request): RedirectResponse
     {
         $user = $request->user();
-        $employeeId = $user->employee?->id ?? (int) $request->employee_id;
+        $employeeId = $user->isHrUser()
+            ? (int) $request->employee_id
+            : (int) $user->employee?->id;
 
         $start = Carbon::parse($request->date.' '.$request->start_time);
         $end = Carbon::parse($request->date.' '.$request->end_time);
@@ -116,7 +120,7 @@ class OvertimeRequestController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->employee && $overtimeRequest->employee_id !== $user->employee->id) {
+        if (! $user->isHrUser() && $overtimeRequest->employee_id !== $user->employee?->id) {
             abort(403);
         }
 
@@ -131,8 +135,6 @@ class OvertimeRequestController extends Controller
 
     protected function ensureHr(): void
     {
-        if (auth()->user()->employee) {
-            abort(403, 'Hanya HR yang dapat menyetujui lembur.');
-        }
+        abort_unless(auth()->user()->isHrUser(), 403, 'Hanya HR yang dapat menyetujui lembur.');
     }
 }

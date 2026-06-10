@@ -14,8 +14,29 @@
             </a>
         </li>
 
-        @if (!auth()->user()->employee)
+        @if (auth()->user()->isHrUser())
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Master Data</span></li>
+
+        <li class="menu-item {{ request()->routeIs('organization-structure.*') ? 'active' : '' }}">
+            <a href="{{ route('organization-structure.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-sitemap"></i>
+                <div>Struktur Organisasi</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('organizational-units.*') ? 'active' : '' }}">
+            <a href="{{ route('organizational-units.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-buildings"></i>
+                <div>Unit Organisasi</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('positions.*') ? 'active' : '' }}">
+            <a href="{{ route('positions.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-briefcase"></i>
+                <div>Data Jabatan</div>
+            </a>
+        </li>
 
         <li class="menu-item {{ request()->routeIs('shifts.*') ? 'active' : '' }}">
             <a href="{{ route('shifts.index') }}" class="menu-link">
@@ -50,7 +71,7 @@
         </li>
         @endif
 
-        @if (!auth()->user()->employee)
+        @if (auth()->user()->isHrUser())
         <li class="menu-item {{ request()->routeIs('attendances.*') && !request()->routeIs('attendances.check-in*') ? 'active' : '' }}">
             <a href="{{ route('attendances.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-calendar-check"></i>
@@ -80,7 +101,7 @@
             </a>
         </li>
 
-        @if (!auth()->user()->employee)
+        @if (auth()->user()->isHrUser())
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Sistem</span></li>
 
         <li class="menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">

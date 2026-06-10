@@ -14,7 +14,7 @@ class WhatsAppSessionController extends Controller
 
     public function connect(): JsonResponse
     {
-        abort_if(auth()->user()->employee, 403);
+        abort_unless(auth()->user()->isHrUser(), 403);
 
         $result = $this->gateway->connect();
         $this->syncSender($result);
@@ -24,7 +24,7 @@ class WhatsAppSessionController extends Controller
 
     public function status(): JsonResponse
     {
-        abort_if(auth()->user()->employee, 403);
+        abort_unless(auth()->user()->isHrUser(), 403);
 
         $result = $this->gateway->status();
         $this->syncSender($result);
@@ -34,7 +34,7 @@ class WhatsAppSessionController extends Controller
 
     public function disconnect(): JsonResponse
     {
-        abort_if(auth()->user()->employee, 403);
+        abort_unless(auth()->user()->isHrUser(), 403);
 
         $result = $this->gateway->disconnect();
 

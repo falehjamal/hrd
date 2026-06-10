@@ -7,7 +7,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeeSalaryController;
 use App\Http\Controllers\EmployeeWeeklyShiftController;
+use App\Http\Controllers\OrganizationalUnitController;
+use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShiftController;
@@ -28,11 +31,24 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('employees/data', [EmployeeController::class, 'data'])->name('employees.data');
-    Route::get('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
+    Route::middleware('hr.user')->group(function () {
+        Route::get('employees/data', [EmployeeController::class, 'data'])->name('employees.data');
+        Route::get('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
+        Route::get('positions/data', [PositionController::class, 'data'])->name('positions.data');
+        Route::get('organizational-units/data', [OrganizationalUnitController::class, 'data'])->name('organizational-units.data');
+        Route::get('organization-structure', [OrganizationStructureController::class, 'index'])->name('organization-structure.index');
+        Route::get('salaries/data', [EmployeeSalaryController::class, 'dataAll'])->name('salaries.data');
+        Route::get('employees/{employee}/salaries/data', [EmployeeSalaryController::class, 'dataForEmployee'])->name('employees.salaries.data');
+        Route::get('employees/{employee}/weekly-shifts/edit', [EmployeeWeeklyShiftController::class, 'edit'])->name('employees.weekly-shifts.edit');
+        Route::put('employees/{employee}/weekly-shifts', [EmployeeWeeklyShiftController::class, 'update'])->name('employees.weekly-shifts.update');
+        Route::resource('positions', PositionController::class)->except(['show']);
+        Route::resource('organizational-units', OrganizationalUnitController::class)->except(['show']);
+        Route::resource('employees', EmployeeController::class);
+        Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
+        Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
+    });
+
     Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
-    Route::get('salaries/data', [EmployeeSalaryController::class, 'dataAll'])->name('salaries.data');
-    Route::get('employees/{employee}/salaries/data', [EmployeeSalaryController::class, 'dataForEmployee'])->name('employees.salaries.data');
 
     Route::get('work-locations/data', [WorkLocationController::class, 'data'])->name('work-locations.data');
     Route::get('attendances/data', [AttendanceController::class, 'data'])->name('attendances.data');
@@ -60,15 +76,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('overtime-requests/{overtime_request}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime-requests.approve');
     Route::patch('overtime-requests/{overtime_request}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime-requests.reject');
 
-    Route::get('employees/{employee}/weekly-shifts/edit', [EmployeeWeeklyShiftController::class, 'edit'])->name('employees.weekly-shifts.edit');
-    Route::put('employees/{employee}/weekly-shifts', [EmployeeWeeklyShiftController::class, 'update'])->name('employees.weekly-shifts.update');
-
     Route::resource('shift-overrides', ShiftOverrideController::class)->except(['show']);
 
     Route::resource('shifts', ShiftController::class);
-    Route::resource('employees', EmployeeController::class);
-    Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
-    Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
 
     Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');

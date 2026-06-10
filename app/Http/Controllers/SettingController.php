@@ -25,7 +25,7 @@ class SettingController extends Controller
 
     public function edit(): View
     {
-        abort_if(auth()->user()->employee, 403);
+        abort_unless(auth()->user()->isHrUser(), 403);
 
         $settings = Setting::getMany(array_keys(self::DEFAULTS), self::DEFAULTS);
         $waGatewayConfigured = filled(config('services.whatsapp_gateway.url'))

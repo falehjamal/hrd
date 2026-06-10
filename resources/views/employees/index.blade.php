@@ -34,7 +34,7 @@
         <tr>
             <th>ID</th>
             <th>Nama</th>
-            <th>Departemen</th>
+            <th>Unit</th>
             <th>Jabatan</th>
             <th>Shift</th>
             <th>Gaji Aktif</th>
@@ -58,8 +58,8 @@
         columns: [
             { data: 'employee_code', name: 'employee_code' },
             { data: 'name_link', name: 'name', orderable: true, searchable: true },
-            { data: 'department', name: 'department', defaultContent: '-' },
-            { data: 'position', name: 'position', defaultContent: '-' },
+            { data: 'unit_name', name: 'organizationalUnit.name', defaultContent: '-' },
+            { data: 'position_name', name: 'position.name', defaultContent: '-' },
             { data: 'shift_code', name: 'shift_id', orderable: false, searchable: false },
             { data: 'salary_display', name: 'salary_display', orderable: false, searchable: false },
             { data: 'status_badge', name: 'status', orderable: true, searchable: false },

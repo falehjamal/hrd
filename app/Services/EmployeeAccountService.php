@@ -17,6 +17,7 @@ class EmployeeAccountService
         ?string $username = null,
         ?string $password = null,
         bool $sendNotification = true,
+        string $role = 'employee',
     ): array {
         if ($employee->user_id) {
             throw new \InvalidArgumentException('Karyawan ini sudah memiliki akun login.');
@@ -30,6 +31,7 @@ class EmployeeAccountService
             'email' => $employee->email,
             'username' => $resolvedUsername,
             'password' => $plainPassword,
+            'role' => $role,
         ]);
 
         $employee->update(['user_id' => $user->id]);
@@ -47,6 +49,7 @@ class EmployeeAccountService
         ?string $username = null,
         ?string $password = null,
         bool $sendNotification = true,
+        string $role = 'employee',
     ): void {
         if ($employee->user_id) {
             $this->syncForEmployee($employee, [
@@ -54,12 +57,13 @@ class EmployeeAccountService
                 'email' => $employee->email,
                 'username' => $username ?? $employee->user?->username,
                 'password' => $password,
+                'role' => $role,
             ], $sendNotification);
 
             return;
         }
 
-        $this->createAutoForEmployee($employee, $username, $password, $sendNotification);
+        $this->createAutoForEmployee($employee, $username, $password, $sendNotification, $role);
     }
 
     public function syncForEmployee(Employee $employee, array $data, bool $sendNotification = true): void
@@ -82,6 +86,7 @@ class EmployeeAccountService
             'name' => $data['name'],
             'email' => $data['email'],
             'username' => $resolvedUsername,
+            'role' => $data['role'] ?? $user->role,
         ];
 
         $plainPassword = null;

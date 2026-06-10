@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'username', 'password'])]
+#[Fillable(['name', 'email', 'username', 'password', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -43,6 +43,6 @@ class User extends Authenticatable
 
     public function isHrUser(): bool
     {
-        return ! $this->employee()->exists();
+        return $this->role === 'hr';
     }
 }

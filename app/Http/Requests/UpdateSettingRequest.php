@@ -9,7 +9,7 @@ class UpdateSettingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return ! $this->user()->employee;
+        return $this->user()->isHrUser();
     }
 
     public function rules(): array

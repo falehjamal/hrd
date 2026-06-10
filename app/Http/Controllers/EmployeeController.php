@@ -6,6 +6,8 @@ use App\DataTables\EmployeeDataTable;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
+use App\Models\OrganizationalUnit;
+use App\Models\Position;
 use App\Models\Shift;
 use App\Services\EmployeeAccountService;
 use App\Services\EmployeeWeeklyShiftService;
@@ -13,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -23,8 +26,9 @@ class EmployeeController extends Controller
         'name',
         'email',
         'phone',
-        'department',
-        'position',
+        'position_id',
+        'organizational_unit_id',
+        'manager_id',
         'shift_id',
         'join_date',
         'status',
@@ -66,9 +70,7 @@ class EmployeeController extends Controller
 
     public function create(): View
     {
-        $shifts = Shift::query()->active()->orderBy('name')->get();
-
-        return view('employees.create', compact('shifts'));
+        return view('employees.create', $this->formOptions());
     }
 
     public function store(StoreEmployeeRequest $request): RedirectResponse
@@ -77,7 +79,9 @@ class EmployeeController extends Controller
 
         $sendNotification = $validated['send_notification'] ?? true;
 
-        $result = DB::transaction(function () use ($validated, $sendNotification) {
+        $role = ($validated['has_hr_access'] ?? false) ? 'hr' : 'employee';
+
+        $result = DB::transaction(function () use ($validated, $sendNotification, $role) {
             $employee = Employee::query()->create(Arr::only($validated, self::EMPLOYEE_FIELDS));
 
             return app(EmployeeAccountService::class)->createAutoForEmployee(
@@ -85,6 +89,7 @@ class EmployeeController extends Controller
                 $validated['username'] ?? null,
                 $validated['password'] ?? null,
                 $sendNotification,
+                $role,
             );
         });
 
@@ -101,7 +106,7 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
-        $employee->load(['shift', 'user', 'weeklyShifts.shift']);
+        $employee->load(['shift', 'user', 'position', 'organizationalUnit', 'manager', 'weeklyShifts.shift']);
         $weeklyShifts = app(EmployeeWeeklyShiftService::class)->shiftsIndexedByDay($employee);
 
         return view('employees.show', compact('employee', 'weeklyShifts'));
@@ -110,9 +115,11 @@ class EmployeeController extends Controller
     public function edit(Employee $employee): View
     {
         $employee->load('user');
-        $shifts = Shift::query()->active()->orderBy('name')->get();
 
-        return view('employees.edit', compact('employee', 'shifts'));
+        return view('employees.edit', [
+            'employee' => $employee,
+            ...$this->formOptions($employee),
+        ]);
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
@@ -120,7 +127,9 @@ class EmployeeController extends Controller
         $validated = $request->validated();
         $sendNotification = $validated['send_notification'] ?? true;
 
-        DB::transaction(function () use ($employee, $validated, $sendNotification) {
+        $role = ($validated['has_hr_access'] ?? false) ? 'hr' : 'employee';
+
+        DB::transaction(function () use ($employee, $validated, $sendNotification, $role) {
             $employee->update(Arr::only($validated, self::EMPLOYEE_FIELDS));
 
             app(EmployeeAccountService::class)->createOrSyncForEmployee(
@@ -128,6 +137,7 @@ class EmployeeController extends Controller
                 $validated['username'] ?? null,
                 $validated['password'] ?? null,
                 $sendNotification,
+                $role,
             );
         });
 
@@ -149,5 +159,22 @@ class EmployeeController extends Controller
         });
 
         return redirect()->route('employees.index')->with('success', 'Karyawan berhasil dihapus.');
+    }
+
+    /**
+     * @return array{shifts: Collection, positions: Collection, units: Collection, managers: Collection}
+     */
+    private function formOptions(?Employee $exclude = null): array
+    {
+        return [
+            'shifts' => Shift::query()->active()->orderBy('name')->get(),
+            'positions' => Position::query()->active()->orderBy('level')->orderBy('name')->get(),
+            'units' => OrganizationalUnit::query()->active()->orderBy('name')->get(),
+            'managers' => Employee::query()
+                ->active()
+                ->when($exclude, fn ($q) => $q->where('id', '!=', $exclude->id))
+                ->orderBy('name')
+                ->get(),
+        ];
     }
 }

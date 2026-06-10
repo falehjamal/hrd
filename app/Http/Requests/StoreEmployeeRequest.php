@@ -10,13 +10,14 @@ class StoreEmployeeRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->isHrUser();
     }
 
     protected function prepareForValidation(): void
     {
         $this->merge([
             'send_notification' => $this->boolean('send_notification'),
+            'has_hr_access' => $this->boolean('has_hr_access'),
         ]);
     }
 
@@ -27,14 +28,16 @@ class StoreEmployeeRequest extends FormRequest
             'name' => ['required', 'string', 'max:150'],
             'email' => ['required', 'email', 'max:150', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:30'],
-            'department' => ['nullable', 'string', 'max:100'],
-            'position' => ['nullable', 'string', 'max:100'],
+            'position_id' => ['nullable', 'exists:positions,id'],
+            'organizational_unit_id' => ['nullable', 'exists:organizational_units,id'],
+            'manager_id' => ['nullable', 'exists:employees,id'],
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'join_date' => ['nullable', 'date'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'username' => ['nullable', 'string', 'max:50', 'unique:users,username'],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'send_notification' => ['nullable', 'boolean'],
+            'has_hr_access' => ['nullable', 'boolean'],
         ];
     }
 }

@@ -79,7 +79,7 @@
                 <small class="text-muted">
                     @if (auth()->user()->employee)
                         <a href="{{ route('attendances.check-in') }}">Absen saya</a>
-                    @else
+                    @elseif (auth()->user()->isHrUser())
                         <a href="{{ route('attendances.index') }}">Lihat absensi</a>
                     @endif
                 </small>

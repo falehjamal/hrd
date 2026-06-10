@@ -1,6 +1,6 @@
 <div class="btn-action-group">
     @if ($overtime->status === \App\Models\OvertimeRequest::STATUS_PENDING)
-        @if (!auth()->user()->employee)
+        @if (auth()->user()->isHrUser())
             <form action="{{ route('overtime-requests.approve', $overtime) }}" method="POST" class="d-inline">
                 @csrf
                 @method('PATCH')
@@ -22,7 +22,7 @@
     @endif
 </div>
 
-@if ($overtime->status === \App\Models\OvertimeRequest::STATUS_PENDING && !auth()->user()->employee)
+@if ($overtime->status === \App\Models\OvertimeRequest::STATUS_PENDING && auth()->user()->isHrUser())
 <div class="modal fade" id="rejectModal{{ $overtime->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

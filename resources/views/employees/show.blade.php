@@ -22,10 +22,18 @@
                     <dd class="col-sm-8">{{ $employee->email ?? '-' }}</dd>
                     <dt class="col-sm-4">Telepon</dt>
                     <dd class="col-sm-8">{{ $employee->phone ?? '-' }}</dd>
-                    <dt class="col-sm-4">Departemen</dt>
-                    <dd class="col-sm-8">{{ $employee->department ?? '-' }}</dd>
+                    <dt class="col-sm-4">Unit Organisasi</dt>
+                    <dd class="col-sm-8">{{ $employee->organizationalUnit?->name ?? '-' }}</dd>
                     <dt class="col-sm-4">Jabatan</dt>
-                    <dd class="col-sm-8">{{ $employee->position ?? '-' }}</dd>
+                    <dd class="col-sm-8">{{ $employee->position?->name ?? '-' }}</dd>
+                    <dt class="col-sm-4">Atasan</dt>
+                    <dd class="col-sm-8">
+                        @if ($employee->manager)
+                            <a href="{{ route('employees.show', $employee->manager) }}">{{ $employee->manager->name }}</a>
+                        @else
+                            -
+                        @endif
+                    </dd>
                     <dt class="col-sm-4">Shift Default</dt>
                     <dd class="col-sm-8">{{ $employee->shift ? $employee->shift->code.' - '.$employee->shift->name : '-' }}</dd>
                     <dt class="col-sm-4">Bergabung</dt>

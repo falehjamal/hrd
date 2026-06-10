@@ -20,7 +20,7 @@ class StoreOvertimeRequest extends FormRequest
             'reason' => ['required', 'string', 'max:2000'],
         ];
 
-        if ($this->user()->employee === null) {
+        if ($this->user()->isHrUser()) {
             $rules['employee_id'] = ['required', 'exists:employees,id'];
         }
 

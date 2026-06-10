@@ -50,20 +50,56 @@
         </div>
         <div class="form-text">Email ke alamat karyawan, WhatsApp ke nomor telepon (jika dikonfigurasi).</div>
     </div>
+    <div class="col-12">
+        <input type="hidden" name="has_hr_access" value="0">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input @error('has_hr_access') is-invalid @enderror" id="has_hr_access" name="has_hr_access" value="1"
+                @checked(old('has_hr_access', isset($employee) ? $employee->user?->isHrUser() : false)) />
+            <label class="form-check-label" for="has_hr_access">Akses panel HR</label>
+            @error('has_hr_access')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="form-text">Centang untuk admin/HRD yang tetap memiliki data karyawan.</div>
+    </div>
     <div class="col-md-6">
         <label class="form-label" for="phone">Telepon</label>
         <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $employee->phone ?? '') }}" />
         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="department">Departemen</label>
-        <input type="text" class="form-control @error('department') is-invalid @enderror" id="department" name="department" value="{{ old('department', $employee->department ?? '') }}" />
-        @error('department')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <label class="form-label" for="organizational_unit_id">Unit Organisasi</label>
+        <select class="form-select @error('organizational_unit_id') is-invalid @enderror" id="organizational_unit_id" name="organizational_unit_id">
+            <option value="">-- Pilih Unit --</option>
+            @foreach ($units as $unit)
+                <option value="{{ $unit->id }}" @selected(old('organizational_unit_id', $employee->organizational_unit_id ?? '') == $unit->id)>
+                    {{ $unit->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('organizational_unit_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
-        <label class="form-label" for="position">Jabatan</label>
-        <input type="text" class="form-control @error('position') is-invalid @enderror" id="position" name="position" value="{{ old('position', $employee->position ?? '') }}" />
-        @error('position')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <label class="form-label" for="position_id">Jabatan</label>
+        <select class="form-select @error('position_id') is-invalid @enderror" id="position_id" name="position_id">
+            <option value="">-- Pilih Jabatan --</option>
+            @foreach ($positions as $position)
+                <option value="{{ $position->id }}" @selected(old('position_id', $employee->position_id ?? '') == $position->id)>
+                    {{ $position->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('position_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="manager_id">Atasan Langsung</label>
+        <select class="form-select @error('manager_id') is-invalid @enderror" id="manager_id" name="manager_id">
+            <option value="">-- Tanpa atasan --</option>
+            @foreach ($managers as $manager)
+                <option value="{{ $manager->id }}" @selected(old('manager_id', $employee->manager_id ?? '') == $manager->id)>
+                    {{ $manager->employee_code }} — {{ $manager->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('manager_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-md-6">
         <label class="form-label" for="shift_id">Shift Default (cadangan)</label>

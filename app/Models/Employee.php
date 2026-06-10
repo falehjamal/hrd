@@ -17,8 +17,9 @@ class Employee extends Model
         'name',
         'email',
         'phone',
-        'department',
-        'position',
+        'position_id',
+        'organizational_unit_id',
+        'manager_id',
         'shift_id',
         'join_date',
         'status',
@@ -30,6 +31,26 @@ class Employee extends Model
         return [
             'join_date' => 'date',
         ];
+    }
+
+    public function position(): BelongsTo
+    {
+        return $this->belongsTo(Position::class);
+    }
+
+    public function organizationalUnit(): BelongsTo
+    {
+        return $this->belongsTo(OrganizationalUnit::class);
+    }
+
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'manager_id');
+    }
+
+    public function subordinates(): HasMany
+    {
+        return $this->hasMany(self::class, 'manager_id');
     }
 
     public function shift(): BelongsTo
