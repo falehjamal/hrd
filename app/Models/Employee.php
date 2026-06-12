@@ -12,11 +12,21 @@ class Employee extends Model
 {
     use SoftDeletes;
 
+    public const GENDER_LABELS = [
+        'male' => 'Laki-laki',
+        'female' => 'Perempuan',
+    ];
+
     protected $fillable = [
         'employee_code',
         'name',
         'email',
         'phone',
+        'photo_path',
+        'national_id',
+        'gender',
+        'birth_date',
+        'address',
         'position_id',
         'organizational_unit_id',
         'manager_id',
@@ -30,7 +40,26 @@ class Employee extends Model
     {
         return [
             'join_date' => 'date',
+            'birth_date' => 'date',
         ];
+    }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (! $this->photo_path) {
+            return null;
+        }
+
+        return route('employees.photo', $this);
+    }
+
+    public function getGenderLabelAttribute(): ?string
+    {
+        if (! $this->gender) {
+            return null;
+        }
+
+        return self::GENDER_LABELS[$this->gender] ?? null;
     }
 
     public function position(): BelongsTo

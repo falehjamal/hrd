@@ -65,6 +65,50 @@
         <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $employee->phone ?? '') }}" />
         @error('phone')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    <div class="col-12">
+        <hr class="my-1">
+        <h6 class="mb-0 text-muted">Data Pribadi</h6>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="photo">Foto Profil</label>
+        <input type="file" class="form-control @error('photo') is-invalid @enderror" id="photo" name="photo" accept="image/jpeg,image/png,image/webp" />
+        @error('photo')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <div class="form-text">Opsional. JPG, PNG, atau WebP, maks. 2 MB.</div>
+        @if (isset($employee) && $employee->photo_path)
+            <div class="mt-2">
+                <img src="{{ $employee->photo_url }}" alt="Foto {{ $employee->name }}" class="rounded border" style="width: 96px; height: 96px; object-fit: cover;" id="photo-preview">
+            </div>
+        @else
+            <div class="mt-2 d-none" id="photo-preview-wrap">
+                <img src="" alt="Pratinjau foto" class="rounded border" style="width: 96px; height: 96px; object-fit: cover;" id="photo-preview">
+            </div>
+        @endif
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="national_id">NIK</label>
+        <input type="text" class="form-control @error('national_id') is-invalid @enderror" id="national_id" name="national_id" value="{{ old('national_id', $employee->national_id ?? '') }}" maxlength="16" inputmode="numeric" />
+        @error('national_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="gender">Jenis Kelamin</label>
+        <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender">
+            <option value="">-- Pilih --</option>
+            @foreach (\App\Models\Employee::GENDER_LABELS as $value => $label)
+                <option value="{{ $value }}" @selected(old('gender', $employee->gender ?? '') === $value)>{{ $label }}</option>
+            @endforeach
+        </select>
+        @error('gender')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="birth_date">Tanggal Lahir</label>
+        <input type="date" class="form-control @error('birth_date') is-invalid @enderror" id="birth_date" name="birth_date" value="{{ old('birth_date', isset($employee) && $employee->birth_date ? $employee->birth_date->format('Y-m-d') : '') }}" />
+        @error('birth_date')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-md-8">
+        <label class="form-label" for="address">Alamat</label>
+        <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="2">{{ old('address', $employee->address ?? '') }}</textarea>
+        @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
     <div class="col-md-6">
         <label class="form-label" for="organizational_unit_id">Unit Organisasi</label>
         <select class="form-select @error('organizational_unit_id') is-invalid @enderror" id="organizational_unit_id" name="organizational_unit_id">
@@ -127,3 +171,22 @@
         @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>
+
+@once
+@push('scripts')
+<script>
+document.getElementById('photo')?.addEventListener('change', function () {
+    const file = this.files?.[0];
+    const preview = document.getElementById('photo-preview');
+    const wrap = document.getElementById('photo-preview-wrap');
+
+    if (!file || !preview) {
+        return;
+    }
+
+    preview.src = URL.createObjectURL(file);
+    wrap?.classList.remove('d-none');
+});
+</script>
+@endpush
+@endonce

@@ -13,6 +13,19 @@
                 <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit</a>
             </div>
             <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    @if ($employee->photo_path)
+                        <img src="{{ $employee->photo_url }}" alt="Foto {{ $employee->name }}" class="rounded-circle border" style="width: 80px; height: 80px; object-fit: cover;">
+                    @else
+                        <span class="avatar avatar-lg rounded-circle bg-label-primary d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="bx bx-user bx-lg"></i>
+                        </span>
+                    @endif
+                    <div>
+                        <h6 class="mb-0">{{ $employee->name }}</h6>
+                        <small class="text-muted">{{ $employee->employee_code }}</small>
+                    </div>
+                </div>
                 <dl class="row mb-0">
                     <dt class="col-sm-4">ID</dt>
                     <dd class="col-sm-8">{{ $employee->employee_code }}</dd>
@@ -22,6 +35,14 @@
                     <dd class="col-sm-8">{{ $employee->email ?? '-' }}</dd>
                     <dt class="col-sm-4">Telepon</dt>
                     <dd class="col-sm-8">{{ $employee->phone ?? '-' }}</dd>
+                    <dt class="col-sm-4">NIK</dt>
+                    <dd class="col-sm-8">{{ $employee->national_id ?? '-' }}</dd>
+                    <dt class="col-sm-4">Jenis Kelamin</dt>
+                    <dd class="col-sm-8">{{ $employee->gender_label ?? '-' }}</dd>
+                    <dt class="col-sm-4">Tanggal Lahir</dt>
+                    <dd class="col-sm-8">{{ $employee->birth_date?->format('d/m/Y') ?? '-' }}</dd>
+                    <dt class="col-sm-4">Alamat</dt>
+                    <dd class="col-sm-8">{{ $employee->address ?? '-' }}</dd>
                     <dt class="col-sm-4">Unit Organisasi</dt>
                     <dd class="col-sm-8">{{ $employee->organizationalUnit?->name ?? '-' }}</dd>
                     <dt class="col-sm-4">Jabatan</dt>

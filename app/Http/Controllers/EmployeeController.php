@@ -10,22 +10,33 @@ use App\Models\OrganizationalUnit;
 use App\Models\Position;
 use App\Models\Shift;
 use App\Services\EmployeeAccountService;
+use App\Services\EmployeePhotoService;
 use App\Services\EmployeeWeeklyShiftService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
+    public function __construct(
+        private readonly EmployeePhotoService $employeePhotoService,
+    ) {}
+
     private const EMPLOYEE_FIELDS = [
         'employee_code',
         'name',
         'email',
         'phone',
+        'national_id',
+        'gender',
+        'birth_date',
+        'address',
         'position_id',
         'organizational_unit_id',
         'manager_id',
@@ -81,8 +92,14 @@ class EmployeeController extends Controller
 
         $role = ($validated['has_hr_access'] ?? false) ? 'hr' : 'employee';
 
-        $result = DB::transaction(function () use ($validated, $sendNotification, $role) {
+        $result = DB::transaction(function () use ($validated, $sendNotification, $role, $request) {
             $employee = Employee::query()->create(Arr::only($validated, self::EMPLOYEE_FIELDS));
+
+            if ($request->hasFile('photo')) {
+                $employee->update([
+                    'photo_path' => $this->employeePhotoService->storePhoto($employee, $request->file('photo')),
+                ]);
+            }
 
             return app(EmployeeAccountService::class)->createAutoForEmployee(
                 $employee,
@@ -129,8 +146,14 @@ class EmployeeController extends Controller
 
         $role = ($validated['has_hr_access'] ?? false) ? 'hr' : 'employee';
 
-        DB::transaction(function () use ($employee, $validated, $sendNotification, $role) {
+        DB::transaction(function () use ($employee, $validated, $sendNotification, $role, $request) {
             $employee->update(Arr::only($validated, self::EMPLOYEE_FIELDS));
+
+            if ($request->hasFile('photo')) {
+                $employee->update([
+                    'photo_path' => $this->employeePhotoService->replacePhoto($employee, $request->file('photo')),
+                ]);
+            }
 
             app(EmployeeAccountService::class)->createOrSyncForEmployee(
                 $employee->refresh(),
@@ -153,12 +176,32 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee): RedirectResponse
     {
         DB::transaction(function () use ($employee) {
+            $this->employeePhotoService->deletePhoto($employee->photo_path);
             $user = $employee->user;
             $employee->delete();
             $user?->delete();
         });
 
         return redirect()->route('employees.index')->with('success', 'Karyawan berhasil dihapus.');
+    }
+
+    public function photo(Employee $employee): Response
+    {
+        if (! $this->employeePhotoService->canViewPhoto($employee, request()->user())) {
+            abort(403);
+        }
+
+        $path = $employee->photo_path;
+
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            abort(404);
+        }
+
+        $disk = Storage::disk('local');
+
+        return response($disk->get($path), 200, [
+            'Content-Type' => $disk->mimeType($path),
+        ]);
     }
 
     /**

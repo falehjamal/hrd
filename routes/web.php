@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::post('company-holidays', [CompanyHolidayController::class, 'store'])->name('company-holidays.store');
     Route::put('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'update'])->name('company-holidays.update');
     Route::delete('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'destroy'])->name('company-holidays.destroy');
+    Route::get('employees/{employee}/photo', [EmployeeController::class, 'photo'])->name('employees.photo');
     Route::get('attendances/{attendance}/photo/{type}', [AttendanceController::class, 'photo'])
         ->name('attendances.photo')
         ->where('type', 'check-in|check-out');

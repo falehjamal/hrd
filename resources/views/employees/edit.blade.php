@@ -6,7 +6,7 @@
 <div class="card card-modern">
     <div class="card-header"><h5 class="mb-0">Edit Karyawan</h5></div>
     <div class="card-body">
-        <form action="{{ route('employees.update', $employee) }}" method="POST">
+        <form action="{{ route('employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             @include('employees._form', ['employee' => $employee])
