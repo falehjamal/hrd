@@ -120,6 +120,156 @@
             </div>
         </div>
 
+        <div class="card card-modern mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Saldo Cuti {{ $leaveYear }}</h5>
+                <a href="{{ route('employees.leave-balances.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Kuota</a>
+            </div>
+            <div class="card-body">
+                @if ($leaveBalances->isEmpty())
+                    <p class="text-muted small mb-0">Belum ada jenis cuti aktif.</p>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-sm table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Jenis</th>
+                                    <th>Kuota</th>
+                                    <th>Terpakai</th>
+                                    <th>Sisa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($leaveBalances as $balance)
+                                    <tr>
+                                        <td>{{ $balance->leaveType->code }} — {{ $balance->leaveType->name }}</td>
+                                        <td>{{ $balance->quota_days }} hari</td>
+                                        <td>{{ $balance->used_days }} hari</td>
+                                        <td>{{ $balance->remaining_days }} hari</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <x-datatable-card tableId="employee-leave-requests-table" title="Riwayat Pengajuan Cuti">
+            <thead>
+                <tr>
+                    <th>Jenis Cuti</th>
+                    <th>Rentang</th>
+                    <th>Total Hari</th>
+                    <th>Alasan</th>
+                    <th>Status</th>
+                    <th class="no-export">Aksi</th>
+                </tr>
+            </thead>
+        </x-datatable-card>
+
+        <div class="card card-modern mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Pemotongan Aktif</h5>
+                <a href="{{ route('employees.deductions.create', $employee) }}" class="btn btn-sm btn-primary">
+                    <i class="bx bx-plus me-1"></i> Tambah
+                </a>
+            </div>
+            <div class="card-body">
+                @if ($employee->activeDeductions->isEmpty())
+                    <p class="text-muted small mb-0">Belum ada pemotongan aktif.</p>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-sm table-modern mb-2">
+                            <thead>
+                                <tr>
+                                    <th>Jenis</th>
+                                    <th>Nominal</th>
+                                    <th>Berlaku</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($employee->activeDeductions as $deduction)
+                                    <tr>
+                                        <td>{{ $deduction->deductionType->code }} — {{ $deduction->deductionType->name }}</td>
+                                        <td>{{ format_rupiah($deduction->amount) }}</td>
+                                        <td>{{ $deduction->effective_date->format('d/m/Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="small mb-0"><strong>Total pemotongan/bulan:</strong> {{ format_rupiah($employee->total_active_deductions) }}</p>
+                @endif
+            </div>
+        </div>
+
+        <x-datatable-card tableId="employee-deductions-table" title="Riwayat Pemotongan">
+            <x-slot:headerActions>
+                <a href="{{ route('employees.deductions.create', $employee) }}" class="btn btn-sm btn-primary">
+                    <i class="bx bx-plus me-1"></i> Tambah Pemotongan
+                </a>
+            </x-slot:headerActions>
+            <thead>
+                <tr>
+                    <th>Jenis</th>
+                    <th>Berlaku</th>
+                    <th>Nominal</th>
+                    <th>Status</th>
+                    <th class="no-export">Aksi</th>
+                </tr>
+            </thead>
+        </x-datatable-card>
+
+        <div class="card card-modern mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Piutang Aktif</h5>
+                <a href="{{ route('employee-loans.create') }}?employee_id={{ $employee->id }}" class="btn btn-sm btn-primary">
+                    <i class="bx bx-plus me-1"></i> Catat Piutang
+                </a>
+            </div>
+            <div class="card-body">
+                @if ($employee->activeLoans->isEmpty())
+                    <p class="text-muted small mb-0">Tidak ada piutang aktif.</p>
+                @else
+                    <div class="table-responsive">
+                        <table class="table table-sm table-modern mb-2">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Pinjaman</th>
+                                    <th>Sisa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($employee->activeLoans as $loan)
+                                    <tr>
+                                        <td><a href="{{ route('employee-loans.show', $loan) }}">{{ $loan->loan_date->format('d/m/Y') }}</a></td>
+                                        <td>{{ format_rupiah($loan->principal_amount) }}</td>
+                                        <td>{{ format_rupiah($loan->remaining_amount) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="small mb-0"><strong>Total sisa piutang:</strong> {{ format_rupiah($employee->total_loan_remaining) }}</p>
+                @endif
+            </div>
+        </div>
+
+        <x-datatable-card tableId="employee-loans-table" title="Riwayat Piutang">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>Pinjaman</th>
+                    <th>Cicilan</th>
+                    <th>Sisa</th>
+                    <th>Status</th>
+                    <th class="no-export">Aksi</th>
+                </tr>
+            </thead>
+        </x-datatable-card>
+
         <x-datatable-card tableId="employee-salaries-table" title="Riwayat Gaji">
             <x-slot:headerActions>
                 <a href="{{ route('employees.salaries.create', $employee) }}" class="btn btn-sm btn-primary">
@@ -145,6 +295,50 @@
 
 @push('datatable-scripts')
 <script type="module">
+    window.initServerDataTable('#employee-leave-requests-table', {
+        ajax: { url: '{{ route('employees.leave-requests.data', $employee) }}' },
+        order: [[1, 'desc']],
+        buttons: [],
+        columns: [
+            { data: 'leave_type_display', name: 'leave_type_display' },
+            { data: 'date_range', name: 'start_date' },
+            { data: 'total_days_display', name: 'total_days', searchable: false },
+            { data: 'reason', name: 'reason' },
+            { data: 'status_badge', name: 'status', searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+    });
+
+    window.initServerDataTable('#employee-deductions-table', {
+        ajax: {
+            url: '{{ route('employees.deductions.data', $employee) }}',
+            data: (d) => { d.active_only = '0'; },
+        },
+        order: [[1, 'desc']],
+        buttons: [],
+        columns: [
+            { data: 'type_display', name: 'type_display' },
+            { data: 'effective_date_display', name: 'effective_date' },
+            { data: 'amount_display', name: 'amount', searchable: false },
+            { data: 'status_badge', name: 'is_active', searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+    });
+
+    window.initServerDataTable('#employee-loans-table', {
+        ajax: { url: '{{ route('employees.employee-loans.data', $employee) }}' },
+        order: [[0, 'desc']],
+        buttons: [],
+        columns: [
+            { data: 'loan_date_display', name: 'loan_date' },
+            { data: 'principal_display', name: 'principal_amount', searchable: false },
+            { data: 'installment_display', name: 'installment_amount', searchable: false },
+            { data: 'remaining_display', name: 'paid_amount', searchable: false },
+            { data: 'status_badge', name: 'status', searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+    });
+
     window.initServerDataTable('#employee-salaries-table', {
         ajax: {
             url: '{{ route('employees.salaries.data', $employee) }}',

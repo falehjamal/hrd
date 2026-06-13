@@ -4,10 +4,15 @@ namespace Database\Seeders;
 
 use App\Models\Central\TenantUser;
 use App\Models\CompanyHoliday;
+use App\Models\DeductionType;
 use App\Models\Employee;
+use App\Models\EmployeeDeduction;
+use App\Models\EmployeeLoan;
 use App\Models\EmployeeSalary;
 use App\Models\EmployeeShiftOverride;
 use App\Models\EmployeeWeeklyShift;
+use App\Models\LeaveRequest;
+use App\Models\LeaveType;
 use App\Models\OrganizationalUnit;
 use App\Models\Position;
 use App\Models\Shift;
@@ -15,6 +20,8 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Models\WorkLocation;
 use App\Services\EmployeeAccountService;
+use App\Services\EmployeeLeaveBalanceService;
+use App\Services\EmployeeLoanService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -83,6 +90,8 @@ class TenantSeeder extends Seeder
         $this->seedEmployees($adminUser, $orgData);
         $this->seedOperationalData();
         $this->seedShiftSchedule();
+        $this->seedLeaveData();
+        $this->seedDeductionAndLoanData();
 
         tenancy()->end();
     }
@@ -429,6 +438,126 @@ class TenantSeeder extends Seeder
                 'is_active' => true,
             ]
         );
+    }
+
+    protected function seedLeaveData(): void
+    {
+        $types = [
+            ['code' => 'TAHUNAN', 'name' => 'Cuti Tahunan', 'default_quota_days' => 12],
+            ['code' => 'SAKIT', 'name' => 'Cuti Sakit', 'default_quota_days' => 12],
+            ['code' => 'IZIN', 'name' => 'Izin', 'default_quota_days' => 6, 'is_paid' => false],
+        ];
+
+        foreach ($types as $data) {
+            LeaveType::query()->updateOrCreate(
+                ['code' => $data['code']],
+                [
+                    'name' => $data['name'],
+                    'default_quota_days' => $data['default_quota_days'],
+                    'is_paid' => $data['is_paid'] ?? true,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        $year = (int) now()->year;
+        $balanceService = app(EmployeeLeaveBalanceService::class);
+
+        Employee::query()->active()->each(function (Employee $employee) use ($balanceService, $year) {
+            $balanceService->ensureBalancesForYear($employee, $year);
+        });
+
+        $employee = Employee::query()->where('employee_code', 'EMP001')->first();
+        $leaveType = LeaveType::query()->where('code', 'TAHUNAN')->first();
+
+        if ($employee && $leaveType) {
+            LeaveRequest::query()->firstOrCreate(
+                [
+                    'employee_id' => $employee->id,
+                    'leave_type_id' => $leaveType->id,
+                    'start_date' => now()->addWeeks(2)->startOfWeek()->toDateString(),
+                    'status' => LeaveRequest::STATUS_PENDING,
+                ],
+                [
+                    'end_date' => now()->addWeeks(2)->startOfWeek()->addDays(2)->toDateString(),
+                    'total_days' => 3,
+                    'reason' => 'Cuti keluarga (demo pending approval)',
+                ]
+            );
+        }
+    }
+
+    protected function seedDeductionAndLoanData(): void
+    {
+        $types = [
+            ['code' => 'BPJS', 'name' => 'BPJS Kesehatan & Ketenagakerjaan'],
+            ['code' => 'KOPERASI', 'name' => 'Iuran Koperasi'],
+            ['code' => 'PPH21', 'name' => 'PPh 21'],
+        ];
+
+        foreach ($types as $data) {
+            DeductionType::query()->updateOrCreate(
+                ['code' => $data['code']],
+                ['name' => $data['name'], 'is_active' => true]
+            );
+        }
+
+        $bpjs = DeductionType::query()->where('code', 'BPJS')->first();
+        $koperasi = DeductionType::query()->where('code', 'KOPERASI')->first();
+
+        $deductionSeeds = [
+            ['employee_code' => 'EMP001', 'type' => $bpjs, 'amount' => 150000],
+            ['employee_code' => 'EMP002', 'type' => $bpjs, 'amount' => 150000],
+            ['employee_code' => 'EMP002', 'type' => $koperasi, 'amount' => 50000],
+            ['employee_code' => 'EMP003', 'type' => $koperasi, 'amount' => 75000],
+        ];
+
+        foreach ($deductionSeeds as $seed) {
+            if (! $seed['type']) {
+                continue;
+            }
+
+            $employee = Employee::query()->where('employee_code', $seed['employee_code'])->first();
+
+            if (! $employee) {
+                continue;
+            }
+
+            EmployeeDeduction::query()->firstOrCreate(
+                [
+                    'employee_id' => $employee->id,
+                    'deduction_type_id' => $seed['type']->id,
+                    'is_active' => true,
+                ],
+                [
+                    'amount' => $seed['amount'],
+                    'effective_date' => now()->startOfYear()->toDateString(),
+                    'notes' => 'Seed demo pemotongan',
+                ]
+            );
+        }
+
+        $employee = Employee::query()->where('employee_code', 'EMP001')->first();
+        $adminUser = User::query()->where('email', 'admin@hrd.test')->first();
+
+        if (! $employee || EmployeeLoan::query()->where('employee_id', $employee->id)->exists()) {
+            return;
+        }
+
+        $loan = app(EmployeeLoanService::class)->createLoan(
+            $employee,
+            now()->subMonth()->toDateString(),
+            3000000,
+            500000,
+            'Kasbon demo EMP001',
+            $adminUser
+        );
+
+        $firstInstallment = $loan->installments()->orderBy('installment_number')->first();
+
+        if ($firstInstallment && $adminUser) {
+            app(EmployeeLoanService::class)->payInstallment($firstInstallment, $adminUser, 'Cicilan demo sudah dibayar');
+        }
     }
 
     protected function dropTenantDatabaseIfExists(string $tenantId): void

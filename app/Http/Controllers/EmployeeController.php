@@ -10,6 +10,7 @@ use App\Models\OrganizationalUnit;
 use App\Models\Position;
 use App\Models\Shift;
 use App\Services\EmployeeAccountService;
+use App\Services\EmployeeLeaveBalanceService;
 use App\Services\EmployeePhotoService;
 use App\Services\EmployeeWeeklyShiftService;
 use Illuminate\Http\JsonResponse;
@@ -123,10 +124,21 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee): View
     {
-        $employee->load(['shift', 'user', 'position', 'organizationalUnit', 'manager', 'weeklyShifts.shift']);
+        $employee->load([
+            'shift', 'user', 'position', 'organizationalUnit', 'manager', 'weeklyShifts.shift',
+            'activeDeductions.deductionType', 'activeLoans',
+        ]);
         $weeklyShifts = app(EmployeeWeeklyShiftService::class)->shiftsIndexedByDay($employee);
+        $leaveYear = (int) now()->year;
+        $leaveBalances = app(EmployeeLeaveBalanceService::class)->ensureBalancesForYear($employee, $leaveYear);
 
-        return view('employees.show', compact('employee', 'weeklyShifts'));
+        foreach ($leaveBalances as $balance) {
+            app(EmployeeLeaveBalanceService::class)->syncUsedDays($balance);
+        }
+
+        $leaveBalances = app(EmployeeLeaveBalanceService::class)->ensureBalancesForYear($employee, $leaveYear);
+
+        return view('employees.show', compact('employee', 'weeklyShifts', 'leaveBalances', 'leaveYear'));
     }
 
     public function edit(Employee $employee): View

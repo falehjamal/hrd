@@ -45,7 +45,7 @@
             </a>
         </li>
 
-        <li class="menu-item {{ request()->routeIs('employees.*', 'employees.salaries.*', 'employees.weekly-shifts.*') ? 'active' : '' }}">
+        <li class="menu-item {{ request()->routeIs('employees.*', 'employees.salaries.*', 'employees.weekly-shifts.*', 'employees.deductions.*', 'employees.employee-loans.*', 'employees.leave-balances.*') ? 'active' : '' }}">
             <a href="{{ route('employees.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div>Data Karyawan</div>
@@ -56,6 +56,34 @@
             <a href="{{ route('salaries.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-wallet"></i>
                 <div>Master Gaji</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('leave-types.*') ? 'active' : '' }}">
+            <a href="{{ route('leave-types.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar"></i>
+                <div>Jenis Cuti</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('deduction-types.*') ? 'active' : '' }}">
+            <a href="{{ route('deduction-types.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-minus-circle"></i>
+                <div>Jenis Pemotongan</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('deductions.*', 'employees.deductions.*') ? 'active' : '' }}">
+            <a href="{{ route('deductions.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div>Master Pemotongan</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('employee-loans.*', 'employees.employee-loans.*') ? 'active' : '' }}">
+            <a href="{{ route('employee-loans.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-credit-card"></i>
+                <div>Piutang Karyawan</div>
             </a>
         </li>
         @endif
@@ -98,6 +126,13 @@
             <a href="{{ route('overtime-requests.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-time-five"></i>
                 <div>Lembur</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('leave-requests.*') ? 'active' : '' }}">
+            <a href="{{ route('leave-requests.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-calendar-check"></i>
+                <div>Cuti</div>
             </a>
         </li>
 

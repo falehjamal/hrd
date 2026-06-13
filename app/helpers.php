@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\Attendance;
+use App\Models\EmployeeLoan;
+use App\Models\EmployeeLoanInstallment;
+use App\Models\LeaveRequest;
 use App\Models\OvertimeRequest;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Config;
@@ -57,6 +60,27 @@ if (! function_exists('overtime_status_label')) {
     function overtime_status_label(string $status): string
     {
         return OvertimeRequest::statusLabels()[$status] ?? $status;
+    }
+}
+
+if (! function_exists('leave_status_label')) {
+    function leave_status_label(string $status): string
+    {
+        return LeaveRequest::statusLabels()[$status] ?? $status;
+    }
+}
+
+if (! function_exists('loan_status_label')) {
+    function loan_status_label(string $status): string
+    {
+        return EmployeeLoan::statusLabels()[$status] ?? $status;
+    }
+}
+
+if (! function_exists('loan_installment_status_label')) {
+    function loan_installment_status_label(string $status): string
+    {
+        return EmployeeLoanInstallment::statusLabels()[$status] ?? $status;
     }
 }
 

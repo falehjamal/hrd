@@ -4,9 +4,16 @@ use App\Http\Controllers\AttendanceCheckInController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CompanyHolidayController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeductionTypeController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeDeductionController;
+use App\Http\Controllers\EmployeeLeaveBalanceController;
+use App\Http\Controllers\EmployeeLoanController;
+use App\Http\Controllers\EmployeeLoanInstallmentController;
 use App\Http\Controllers\EmployeeSalaryController;
 use App\Http\Controllers\EmployeeWeeklyShiftController;
+use App\Http\Controllers\LeaveRequestController;
+use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\OrganizationalUnitController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\OvertimeRequestController;
@@ -32,6 +39,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::middleware('hr.user')->group(function () {
+        Route::get('deduction-types/data', [DeductionTypeController::class, 'data'])->name('deduction-types.data');
+        Route::resource('deduction-types', DeductionTypeController::class)->except(['show']);
+        Route::get('deductions/data', [EmployeeDeductionController::class, 'dataAll'])->name('deductions.data');
+        Route::get('employees/{employee}/deductions/data', [EmployeeDeductionController::class, 'dataForEmployee'])->name('employees.deductions.data');
+        Route::resource('employees.deductions', EmployeeDeductionController::class)->except(['show', 'index'])->shallow();
+        Route::get('deductions', [EmployeeDeductionController::class, 'indexAll'])->name('deductions.index');
+        Route::get('employee-loans/data', [EmployeeLoanController::class, 'data'])->name('employee-loans.data');
+        Route::get('employee-loans/preview', [EmployeeLoanController::class, 'preview'])->name('employee-loans.preview');
+        Route::get('employees/{employee}/employee-loans/data', [EmployeeLoanController::class, 'dataForEmployee'])->name('employees.employee-loans.data');
+        Route::resource('employee-loans', EmployeeLoanController::class)->only(['index', 'create', 'store', 'show', 'destroy']);
+        Route::patch('employee-loans/{employee_loan}/cancel', [EmployeeLoanController::class, 'cancel'])->name('employee-loans.cancel');
+        Route::patch('employee-loan-installments/{employee_loan_installment}/pay', [EmployeeLoanInstallmentController::class, 'pay'])->name('employee-loan-installments.pay');
+        Route::get('leave-types/data', [LeaveTypeController::class, 'data'])->name('leave-types.data');
+        Route::resource('leave-types', LeaveTypeController::class)->except(['show']);
+        Route::get('employees/{employee}/leave-balances/data', [EmployeeLeaveBalanceController::class, 'data'])->name('employees.leave-balances.data');
+        Route::get('employees/{employee}/leave-balances/edit', [EmployeeLeaveBalanceController::class, 'edit'])->name('employees.leave-balances.edit');
+        Route::put('employees/{employee}/leave-balances', [EmployeeLeaveBalanceController::class, 'update'])->name('employees.leave-balances.update');
+        Route::get('employees/{employee}/leave-requests/data', [LeaveRequestController::class, 'dataForEmployee'])->name('employees.leave-requests.data');
         Route::get('employees/data', [EmployeeController::class, 'data'])->name('employees.data');
         Route::get('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
         Route::get('positions/data', [PositionController::class, 'data'])->name('positions.data');
@@ -64,7 +89,8 @@ Route::middleware('auth')->group(function () {
     Route::get('attendances/{attendance}/photo/{type}', [AttendanceController::class, 'photo'])
         ->name('attendances.photo')
         ->where('type', 'check-in|check-out');
-    Route::get('overtime-requests/data', [OvertimeRequestController::class, 'data'])->name('overtime-requests.data');
+    Route::get('leave-requests/data', [LeaveRequestController::class, 'data'])->name('leave-requests.data');
+    Route::get('leave-requests/calculate-days', [LeaveRequestController::class, 'calculateDays'])->name('leave-requests.calculate-days');
 
     Route::middleware('employee.linked')->group(function () {
         Route::get('absen', [AttendanceCheckInController::class, 'create'])->name('attendances.check-in');
@@ -74,6 +100,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('work-locations', WorkLocationController::class)->except(['show']);
     Route::resource('attendances', AttendanceController::class)->except(['show']);
     Route::resource('overtime-requests', OvertimeRequestController::class)->except(['show', 'edit', 'update']);
+    Route::resource('leave-requests', LeaveRequestController::class)->except(['show', 'edit', 'update']);
+    Route::patch('leave-requests/{leave_request}/approve', [LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
+    Route::patch('leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
     Route::patch('overtime-requests/{overtime_request}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime-requests.approve');
     Route::patch('overtime-requests/{overtime_request}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime-requests.reject');
 

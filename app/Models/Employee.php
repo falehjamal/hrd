@@ -122,6 +122,48 @@ class Employee extends Model
         return $this->hasMany(OvertimeRequest::class);
     }
 
+    public function leaveBalances(): HasMany
+    {
+        return $this->hasMany(EmployeeLeaveBalance::class);
+    }
+
+    public function leaveRequests(): HasMany
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    public function deductions(): HasMany
+    {
+        return $this->hasMany(EmployeeDeduction::class);
+    }
+
+    public function activeDeductions(): HasMany
+    {
+        return $this->hasMany(EmployeeDeduction::class)->where('is_active', true);
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(EmployeeLoan::class);
+    }
+
+    public function activeLoans(): HasMany
+    {
+        return $this->hasMany(EmployeeLoan::class)->where('status', EmployeeLoan::STATUS_ACTIVE);
+    }
+
+    public function getTotalActiveDeductionsAttribute(): float
+    {
+        return (float) $this->activeDeductions()->sum('amount');
+    }
+
+    public function getTotalLoanRemainingAttribute(): float
+    {
+        return (float) $this->activeLoans()
+            ->get()
+            ->sum(fn (EmployeeLoan $loan) => $loan->remaining_amount);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

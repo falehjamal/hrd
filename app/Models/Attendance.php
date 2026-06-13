@@ -36,6 +36,7 @@ class Attendance extends Model
         'check_out_longitude',
         'source',
         'status',
+        'leave_request_id',
         'notes',
         'created_by',
         'updated_by',
@@ -74,6 +75,11 @@ class Attendance extends Model
     public function shift(): BelongsTo
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function leaveRequest(): BelongsTo
+    {
+        return $this->belongsTo(LeaveRequest::class);
     }
 
     public function creator(): BelongsTo
