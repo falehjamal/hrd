@@ -86,6 +86,15 @@
                 <div>Piutang Karyawan</div>
             </a>
         </li>
+
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Kompensasi</span></li>
+
+        <li class="menu-item {{ request()->routeIs('payroll-periods.*') ? 'active' : '' }}">
+            <a href="{{ route('payroll-periods.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-money"></i>
+                <div>Proses Gaji</div>
+            </a>
+        </li>
         @endif
 
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Operasional</span></li>
@@ -95,6 +104,13 @@
             <a href="{{ route('attendances.check-in') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-current-location"></i>
                 <div>Absen Saya</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ request()->routeIs('payslips.*') ? 'active' : '' }}">
+            <a href="{{ route('payslips.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div>Slip Gaji</div>
             </a>
         </li>
         @endif

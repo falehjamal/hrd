@@ -78,6 +78,16 @@ class EmployeeLoanService
 
     public function payInstallment(EmployeeLoanInstallment $installment, User $user, ?string $notes = null): void
     {
+        $this->markInstallmentPaid($installment, $user, $notes);
+    }
+
+    public function payInstallmentViaPayroll(EmployeeLoanInstallment $installment, User $user, ?string $notes = null): void
+    {
+        $this->markInstallmentPaid($installment, $user, $notes);
+    }
+
+    protected function markInstallmentPaid(EmployeeLoanInstallment $installment, User $user, ?string $notes = null): void
+    {
         $installment->load('loan');
 
         if ($installment->status !== EmployeeLoanInstallment::STATUS_PENDING) {

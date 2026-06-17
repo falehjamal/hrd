@@ -152,6 +152,11 @@ class Employee extends Model
         return $this->hasMany(EmployeeLoan::class)->where('status', EmployeeLoan::STATUS_ACTIVE);
     }
 
+    public function payrollEntries(): HasMany
+    {
+        return $this->hasMany(PayrollEntry::class);
+    }
+
     public function getTotalActiveDeductionsAttribute(): float
     {
         return (float) $this->activeDeductions()->sum('amount');

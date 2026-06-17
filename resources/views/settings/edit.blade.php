@@ -19,6 +19,11 @@
                     <i class="bx bxl-whatsapp me-1"></i> WhatsApp
                 </button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-payroll" data-bs-toggle="tab" data-bs-target="#panel-payroll" type="button" role="tab">
+                    <i class="bx bx-money me-1"></i> Payroll
+                </button>
+            </li>
         </ul>
 
         <form action="{{ route('settings.update') }}" method="POST">
@@ -92,6 +97,17 @@
                                 <label class="form-check-label" for="wa_enabled">Aktifkan notifikasi WhatsApp</label>
                             </div>
                             <div class="form-text">Notifikasi WA hanya dikirim jika fitur ini aktif dan nomor WhatsApp tenant sudah terhubung.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="panel-payroll" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="payroll_overtime_hourly_rate">Tarif Lembur per Jam (Rp)</label>
+                            <input type="number" class="form-control @error('payroll_overtime_hourly_rate') is-invalid @enderror" id="payroll_overtime_hourly_rate" name="payroll_overtime_hourly_rate" value="{{ old('payroll_overtime_hourly_rate', $settings['payroll_overtime_hourly_rate'] ?? 50000) }}" min="0" step="1">
+                            @error('payroll_overtime_hourly_rate')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <div class="form-text">Digunakan saat menghitung upah lembur disetujui dalam proses gaji.</div>
                         </div>
                     </div>
                 </div>

@@ -17,6 +17,8 @@ use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\OrganizationalUnitController;
 use App\Http\Controllers\OrganizationStructureController;
 use App\Http\Controllers\OvertimeRequestController;
+use App\Http\Controllers\PayrollPeriodController;
+use App\Http\Controllers\PayslipController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
@@ -71,6 +73,16 @@ Route::middleware('auth')->group(function () {
         Route::resource('employees', EmployeeController::class);
         Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
         Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
+        Route::get('payroll-periods/data', [PayrollPeriodController::class, 'data'])->name('payroll-periods.data');
+        Route::get('payroll-periods/create', [PayrollPeriodController::class, 'create'])->name('payroll-periods.create');
+        Route::post('payroll-periods', [PayrollPeriodController::class, 'store'])->name('payroll-periods.store');
+        Route::get('payroll-periods/{payroll_period}', [PayrollPeriodController::class, 'show'])->name('payroll-periods.show');
+        Route::get('payroll-periods/{payroll_period}/entries/data', [PayrollPeriodController::class, 'entriesData'])->name('payroll-periods.entries.data');
+        Route::get('payroll-periods/{payroll_period}/entries/{entry}', [PayrollPeriodController::class, 'showEntry'])->name('payroll-periods.entries.show');
+        Route::post('payroll-periods/{payroll_period}/regenerate', [PayrollPeriodController::class, 'regenerate'])->name('payroll-periods.regenerate');
+        Route::patch('payroll-periods/{payroll_period}/finalize', [PayrollPeriodController::class, 'finalize'])->name('payroll-periods.finalize');
+        Route::delete('payroll-periods/{payroll_period}', [PayrollPeriodController::class, 'destroy'])->name('payroll-periods.destroy');
+        Route::get('payroll-periods', [PayrollPeriodController::class, 'index'])->name('payroll-periods.index');
     });
 
     Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
@@ -95,6 +107,9 @@ Route::middleware('auth')->group(function () {
     Route::middleware('employee.linked')->group(function () {
         Route::get('absen', [AttendanceCheckInController::class, 'create'])->name('attendances.check-in');
         Route::post('absen', [AttendanceCheckInController::class, 'store'])->name('attendances.check-in.store');
+        Route::get('payslips/data', [PayslipController::class, 'data'])->name('payslips.data');
+        Route::get('payslips/{entry}', [PayslipController::class, 'show'])->name('payslips.show');
+        Route::get('payslips', [PayslipController::class, 'index'])->name('payslips.index');
     });
 
     Route::resource('work-locations', WorkLocationController::class)->except(['show']);

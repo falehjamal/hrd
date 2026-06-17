@@ -21,6 +21,7 @@ class SettingController extends Controller
         'mail_from_name' => null,
         'wa_enabled' => '0',
         'wa_sender' => null,
+        'payroll_overtime_hourly_rate' => '50000',
     ];
 
     public function edit(): View
@@ -47,6 +48,7 @@ class SettingController extends Controller
             'mail_from_address' => $validated['mail_from_address'] ?? null,
             'mail_from_name' => $validated['mail_from_name'] ?? null,
             'wa_enabled' => $request->boolean('wa_enabled') ? '1' : '0',
+            'payroll_overtime_hourly_rate' => (string) ($validated['payroll_overtime_hourly_rate'] ?? self::DEFAULTS['payroll_overtime_hourly_rate']),
         ];
 
         if (filled($validated['mail_password'] ?? null)) {

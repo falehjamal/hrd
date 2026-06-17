@@ -24,6 +24,7 @@ class OvertimeRequest extends Model
         'approved_by',
         'approved_at',
         'rejection_notes',
+        'payroll_entry_id',
     ];
 
     protected function casts(): array
@@ -52,6 +53,11 @@ class OvertimeRequest extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function payrollEntry(): BelongsTo
+    {
+        return $this->belongsTo(PayrollEntry::class);
     }
 
     public function scopePending($query)

@@ -24,6 +24,7 @@ class UpdateSettingRequest extends FormRequest
             'mail_from_address' => ['nullable', 'email', 'max:150'],
             'mail_from_name' => ['nullable', 'string', 'max:150'],
             'wa_enabled' => ['nullable', 'boolean'],
+            'payroll_overtime_hourly_rate' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

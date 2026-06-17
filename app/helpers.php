@@ -5,6 +5,7 @@ use App\Models\EmployeeLoan;
 use App\Models\EmployeeLoanInstallment;
 use App\Models\LeaveRequest;
 use App\Models\OvertimeRequest;
+use App\Models\PayrollPeriod;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Config;
 
@@ -81,6 +82,13 @@ if (! function_exists('loan_installment_status_label')) {
     function loan_installment_status_label(string $status): string
     {
         return EmployeeLoanInstallment::statusLabels()[$status] ?? $status;
+    }
+}
+
+if (! function_exists('payroll_period_status_label')) {
+    function payroll_period_status_label(string $status): string
+    {
+        return PayrollPeriod::statusLabels()[$status] ?? $status;
     }
 }
 
