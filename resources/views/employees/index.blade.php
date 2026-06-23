@@ -5,7 +5,14 @@
 @section('content')
 @include('partials.alerts')
 
-<x-page-header title="Data Karyawan" subtitle="Kelola data karyawan perusahaan">
+<x-page-header
+    title="Data Karyawan"
+    subtitle="Kelola data karyawan perusahaan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Data Karyawan', 'url' => route('employees.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('employees.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Karyawan
@@ -13,7 +20,7 @@
     </x-slot:actions>
 </x-page-header>
 
-<x-datatable-card tableId="employees-table" title="Daftar Karyawan">
+<x-datatable-card tableId="employees-table" title="Daftar Karyawan" subtitle="Semua karyawan terdaftar di perusahaan">
     <x-slot:filters>
         <div class="row g-2 align-items-end">
             <div class="col-md-4">

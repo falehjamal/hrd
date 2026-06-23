@@ -1,26 +1,45 @@
-<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+<nav class="layout-navbar navbar navbar-expand-xl align-items-center" id="layout-navbar">
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
             <i class="bx bx-menu bx-sm"></i>
         </a>
     </div>
 
-    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-        <ul class="navbar-nav flex-row align-items-center ms-auto">
+    @include('partials.navbar-search')
+
+    <div class="navbar-nav-right d-flex align-items-center ms-auto" id="navbar-collapse">
+        <ul class="navbar-nav flex-row align-items-center gap-1">
             @include('partials.theme-toggle')
-            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+            <li class="nav-item">
+                <a class="nav-link navbar-icon-btn" href="javascript:void(0);" aria-label="Notifikasi">
+                    <i class="bx bx-bell"></i>
+                    <span class="navbar-notification-dot"></span>
+                </a>
+            </li>
+            <li class="nav-item d-none d-sm-block">
+                <a class="nav-link navbar-icon-btn" href="{{ auth()->user()->isHrUser() ? route('settings.edit') : route('profile.edit') }}" aria-label="Pengaturan">
+                    <i class="bx bx-cog"></i>
+                </a>
+            </li>
+            <li class="nav-item navbar-dropdown dropdown-user dropdown ms-1">
+                <a class="nav-link dropdown-toggle navbar-user-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <div class="navbar-user-info d-none d-md-flex">
+                        <div class="navbar-user-text">
+                            <span class="navbar-user-name">{{ auth()->user()->name }}</span>
+                            <span class="navbar-user-role">{{ auth()->user()->isHrUser() ? 'HR Admin' : 'Karyawan' }}</span>
+                        </div>
+                    </div>
                     <div class="avatar avatar-online">
-                        <img src="{{ asset('sneat/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                        <span class="avatar-initial rounded-circle bg-label-primary">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
                         <a class="dropdown-item" href="{{ route('profile.edit') }}">
-                            <div class="d-flex">
+                            <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('sneat/img/avatars/1.png') }}" alt class="w-px-40 h-auto rounded-circle" />
+                                        <span class="avatar-initial rounded-circle bg-label-primary">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">

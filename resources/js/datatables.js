@@ -50,7 +50,7 @@ export function initServerDataTable(selector, options = {}) {
             {
                 extend: 'excelHtml5',
                 text: '<i class="bx bx-export"></i> Excel',
-                className: 'btn btn-sm btn-outline-secondary',
+                className: 'btn btn-sm btn-outline-primary dt-export-btn',
                 exportOptions: { columns: ':visible:not(.no-export)' },
             },
         ],

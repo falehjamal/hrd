@@ -1,11 +1,16 @@
-@props(['tableId', 'title' => null])
+@props(['tableId', 'title' => null, 'subtitle' => null])
 
-<div class="card card-modern">
-    @if ($title || isset($headerActions))
-        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-            @if ($title)
-                <h5 class="mb-0">{{ $title }}</h5>
-            @endif
+<div class="card card-modern datatable-card">
+    @if ($title || $subtitle || isset($headerActions))
+        <div class="card-header datatable-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div>
+                @if ($title)
+                    <h5 class="datatable-card-title mb-0">{{ $title }}</h5>
+                @endif
+                @if ($subtitle)
+                    <p class="datatable-card-subtitle mb-0">{{ $subtitle }}</p>
+                @endif
+            </div>
             @if (isset($headerActions))
                 <div class="d-flex gap-2 flex-wrap">{{ $headerActions }}</div>
             @endif

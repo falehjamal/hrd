@@ -14,7 +14,17 @@ class OrganizationalUnitController extends Controller
 {
     public function index(): View
     {
-        return view('organizational-units.index');
+        $total = OrganizationalUnit::query()->count();
+        $active = OrganizationalUnit::query()->where('is_active', true)->count();
+
+        return view('organizational-units.index', [
+            'stats' => [
+                'total' => $total,
+                'active' => $active,
+                'inactive' => $total - $active,
+                'with_employees' => OrganizationalUnit::query()->has('employees')->count(),
+            ],
+        ]);
     }
 
     public function data(OrganizationalUnitDataTable $dataTable): JsonResponse

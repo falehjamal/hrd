@@ -1,7 +1,8 @@
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme hrd-sidebar">
     @include('partials.sidebar-brand', [
         'href' => route('dashboard'),
         'title' => tenant_sidebar_title(),
+        'subtitle' => 'Enterprise Admin',
     ])
 
     <div class="menu-inner-shadow"></div>
@@ -163,4 +164,6 @@
         </li>
         @endif
     </ul>
+
+    @include('partials.sidebar-footer')
 </aside>

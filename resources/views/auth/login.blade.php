@@ -8,9 +8,10 @@
         <div class="authentication-inner">
             <div class="card card-modern border-0 shadow-sm">
                 <div class="card-body">
-                    <div class="app-brand justify-content-center mb-2">
+                    <div class="app-brand justify-content-center mb-3 flex-column">
+                        <span class="app-brand-logo"><i class="bx bx-buildings"></i></span>
                         <a href="{{ route('login') }}" class="app-brand-link">
-                            <span class="app-brand-text demo text-body fw-bolder fs-4">{{ tenant_app_name() }}</span>
+                            <span class="app-brand-text demo text-body fw-bolder fs-5">{{ tenant_app_name() }}</span>
                         </a>
                     </div>
 
