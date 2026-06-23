@@ -19,10 +19,10 @@ class ShiftDataTable
             ->addColumn('break_display', fn (Shift $shift) => $shift->break_minutes.' menit')
             ->addColumn('status_badge', function (Shift $shift) {
                 if ($shift->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (Shift $shift) {
                 return view('partials.datatables.shift-actions', compact('shift'))->render();

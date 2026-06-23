@@ -14,10 +14,10 @@ class PositionDataTable
         return DataTables::eloquent($this->query())
             ->addColumn('status_badge', function (Position $position) {
                 if ($position->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (Position $position) {
                 return view('partials.datatables.position-actions', compact('position'))->render();

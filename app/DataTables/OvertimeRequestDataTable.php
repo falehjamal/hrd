@@ -32,7 +32,7 @@ class OvertimeRequestDataTable
                 ];
                 $color = $colors[$row->status] ?? 'secondary';
 
-                return '<span class="badge bg-label-'.$color.'">'.e(overtime_status_label($row->status)).'</span>';
+                return status_badge_html(overtime_status_label($row->status), $color);
             })
             ->addColumn('action', function (OvertimeRequest $row) {
                 return view('partials.datatables.overtime-actions', ['overtime' => $row])->render();

@@ -32,7 +32,7 @@ class AttendanceDataTable
             ->addColumn('source_badge', function (Attendance $row) {
                 $label = $row->source === Attendance::SOURCE_GPS ? 'GPS' : 'Manual';
 
-                return '<span class="badge bg-label-info">'.e($label).'</span>';
+                return '<span class="badge badge-pill badge-pill--info">'.e($label).'</span>';
             })
             ->addColumn('status_badge', function (Attendance $row) {
                 $colors = [
@@ -44,7 +44,7 @@ class AttendanceDataTable
                 ];
                 $color = $colors[$row->status] ?? 'secondary';
 
-                return '<span class="badge bg-label-'.$color.'">'.e(attendance_status_label($row->status)).'</span>';
+                return status_badge_html(attendance_status_label($row->status), $color);
             })
             ->addColumn('photo_links', function (Attendance $row) {
                 $links = [];

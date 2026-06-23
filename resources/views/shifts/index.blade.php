@@ -3,17 +3,21 @@
 @section('title', 'Data Shift')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Data Shift" subtitle="Kelola jadwal kerja karyawan">
+<x-index-page
+    table-id="shifts-table"
+    table-title="Daftar Shift"
+    title="Data Shift"
+    subtitle="Kelola jadwal kerja karyawan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Data Shift', 'url' => route('shifts.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('shifts.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Shift
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="shifts-table" title="Daftar Shift">
     <thead>
         <tr>
             <th>Kode</th>
@@ -25,7 +29,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

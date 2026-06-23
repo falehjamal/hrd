@@ -26,10 +26,10 @@ class EmployeeSalaryDataTable
             ->addColumn('total_display', fn (EmployeeSalary $salary) => '<strong>'.format_rupiah($salary->total_salary).'</strong>')
             ->addColumn('status_badge', function (EmployeeSalary $salary) {
                 if ($salary->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Arsip</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Arsip</span>';
             })
             ->addColumn('action', function (EmployeeSalary $salary) {
                 $view = $this->employeeId

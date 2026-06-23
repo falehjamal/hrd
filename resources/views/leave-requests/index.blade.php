@@ -3,17 +3,21 @@
 @section('title', 'Cuti')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Cuti" subtitle="{{ $isEmployee ? 'Pengajuan cuti Anda' : 'Kelola persetujuan cuti karyawan' }}">
+<x-index-page
+    table-id="leave-requests-table"
+    table-title="Daftar Pengajuan Cuti"
+    title="Cuti"
+    subtitle="{{ $isEmployee ? 'Pengajuan cuti Anda' : 'Kelola persetujuan cuti karyawan' }}"
+    :breadcrumbs="[
+        ['label' => 'Operasional', 'url' => route('attendances.index')],
+        ['label' => 'Cuti', 'url' => route('leave-requests.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('leave-requests.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Ajukan Cuti
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="leave-requests-table" title="Daftar Pengajuan Cuti">
     <x-slot:filters>
         <div class="filter-toolbar row g-2 align-items-end">
             <div class="col-md-3">
@@ -55,7 +59,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

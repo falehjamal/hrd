@@ -3,18 +3,23 @@
 @section('title', 'Proses Gaji')
 
 @section('content')
-@include('partials.alerts')
 @include('partials.delete-modal')
 
-<x-page-header title="Proses Gaji" subtitle="Kelola periode payroll bulanan">
+<x-index-page
+    table-id="payroll-periods-table"
+    table-title="Daftar Periode Gaji"
+    title="Proses Gaji"
+    subtitle="Kelola periode payroll bulanan"
+    :breadcrumbs="[
+        ['label' => 'Kompensasi', 'url' => route('payroll-periods.index')],
+        ['label' => 'Proses Gaji', 'url' => route('payroll-periods.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('payroll-periods.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Buat Periode
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="payroll-periods-table" title="Daftar Periode Gaji">
     <thead>
         <tr>
             <th>Periode</th>
@@ -25,7 +30,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

@@ -6,7 +6,14 @@
 @include('partials.alerts')
 @include('partials.delete-modal')
 
-<x-page-header title="Periode {{ $period->periodLabel() }}" subtitle="Proses gaji bulanan">
+<x-page-header
+    title="Periode {{ $period->periodLabel() }}"
+    subtitle="Proses gaji bulanan"
+    :breadcrumbs="[
+        ['label' => 'Periode Gaji', 'url' => route('payroll-periods.index')],
+        ['label' => $period->periodLabel(), 'url' => route('payroll-periods.show', $period)],
+    ]"
+>
     <x-slot:actions>
         @if ($period->isDraft())
             <form action="{{ route('payroll-periods.regenerate', $period) }}" method="POST" class="d-inline">
@@ -22,66 +29,79 @@
                 Hapus
             </button>
         @endif
-        <a href="{{ route('payroll-periods.index') }}" class="btn btn-outline-secondary">Kembali</a>
+        <a href="{{ route('payroll-periods.index') }}" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Kembali
+        </a>
     </x-slot:actions>
 </x-page-header>
 
-<div class="row g-4 mb-4">
-    <div class="col-md-3">
-        <div class="card card-modern h-100">
-            <div class="card-body">
-                <p class="text-muted mb-1">Status</p>
-                @if ($period->isFinalized())
-                    <span class="badge bg-label-success">{{ payroll_period_status_label($period->status) }}</span>
-                @else
-                    <span class="badge bg-label-warning">{{ payroll_period_status_label($period->status) }}</span>
+<div class="card card-modern content-card mb-4">
+    <div class="card-body pb-0">
+        <ul class="nav nav-tabs nav-tabs-modern" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-summary" data-bs-toggle="tab" data-bs-target="#panel-summary" type="button" role="tab">
+                    <i class="bx bx-bar-chart-alt-2 me-1"></i> Ringkasan
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-entries" data-bs-toggle="tab" data-bs-target="#panel-entries" type="button" role="tab">
+                    <i class="bx bx-group me-1"></i> Rincian Karyawan
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body pt-0">
+        <div class="tab-content tab-content-modern">
+            <div class="tab-pane fade show active" id="panel-summary" role="tabpanel">
+                <div class="row g-4 mb-0">
+                    <div class="col-md-3">
+                        <div class="card card-modern h-100">
+                            <div class="card-body">
+                                <p class="text-muted mb-1">Status</p>
+                                @if ($period->isFinalized())
+                                    <span class="badge badge-pill badge-pill--success">{{ payroll_period_status_label($period->status) }}</span>
+                                @else
+                                    <span class="badge badge-pill badge-pill--warning">{{ payroll_period_status_label($period->status) }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <x-stat-card label="Diproses" :value="$summary['processed']" icon="bx-user-check" icon-variant="primary" />
+                    </div>
+                    <div class="col-md-3">
+                        <x-stat-card label="Dilewati" :value="$summary['skipped']" icon="bx-user-x" icon-variant="secondary" />
+                    </div>
+                    <div class="col-md-3">
+                        <x-stat-card label="Total Gaji Bersih" :value="format_rupiah($summary['total_net'])" icon="bx-wallet" icon-variant="success" />
+                    </div>
+                </div>
+
+                @if ($period->notes)
+                    <div class="alert alert-secondary mt-4 mb-0">{{ $period->notes }}</div>
                 @endif
             </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card card-modern h-100">
-            <div class="card-body">
-                <p class="text-muted mb-1">Diproses</p>
-                <h4 class="mb-0">{{ $summary['processed'] }}</h4>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card card-modern h-100">
-            <div class="card-body">
-                <p class="text-muted mb-1">Dilewati</p>
-                <h4 class="mb-0">{{ $summary['skipped'] }}</h4>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card card-modern h-100">
-            <div class="card-body">
-                <p class="text-muted mb-1">Total Gaji Bersih</p>
-                <h4 class="mb-0">{{ format_rupiah($summary['total_net']) }}</h4>
+
+            <div class="tab-pane fade" id="panel-entries" role="tabpanel">
+                <div class="table-responsive">
+                    <table id="payroll-entries-table" class="table table-modern table-hover w-100">
+                        <thead>
+                            <tr>
+                                <th>Karyawan</th>
+                                <th>ID</th>
+                                <th>Pendapatan</th>
+                                <th>Potongan</th>
+                                <th>Gaji Bersih</th>
+                                <th>Status</th>
+                                <th class="no-export">Aksi</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-@if ($period->notes)
-    <div class="alert alert-secondary">{{ $period->notes }}</div>
-@endif
-
-<x-datatable-card tableId="payroll-entries-table" title="Rincian per Karyawan">
-    <thead>
-        <tr>
-            <th>Karyawan</th>
-            <th>ID</th>
-            <th>Pendapatan</th>
-            <th>Potongan</th>
-            <th>Gaji Bersih</th>
-            <th>Status</th>
-            <th class="no-export">Aksi</th>
-        </tr>
-    </thead>
-</x-datatable-card>
 
 <div class="modal fade" id="finalizeModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -108,7 +128,7 @@
 
 @push('datatable-scripts')
 <script type="module">
-    window.initServerDataTable('#payroll-entries-table', {
+    const payrollEntriesTable = window.initServerDataTable('#payroll-entries-table', {
         ajax: { url: '{{ route('payroll-periods.entries.data', $period) }}' },
         order: [[0, 'asc']],
         columns: [
@@ -120,6 +140,10 @@
             { data: 'status_badge', name: 'is_skipped', orderable: true, searchable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
         ],
+    });
+
+    document.getElementById('tab-entries')?.addEventListener('shown.bs.tab', () => {
+        payrollEntriesTable.columns.adjust().draw(false);
     });
 </script>
 @endpush

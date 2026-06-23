@@ -3,17 +3,21 @@
 @section('title', 'Daftar Tenant')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Daftar Tenant" subtitle="Pantau status dan aktivitas perusahaan">
+<x-index-page
+    table-id="tenants-table"
+    table-title="Semua Tenant"
+    title="Daftar Tenant"
+    subtitle="Pantau status dan aktivitas perusahaan"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('platform.dashboard')],
+        ['label' => 'Tenant', 'url' => route('platform.tenants.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('platform.tenants.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tenant Baru
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="tenants-table" title="Semua Tenant">
     <thead>
         <tr>
             <th>Perusahaan</th>
@@ -24,7 +28,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

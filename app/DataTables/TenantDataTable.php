@@ -25,10 +25,10 @@ class TenantDataTable
             ->addColumn('database_name', fn (Tenant $tenant) => '<code>'.config('tenancy.database.prefix').$tenant->id.'</code>')
             ->addColumn('status_badge', function (Tenant $tenant) {
                 if ($tenant->isActive()) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-danger">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--danger">Nonaktif</span>';
             })
             ->addColumn('users_count_display', fn (Tenant $tenant) => (string) ($tenant->tenant_users_count ?? 0))
             ->addColumn('last_login_display', function (Tenant $tenant) {

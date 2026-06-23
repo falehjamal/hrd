@@ -3,17 +3,21 @@
 @section('title', 'Lembur')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Lembur" subtitle="{{ $isEmployee ? 'Pengajuan lembur Anda' : 'Kelola persetujuan lembur karyawan' }}">
+<x-index-page
+    table-id="overtime-table"
+    table-title="Daftar Pengajuan Lembur"
+    title="Lembur"
+    subtitle="{{ $isEmployee ? 'Pengajuan lembur Anda' : 'Kelola persetujuan lembur karyawan' }}"
+    :breadcrumbs="[
+        ['label' => 'Operasional', 'url' => route('attendances.index')],
+        ['label' => 'Lembur', 'url' => route('overtime-requests.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('overtime-requests.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Ajukan Lembur
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="overtime-table" title="Daftar Pengajuan Lembur">
     <x-slot:filters>
         <div class="filter-toolbar row g-2 align-items-end">
             <div class="col-md-3">
@@ -46,7 +50,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

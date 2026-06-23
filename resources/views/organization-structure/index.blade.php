@@ -5,7 +5,14 @@
 @section('content')
 @include('partials.alerts')
 
-<x-page-header title="Struktur Organisasi" subtitle="Visualisasi unit organisasi dan hierarki atasan-bawahan">
+<x-page-header
+    title="Struktur Organisasi"
+    subtitle="Visualisasi unit organisasi dan hierarki atasan-bawahan"
+    :breadcrumbs="[
+        ['label' => 'Organisasi', 'url' => route('organization-structure.index')],
+        ['label' => 'Struktur Organisasi', 'url' => route('organization-structure.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('organizational-units.index') }}" class="btn btn-outline-primary me-2">
             <i class="bx bx-buildings me-1"></i> Kelola Unit
@@ -16,9 +23,9 @@
     </x-slot:actions>
 </x-page-header>
 
-<div class="card card-modern mb-4">
+<div class="card card-modern content-card mb-4">
     <div class="card-body">
-        <ul class="nav nav-tabs mb-4" role="tablist">
+        <ul class="nav nav-tabs nav-tabs-modern mb-4" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tab-units" data-bs-toggle="tab" data-bs-target="#panel-units" type="button" role="tab">
                     <i class="bx bx-buildings me-1"></i> Unit Organisasi
@@ -31,7 +38,7 @@
             </li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content tab-content-modern">
             <div class="tab-pane fade show active" id="panel-units" role="tabpanel">
                 @if (! $companyRoot || $companyRoot->children->isEmpty())
                     <p class="text-muted mb-0">Belum ada unit organisasi. <a href="{{ route('organizational-units.create') }}">Tambah unit</a></p>

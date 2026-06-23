@@ -50,6 +50,16 @@ if (! function_exists('format_rupiah')) {
     }
 }
 
+if (! function_exists('status_badge_html')) {
+    function status_badge_html(string $label, string $variant = 'secondary'): string
+    {
+        $allowed = ['primary', 'success', 'danger', 'warning', 'info', 'secondary'];
+        $variant = in_array($variant, $allowed, true) ? $variant : 'secondary';
+
+        return '<span class="badge badge-pill badge-pill--'.$variant.'">'.e($label).'</span>';
+    }
+}
+
 if (! function_exists('attendance_status_label')) {
     function attendance_status_label(string $status): string
     {

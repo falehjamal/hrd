@@ -26,7 +26,7 @@ class ShiftOverrideDataTable
             ->addColumn('date_display', fn (EmployeeShiftOverride $row) => $row->date->format('d/m/Y'))
             ->addColumn('shift_display', function (EmployeeShiftOverride $row) {
                 if ($row->shift_id === null) {
-                    return '<span class="badge bg-label-secondary">Libur</span>';
+                    return '<span class="badge badge-pill badge-pill--secondary">Libur</span>';
                 }
 
                 return e($row->shift->code.' - '.$row->shift->name);

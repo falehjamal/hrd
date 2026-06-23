@@ -3,17 +3,21 @@
 @section('title', 'Jenis Cuti')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Jenis Cuti" subtitle="Kelola master jenis cuti karyawan">
+<x-index-page
+    table-id="leave-types-table"
+    table-title="Daftar Jenis Cuti"
+    title="Jenis Cuti"
+    subtitle="Kelola master jenis cuti karyawan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Jenis Cuti', 'url' => route('leave-types.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('leave-types.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Jenis Cuti
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="leave-types-table" title="Daftar Jenis Cuti">
     <thead>
         <tr>
             <th>Kode</th>
@@ -24,7 +28,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

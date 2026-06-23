@@ -3,17 +3,18 @@
 @section('title', 'Tambah Shift')
 
 @section('content')
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Tambah Shift</h5></div>
-    <div class="card-body">
-        <form action="{{ route('shifts.store') }}" method="POST">
-            @csrf
-            @include('shifts._form')
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('shifts.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Tambah Shift"
+    :breadcrumbs="[
+        ['label' => 'Data Shift', 'url' => route('shifts.index')],
+        ['label' => 'Tambah Shift'],
+    ]"
+    back-url="{{ route('shifts.index') }}"
+>
+    <form action="{{ route('shifts.store') }}" method="POST">
+        @csrf
+        @include('shifts._form')
+        <x-form-actions cancel-url="{{ route('shifts.index') }}" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

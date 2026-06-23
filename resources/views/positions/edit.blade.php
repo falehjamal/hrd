@@ -3,20 +3,19 @@
 @section('title', 'Edit Jabatan')
 
 @section('content')
-@include('partials.alerts')
-
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Edit Jabatan</h5></div>
-    <div class="card-body">
-        <form action="{{ route('positions.update', $position) }}" method="POST">
-            @csrf
-            @method('PUT')
-            @include('positions._form', ['position' => $position])
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Perbarui</button>
-                <a href="{{ route('positions.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Edit Jabatan"
+    :breadcrumbs="[
+        ['label' => 'Data Jabatan', 'url' => route('positions.index')],
+        ['label' => 'Edit Jabatan'],
+    ]"
+    back-url="{{ route('positions.index') }}"
+>
+    <form action="{{ route('positions.update', $position) }}" method="POST">
+        @csrf
+        @method('PUT')
+        @include('positions._form', ['position' => $position])
+        <x-form-actions cancel-url="{{ route('positions.index') }}" submit-label="Perbarui" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

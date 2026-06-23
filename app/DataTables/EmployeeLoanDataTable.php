@@ -32,7 +32,7 @@ class EmployeeLoanDataTable
                 ];
                 $color = $colors[$loan->status] ?? 'secondary';
 
-                return '<span class="badge bg-label-'.$color.'">'.e(loan_status_label($loan->status)).'</span>';
+                return status_badge_html(loan_status_label($loan->status), $color);
             })
             ->addColumn('action', function (EmployeeLoan $loan) {
                 return view('partials.datatables.employee-loan-actions', compact('loan'))->render();

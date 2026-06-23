@@ -3,12 +3,16 @@
 @section('title', 'Slip Gaji')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Slip Gaji" subtitle="Riwayat gaji yang sudah difinalisasi">
-</x-page-header>
-
-<x-datatable-card tableId="payslips-table" title="Slip Gaji Saya">
+<x-index-page
+    table-id="payslips-table"
+    table-title="Slip Gaji Saya"
+    title="Slip Gaji"
+    subtitle="Riwayat gaji yang sudah difinalisasi"
+    :breadcrumbs="[
+        ['label' => 'Operasional', 'url' => route('attendances.index')],
+        ['label' => 'Slip Gaji', 'url' => route('payslips.index')],
+    ]"
+>
     <thead>
         <tr>
             <th>Periode</th>
@@ -19,7 +23,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

@@ -3,17 +3,21 @@
 @section('title', 'Lokasi Kerja')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Lokasi Kerja" subtitle="Titik koordinat untuk absen GPS">
+<x-index-page
+    table-id="work-locations-table"
+    table-title="Daftar Lokasi Kerja"
+    title="Lokasi Kerja"
+    subtitle="Titik koordinat untuk absen GPS"
+    :breadcrumbs="[
+        ['label' => 'Operasional', 'url' => route('attendances.index')],
+        ['label' => 'Lokasi Kerja', 'url' => route('work-locations.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('work-locations.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Lokasi
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="work-locations-table" title="Daftar Lokasi Kerja">
     <thead>
         <tr>
             <th>Nama</th>
@@ -24,7 +28,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

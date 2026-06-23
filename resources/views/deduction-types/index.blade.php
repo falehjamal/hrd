@@ -3,17 +3,21 @@
 @section('title', 'Jenis Pemotongan')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Jenis Pemotongan" subtitle="Kelola master jenis pemotongan gaji">
+<x-index-page
+    table-id="deduction-types-table"
+    table-title="Daftar Jenis Pemotongan"
+    title="Jenis Pemotongan"
+    subtitle="Kelola master jenis pemotongan gaji"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Jenis Pemotongan', 'url' => route('deduction-types.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('deduction-types.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Jenis
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="deduction-types-table" title="Daftar Jenis Pemotongan">
     <thead>
         <tr>
             <th>Kode</th>
@@ -22,7 +26,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

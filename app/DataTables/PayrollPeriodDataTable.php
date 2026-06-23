@@ -15,10 +15,10 @@ class PayrollPeriodDataTable
             ->addColumn('period_display', fn (PayrollPeriod $period) => $period->periodLabel())
             ->addColumn('status_badge', function (PayrollPeriod $period) {
                 if ($period->isFinalized()) {
-                    return '<span class="badge bg-label-success">'.payroll_period_status_label($period->status).'</span>';
+                    return '<span class="badge badge-pill badge-pill--success">'.payroll_period_status_label($period->status).'</span>';
                 }
 
-                return '<span class="badge bg-label-warning">'.payroll_period_status_label($period->status).'</span>';
+                return '<span class="badge badge-pill badge-pill--warning">'.payroll_period_status_label($period->status).'</span>';
             })
             ->addColumn('entries_count', fn (PayrollPeriod $period) => (string) $period->entries_count)
             ->addColumn('total_net_display', fn (PayrollPeriod $period) => format_rupiah($period->entries_sum_net_salary ?? 0))

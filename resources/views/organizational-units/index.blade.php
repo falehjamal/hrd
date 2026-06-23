@@ -3,9 +3,9 @@
 @section('title', 'Unit Organisasi')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header
+<x-index-page
+    table-id="organizational-units-table"
+    table-title="Daftar Unit Organisasi"
     title="Unit Organisasi"
     subtitle="Kelola departemen dan divisi perusahaan"
     :breadcrumbs="[
@@ -21,25 +21,21 @@
             <i class="bx bx-plus me-1"></i> Tambah Unit
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<div class="row g-4 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <x-stat-card label="Total Unit" :value="$stats['total']" icon="bx-buildings" icon-variant="primary" />
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <x-stat-card label="Unit Aktif" :value="$stats['active']" icon="bx-check-circle" icon-variant="success"
-            :progress="$stats['total'] > 0 ? round(($stats['active'] / $stats['total']) * 100) : 0" progress-variant="success" />
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <x-stat-card label="Unit Nonaktif" :value="$stats['inactive']" icon="bx-x-circle" icon-variant="danger" />
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <x-stat-card label="Berisi Karyawan" :value="$stats['with_employees']" icon="bx-group" icon-variant="info" />
-    </div>
-</div>
-
-<x-datatable-card tableId="organizational-units-table" title="Daftar Unit Organisasi" subtitle="Semua departemen dan divisi terdaftar">
+    <x-slot:stats>
+        <div class="col-sm-6 col-xl-3">
+            <x-stat-card label="Total Unit" :value="$stats['total']" icon="bx-buildings" icon-variant="primary" />
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <x-stat-card label="Unit Aktif" :value="$stats['active']" icon="bx-check-circle" icon-variant="success"
+                :progress="$stats['total'] > 0 ? round(($stats['active'] / $stats['total']) * 100) : 0" progress-variant="success" />
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <x-stat-card label="Unit Nonaktif" :value="$stats['inactive']" icon="bx-x-circle" icon-variant="danger" />
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <x-stat-card label="Berisi Karyawan" :value="$stats['with_employees']" icon="bx-group" icon-variant="info" />
+        </div>
+    </x-slot:stats>
     <thead>
         <tr>
             <th>Kode</th>
@@ -50,21 +46,22 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
-
-<div class="row g-4 mt-2">
-    <div class="col-lg-8">
-        <div class="card card-modern card-gradient">
-            <div class="card-body py-4">
-                <h5 class="text-white mb-2">Visualisasi Hierarki</h5>
-                <p class="text-white-50 mb-4">Lihat struktur organisasi dalam tampilan hierarki interaktif.</p>
-                <a href="{{ route('organization-structure.index') }}" class="btn btn-light">
-                    <i class="bx bx-sitemap me-1"></i> Buka Visualisasi Hierarki
-                </a>
+    <x-slot:footer>
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card card-modern card-gradient">
+                    <div class="card-body py-4">
+                        <h5 class="text-white mb-2">Visualisasi Hierarki</h5>
+                        <p class="text-white-50 mb-4">Lihat struktur organisasi dalam tampilan hierarki interaktif.</p>
+                        <a href="{{ route('organization-structure.index') }}" class="btn btn-light">
+                            <i class="bx bx-sitemap me-1"></i> Buka Visualisasi Hierarki
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    </x-slot:footer>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

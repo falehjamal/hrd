@@ -14,10 +14,10 @@ class DeductionTypeDataTable
         return DataTables::eloquent($this->query())
             ->addColumn('status_badge', function (DeductionType $type) {
                 if ($type->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (DeductionType $type) {
                 return view('partials.datatables.deduction-type-actions', compact('type'))->render();

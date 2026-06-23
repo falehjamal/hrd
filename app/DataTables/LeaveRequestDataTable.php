@@ -32,7 +32,7 @@ class LeaveRequestDataTable
                 ];
                 $color = $colors[$row->status] ?? 'secondary';
 
-                return '<span class="badge bg-label-'.$color.'">'.e(leave_status_label($row->status)).'</span>';
+                return status_badge_html(leave_status_label($row->status), $color);
             })
             ->addColumn('action', function (LeaveRequest $row) {
                 return view('partials.datatables.leave-request-actions', ['leaveRequest' => $row])->render();

@@ -5,42 +5,54 @@
 @section('content')
 @include('partials.alerts')
 
-<x-page-header :title="$tenant->displayName()" :subtitle="'ID: '.$tenant->id.' · Slug: '.$tenant->slug">
+<x-page-header
+    :title="$tenant->displayName()"
+    :subtitle="'ID: '.$tenant->id.' · Slug: '.$tenant->slug"
+    :breadcrumbs="[
+        ['label' => 'Tenant', 'url' => route('platform.tenants.index')],
+        ['label' => $tenant->displayName(), 'url' => route('platform.tenants.show', $tenant)],
+    ]"
+>
     <x-slot:actions>
-        <a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+        <a href="{{ route('platform.tenants.edit', $tenant) }}" class="btn btn-outline-primary">
+            <i class="bx bx-edit me-1"></i> Edit
+        </a>
         @if ($tenant->isActive())
             <form action="{{ route('platform.tenants.suspend', $tenant) }}" method="POST" class="d-inline">
                 @csrf
                 @method('PATCH')
-                <button type="submit" class="btn btn-outline-danger btn-sm">Nonaktifkan</button>
+                <button type="submit" class="btn btn-outline-danger">Nonaktifkan</button>
             </form>
         @else
             <form action="{{ route('platform.tenants.activate', $tenant) }}" method="POST" class="d-inline">
                 @csrf
                 @method('PATCH')
-                <button type="submit" class="btn btn-outline-success btn-sm">Aktifkan</button>
+                <button type="submit" class="btn btn-outline-success">Aktifkan</button>
             </form>
         @endif
+        <a href="{{ route('platform.tenants.index') }}" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Kembali
+        </a>
     </x-slot:actions>
 </x-page-header>
 
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-md-3">
-        <div class="card card-modern">
+        <div class="card card-modern content-card h-100">
             <div class="card-body">
                 <small class="text-muted">Status</small>
                 <div class="mt-1">
                     @if ($tenant->isActive())
-                        <span class="badge bg-label-success">Aktif</span>
+                        <span class="badge badge-pill badge-pill--success">Aktif</span>
                     @else
-                        <span class="badge bg-label-danger">Nonaktif</span>
+                        <span class="badge badge-pill badge-pill--danger">Nonaktif</span>
                     @endif
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card card-modern">
+        <div class="card card-modern content-card h-100">
             <div class="card-body">
                 <small class="text-muted">Database</small>
                 <p class="mb-0 mt-1"><code>{{ $metrics['database'] }}</code></p>
@@ -53,18 +65,13 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card card-modern">
-            <div class="card-body">
-                <small class="text-muted">User (tenant DB)</small>
-                <h5 class="mb-0 mt-1">{{ $metrics['users_count'] }}</h5>
-            </div>
-        </div>
+        <x-stat-card label="User (tenant DB)" :value="$metrics['users_count']" icon="bx-user" icon-variant="primary" />
     </div>
     <div class="col-md-3">
-        <div class="card card-modern">
+        <div class="card card-modern content-card h-100">
             <div class="card-body">
                 <small class="text-muted">Login terakhir</small>
-                <p class="mb-0 mt-1">
+                <p class="mb-0 mt-1 fw-semibold">
                     @if ($metrics['last_login_at'])
                         {{ \Carbon\Carbon::parse($metrics['last_login_at'])->format('d M Y H:i') }}
                     @else
@@ -85,8 +92,6 @@
         </tr>
     </thead>
 </x-datatable-card>
-
-<a href="{{ route('platform.tenants.index') }}" class="btn btn-secondary mt-3">Kembali</a>
 @endsection
 
 @push('datatable-scripts')

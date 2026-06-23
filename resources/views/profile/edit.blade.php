@@ -19,10 +19,15 @@
     </div>
 @endif
 
+<x-page-header title="Profil Saya" subtitle="Kelola informasi akun dan keamanan login">
+</x-page-header>
+
 <div class="row g-4">
     <div class="col-lg-7">
-        <div class="card card-modern">
-            <div class="card-header"><h5 class="mb-0">Informasi Akun</h5></div>
+        <div class="card card-modern content-card">
+            <div class="card-header content-card-header">
+                <h5 class="content-card-title mb-0">Informasi Akun</h5>
+            </div>
             <div class="card-body">
                 <form action="{{ route('profile.update') }}" method="POST" class="row g-3">
                     @csrf
@@ -69,8 +74,10 @@
     </div>
 
     <div class="col-lg-5">
-        <div class="card card-modern">
-            <div class="card-header"><h5 class="mb-0">Ubah Password</h5></div>
+        <div class="card card-modern content-card">
+            <div class="card-header content-card-header">
+                <h5 class="content-card-title mb-0">Ubah Password</h5>
+            </div>
             <div class="card-body">
                 <form action="{{ route('password.update') }}" method="POST" class="row g-3">
                     @csrf

@@ -3,18 +3,19 @@
 @section('title', 'Edit Karyawan')
 
 @section('content')
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Edit Karyawan</h5></div>
-    <div class="card-body">
-        <form action="{{ route('employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            @include('employees._form', ['employee' => $employee])
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Perbarui</button>
-                <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Edit Karyawan"
+    :breadcrumbs="[
+        ['label' => 'Data Karyawan', 'url' => route('employees.index')],
+        ['label' => 'Edit Karyawan'],
+    ]"
+    back-url="{{ route('employees.index') }}"
+>
+    <form action="{{ route('employees.update', $employee) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        @include('employees._form', ['employee' => $employee])
+        <x-form-actions cancel-url="{{ route('employees.index') }}" submit-label="Perbarui" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

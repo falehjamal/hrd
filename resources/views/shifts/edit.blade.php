@@ -3,18 +3,19 @@
 @section('title', 'Edit Shift')
 
 @section('content')
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Edit Shift</h5></div>
-    <div class="card-body">
-        <form action="{{ route('shifts.update', $shift) }}" method="POST">
-            @csrf
-            @method('PUT')
-            @include('shifts._form', ['shift' => $shift])
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Perbarui</button>
-                <a href="{{ route('shifts.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Edit Shift"
+    :breadcrumbs="[
+        ['label' => 'Data Shift', 'url' => route('shifts.index')],
+        ['label' => 'Edit Shift'],
+    ]"
+    back-url="{{ route('shifts.index') }}"
+>
+    <form action="{{ route('shifts.update', $shift) }}" method="POST">
+        @csrf
+        @method('PUT')
+        @include('shifts._form', ['shift' => $shift])
+        <x-form-actions cancel-url="{{ route('shifts.index') }}" submit-label="Perbarui" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

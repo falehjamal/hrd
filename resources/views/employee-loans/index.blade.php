@@ -3,17 +3,21 @@
 @section('title', 'Piutang Karyawan')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Piutang Karyawan" subtitle="Kelola kasbon dan cicilan karyawan">
+<x-index-page
+    table-id="employee-loans-table"
+    table-title="Daftar Piutang"
+    title="Piutang Karyawan"
+    subtitle="Kelola kasbon dan cicilan karyawan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Piutang Karyawan', 'url' => route('employee-loans.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('employee-loans.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Catat Piutang
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="employee-loans-table" title="Daftar Piutang">
     <x-slot:filters>
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
@@ -42,7 +46,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

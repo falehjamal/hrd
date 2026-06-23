@@ -3,17 +3,21 @@
 @section('title', 'Absensi')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Absensi" subtitle="Kelola dan koreksi data kehadiran karyawan">
+<x-index-page
+    table-id="attendances-table"
+    table-title="Daftar Absensi"
+    title="Absensi"
+    subtitle="Kelola dan koreksi data kehadiran karyawan"
+    :breadcrumbs="[
+        ['label' => 'Operasional', 'url' => route('attendances.index')],
+        ['label' => 'Absensi', 'url' => route('attendances.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('attendances.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Absensi
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="attendances-table" title="Daftar Absensi">
     <x-slot:filters>
         <div class="filter-toolbar row g-2 align-items-end">
             <div class="col-md-3">
@@ -57,7 +61,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

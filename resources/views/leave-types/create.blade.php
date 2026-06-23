@@ -3,19 +3,18 @@
 @section('title', 'Tambah Jenis Cuti')
 
 @section('content')
-@include('partials.alerts')
-
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Form Jenis Cuti</h5></div>
-    <div class="card-body">
-        <form action="{{ route('leave-types.store') }}" method="POST">
-            @csrf
-            @include('leave-types._form')
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('leave-types.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Tambah Jenis Cuti"
+    :breadcrumbs="[
+        ['label' => 'Jenis Cuti', 'url' => route('leave-types.index')],
+        ['label' => 'Tambah Jenis Cuti'],
+    ]"
+    back-url="{{ route('leave-types.index') }}"
+>
+    <form action="{{ route('leave-types.store') }}" method="POST">
+        @csrf
+        @include('leave-types._form')
+        <x-form-actions cancel-url="{{ route('leave-types.index') }}" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

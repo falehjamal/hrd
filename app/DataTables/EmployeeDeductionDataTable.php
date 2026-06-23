@@ -25,10 +25,10 @@ class EmployeeDeductionDataTable
             ->addColumn('effective_date_display', fn (EmployeeDeduction $deduction) => $deduction->effective_date->format('d/m/Y'))
             ->addColumn('status_badge', function (EmployeeDeduction $deduction) {
                 if ($deduction->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Arsip</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Arsip</span>';
             })
             ->addColumn('action', function (EmployeeDeduction $deduction) {
                 $view = $this->employeeId

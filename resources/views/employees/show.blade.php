@@ -5,20 +5,37 @@
 @section('content')
 @include('partials.alerts')
 
+<x-page-header
+    :title="$employee->name"
+    :subtitle="$employee->employee_code.' · '.($employee->position?->name ?? 'Karyawan')"
+    :breadcrumbs="[
+        ['label' => 'Data Karyawan', 'url' => route('employees.index')],
+        ['label' => $employee->name, 'url' => route('employees.show', $employee)],
+    ]"
+>
+    <x-slot:actions>
+        <a href="{{ route('employees.edit', $employee) }}" class="btn btn-outline-primary">
+            <i class="bx bx-edit me-1"></i> Edit
+        </a>
+        <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Kembali
+        </a>
+    </x-slot:actions>
+</x-page-header>
+
 <div class="row">
     <div class="col-lg-5 mb-4">
-        <div class="card card-modern h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Profil Karyawan</h5>
-                <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+        <div class="card card-modern content-card h-100">
+            <div class="card-header content-card-header">
+                <h5 class="content-card-title mb-0">Profil Karyawan</h5>
             </div>
             <div class="card-body">
                 <div class="d-flex align-items-center gap-3 mb-4">
                     @if ($employee->photo_path)
-                        <img src="{{ $employee->photo_url }}" alt="Foto {{ $employee->name }}" class="rounded-circle border" style="width: 80px; height: 80px; object-fit: cover;">
+                        <img src="{{ $employee->photo_url }}" alt="Foto {{ $employee->name }}" class="profile-avatar-lg">
                     @else
-                        <span class="avatar avatar-lg rounded-circle bg-label-primary d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="bx bx-user bx-lg"></i>
+                        <span class="profile-avatar-placeholder">
+                            <i class="bx bx-user"></i>
                         </span>
                     @endif
                     <div>
@@ -26,7 +43,7 @@
                         <small class="text-muted">{{ $employee->employee_code }}</small>
                     </div>
                 </div>
-                <dl class="row mb-0">
+                <dl class="row detail-list mb-0">
                     <dt class="col-sm-4">ID</dt>
                     <dd class="col-sm-8">{{ $employee->employee_code }}</dd>
                     <dt class="col-sm-4">Nama</dt>
@@ -62,9 +79,9 @@
                     <dt class="col-sm-4">Status</dt>
                     <dd class="col-sm-8">
                         @if ($employee->status === 'active')
-                            <span class="badge bg-label-success">Aktif</span>
+                            <span class="badge badge-pill badge-pill--success">Aktif</span>
                         @else
-                            <span class="badge bg-label-secondary">Nonaktif</span>
+                            <span class="badge badge-pill badge-pill--secondary">Nonaktif</span>
                         @endif
                     </dd>
                 </dl>
@@ -72,9 +89,9 @@
         </div>
     </div>
     <div class="col-lg-7 mb-4">
-        <div class="card card-modern mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Pola Shift Mingguan</h5>
+        <div class="card card-modern content-card mb-4">
+            <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="content-card-title mb-0">Pola Shift Mingguan</h5>
                 <a href="{{ route('employees.weekly-shifts.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Pola</a>
             </div>
             <div class="card-body">
@@ -84,7 +101,7 @@
                             $shiftId = $weeklyShifts[$day] ?? null;
                             $weeklyRow = $employee->weeklyShifts->firstWhere('day_of_week', $day);
                         @endphp
-                        <span class="badge bg-label-primary" title="{{ $label }}">
+                        <span class="badge badge-pill badge-pill--primary" title="{{ $label }}">
                             {{ $label }}:
                             @if ($weeklyRow?->shift)
                                 {{ $weeklyRow->shift->code }}
@@ -97,14 +114,14 @@
             </div>
         </div>
 
-        <div class="card card-modern mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Akun Login</h5>
+        <div class="card card-modern content-card mb-4">
+            <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="content-card-title mb-0">Akun Login</h5>
                 <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit Akun</a>
             </div>
             <div class="card-body">
                 @if ($employee->user)
-                    <dl class="row mb-0">
+                    <dl class="row detail-list mb-0">
                         <dt class="col-sm-4">Nama Akun</dt>
                         <dd class="col-sm-8">{{ $employee->user->name }}</dd>
                         <dt class="col-sm-4">Username</dt>
@@ -120,9 +137,9 @@
             </div>
         </div>
 
-        <div class="card card-modern mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Saldo Cuti {{ $leaveYear }}</h5>
+        <div class="card card-modern content-card mb-4">
+            <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="content-card-title mb-0">Saldo Cuti {{ $leaveYear }}</h5>
                 <a href="{{ route('employees.leave-balances.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Kuota</a>
             </div>
             <div class="card-body">
@@ -168,9 +185,9 @@
             </thead>
         </x-datatable-card>
 
-        <div class="card card-modern mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Pemotongan Aktif</h5>
+        <div class="card card-modern content-card mb-4">
+            <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="content-card-title mb-0">Pemotongan Aktif</h5>
                 <a href="{{ route('employees.deductions.create', $employee) }}" class="btn btn-sm btn-primary">
                     <i class="bx bx-plus me-1"></i> Tambah
                 </a>
@@ -221,9 +238,9 @@
             </thead>
         </x-datatable-card>
 
-        <div class="card card-modern mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Piutang Aktif</h5>
+        <div class="card card-modern content-card mb-4">
+            <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h5 class="content-card-title mb-0">Piutang Aktif</h5>
                 <a href="{{ route('employee-loans.create') }}?employee_id={{ $employee->id }}" class="btn btn-sm btn-primary">
                     <i class="bx bx-plus me-1"></i> Catat Piutang
                 </a>
@@ -289,8 +306,6 @@
         </x-datatable-card>
     </div>
 </div>
-
-<a href="{{ route('employees.index') }}" class="btn btn-outline-secondary">Kembali</a>
 @endsection
 
 @push('datatable-scripts')

@@ -3,13 +3,16 @@
 @section('title', 'Master Gaji')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Master Gaji" subtitle="Daftar gaji karyawan">
-
-</x-page-header>
-
-<x-datatable-card tableId="salaries-table" title="Master Gaji Karyawan">
+<x-index-page
+    table-id="salaries-table"
+    table-title="Master Gaji Karyawan"
+    title="Master Gaji"
+    subtitle="Daftar gaji karyawan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Master Gaji', 'url' => route('salaries.index')],
+    ]"
+>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
@@ -36,7 +39,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

@@ -14,17 +14,17 @@ class LeaveTypeDataTable
         return DataTables::eloquent($this->query())
             ->addColumn('paid_badge', function (LeaveType $type) {
                 if ($type->is_paid) {
-                    return '<span class="badge bg-label-success">Berbayar</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Berbayar</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Tidak Berbayar</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Tidak Berbayar</span>';
             })
             ->addColumn('status_badge', function (LeaveType $type) {
                 if ($type->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (LeaveType $type) {
                 return view('partials.datatables.leave-type-actions', compact('type'))->render();

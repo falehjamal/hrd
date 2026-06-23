@@ -3,17 +3,21 @@
 @section('title', 'Data Jabatan')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header title="Data Jabatan" subtitle="Kelola master data jabatan karyawan">
+<x-index-page
+    table-id="positions-table"
+    table-title="Daftar Jabatan"
+    title="Data Jabatan"
+    subtitle="Kelola master data jabatan karyawan"
+    :breadcrumbs="[
+        ['label' => 'Master Data', 'url' => route('employees.index')],
+        ['label' => 'Data Jabatan', 'url' => route('positions.index')],
+    ]"
+>
     <x-slot:actions>
         <a href="{{ route('positions.create') }}" class="btn btn-primary">
             <i class="bx bx-plus me-1"></i> Tambah Jabatan
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="positions-table" title="Daftar Jabatan">
     <thead>
         <tr>
             <th>Kode</th>
@@ -24,7 +28,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

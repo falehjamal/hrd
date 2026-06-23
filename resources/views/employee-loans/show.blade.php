@@ -5,7 +5,14 @@
 @section('content')
 @include('partials.alerts')
 
-<x-page-header title="Detail Piutang" subtitle="{{ $loan->employee->employee_code }} — {{ $loan->employee->name }}">
+<x-page-header
+    title="Detail Piutang"
+    :subtitle="$loan->employee->employee_code.' — '.$loan->employee->name"
+    :breadcrumbs="[
+        ['label' => 'Piutang Karyawan', 'url' => route('employee-loans.index')],
+        ['label' => $loan->loan_date->format('d/m/Y'), 'url' => route('employee-loans.show', $loan)],
+    ]"
+>
     <x-slot:actions>
         @if ($loan->status === \App\Models\EmployeeLoan::STATUS_ACTIVE)
             <form action="{{ route('employee-loans.cancel', $loan) }}" method="POST" class="d-inline">
@@ -14,16 +21,20 @@
                 <button type="submit" class="btn btn-outline-warning">Batalkan</button>
             </form>
         @endif
-        <a href="{{ route('employee-loans.index') }}" class="btn btn-outline-secondary">Kembali</a>
+        <a href="{{ route('employee-loans.index') }}" class="btn btn-outline-secondary">
+            <i class="bx bx-arrow-back me-1"></i> Kembali
+        </a>
     </x-slot:actions>
 </x-page-header>
 
 <div class="row mb-4">
     <div class="col-lg-6">
-        <div class="card card-modern h-100">
-            <div class="card-header"><h5 class="mb-0">Ringkasan Pinjaman</h5></div>
+        <div class="card card-modern content-card h-100">
+            <div class="card-header content-card-header">
+                <h5 class="content-card-title mb-0">Ringkasan Pinjaman</h5>
+            </div>
             <div class="card-body">
-                <dl class="row mb-0">
+                <dl class="row detail-list mb-0">
                     <dt class="col-sm-5">Tanggal</dt>
                     <dd class="col-sm-7">{{ $loan->loan_date->format('d/m/Y') }}</dd>
                     <dt class="col-sm-5">Nominal Pinjaman</dt>
@@ -39,9 +50,9 @@
                     <dt class="col-sm-5">Status</dt>
                     <dd class="col-sm-7">
                         @php
-                            $colors = ['active' => 'warning', 'paid' => 'success', 'cancelled' => 'secondary'];
+                            $pillColors = ['active' => 'warning', 'paid' => 'success', 'cancelled' => 'secondary'];
                         @endphp
-                        <span class="badge bg-label-{{ $colors[$loan->status] ?? 'secondary' }}">{{ loan_status_label($loan->status) }}</span>
+                        <span class="badge badge-pill badge-pill--{{ $pillColors[$loan->status] ?? 'secondary' }}">{{ loan_status_label($loan->status) }}</span>
                     </dd>
                     @if ($loan->notes)
                         <dt class="col-sm-5">Catatan</dt>
@@ -53,8 +64,10 @@
     </div>
 </div>
 
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Jadwal Cicilan</h5></div>
+<div class="card card-modern content-card">
+    <div class="card-header content-card-header">
+        <h5 class="content-card-title mb-0">Jadwal Cicilan</h5>
+    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-modern table-hover mb-0">
@@ -76,9 +89,9 @@
                             <td>{{ format_rupiah($installment->amount) }}</td>
                             <td>
                                 @php
-                                    $iColors = ['pending' => 'warning', 'paid' => 'success', 'cancelled' => 'secondary'];
+                                    $iPillColors = ['pending' => 'warning', 'paid' => 'success', 'cancelled' => 'secondary'];
                                 @endphp
-                                <span class="badge bg-label-{{ $iColors[$installment->status] ?? 'secondary' }}">{{ loan_installment_status_label($installment->status) }}</span>
+                                <span class="badge badge-pill badge-pill--{{ $iPillColors[$installment->status] ?? 'secondary' }}">{{ loan_installment_status_label($installment->status) }}</span>
                             </td>
                             <td>
                                 @if ($installment->paid_at)

@@ -3,9 +3,9 @@
 @section('title', 'Data Karyawan')
 
 @section('content')
-@include('partials.alerts')
-
-<x-page-header
+<x-index-page
+    table-id="employees-table"
+    table-title="Daftar Karyawan"
     title="Data Karyawan"
     subtitle="Kelola data karyawan perusahaan"
     :breadcrumbs="[
@@ -18,9 +18,6 @@
             <i class="bx bx-plus me-1"></i> Tambah Karyawan
         </a>
     </x-slot:actions>
-</x-page-header>
-
-<x-datatable-card tableId="employees-table" title="Daftar Karyawan" subtitle="Semua karyawan terdaftar di perusahaan">
     <x-slot:filters>
         <div class="row g-2 align-items-end">
             <div class="col-md-4">
@@ -49,7 +46,7 @@
             <th class="no-export">Aksi</th>
         </tr>
     </thead>
-</x-datatable-card>
+</x-index-page>
 @endsection
 
 @push('datatable-scripts')

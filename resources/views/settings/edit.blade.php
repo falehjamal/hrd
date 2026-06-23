@@ -3,130 +3,129 @@
 @section('title', 'Pengaturan')
 
 @section('content')
-<div class="card card-modern">
-    <div class="card-header">
-        <h5 class="mb-0">Pengaturan Sistem</h5>
-    </div>
-    <div class="card-body">
-        <ul class="nav nav-tabs mb-4" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab-email" data-bs-toggle="tab" data-bs-target="#panel-email" type="button" role="tab">
-                    <i class="bx bx-envelope me-1"></i> Email SMTP
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-wa" data-bs-toggle="tab" data-bs-target="#panel-wa" type="button" role="tab">
-                    <i class="bx bxl-whatsapp me-1"></i> WhatsApp
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-payroll" data-bs-toggle="tab" data-bs-target="#panel-payroll" type="button" role="tab">
-                    <i class="bx bx-money me-1"></i> Payroll
-                </button>
-            </li>
-        </ul>
+<x-form-card
+    title="Pengaturan Sistem"
+    subtitle="Konfigurasi email, WhatsApp, dan payroll"
+    :breadcrumbs="[
+        ['label' => 'Pengaturan', 'url' => route('settings.edit')],
+    ]"
+>
+    <ul class="nav nav-tabs nav-tabs-modern mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-email" data-bs-toggle="tab" data-bs-target="#panel-email" type="button" role="tab">
+                <i class="bx bx-envelope me-1"></i> Email SMTP
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-wa" data-bs-toggle="tab" data-bs-target="#panel-wa" type="button" role="tab">
+                <i class="bx bxl-whatsapp me-1"></i> WhatsApp
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-payroll" data-bs-toggle="tab" data-bs-target="#panel-payroll" type="button" role="tab">
+                <i class="bx bx-money me-1"></i> Payroll
+            </button>
+        </li>
+    </ul>
 
-        <form action="{{ route('settings.update') }}" method="POST">
-            @csrf
-            @method('PUT')
+    <form action="{{ route('settings.update') }}" method="POST">
+        @csrf
+        @method('PUT')
 
-            <div class="tab-content">
-                <div class="tab-pane fade show active" id="panel-email" role="tabpanel">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="mail_enabled" name="mail_enabled" value="1" @checked(old('mail_enabled', $settings['mail_enabled']) == '1')>
-                                <label class="form-check-label" for="mail_enabled">Aktifkan notifikasi email</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="mail_host">SMTP Host</label>
-                            <input type="text" class="form-control @error('mail_host') is-invalid @enderror" id="mail_host" name="mail_host" value="{{ old('mail_host', $settings['mail_host']) }}" placeholder="smtp.gmail.com">
-                            @error('mail_host')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label" for="mail_port">Port</label>
-                            <input type="number" class="form-control @error('mail_port') is-invalid @enderror" id="mail_port" name="mail_port" value="{{ old('mail_port', $settings['mail_port']) }}">
-                            @error('mail_port')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label" for="mail_encryption">Enkripsi</label>
-                            <select class="form-select @error('mail_encryption') is-invalid @enderror" id="mail_encryption" name="mail_encryption">
-                                <option value="tls" @selected(old('mail_encryption', $settings['mail_encryption']) === 'tls')>TLS</option>
-                                <option value="ssl" @selected(old('mail_encryption', $settings['mail_encryption']) === 'ssl')>SSL</option>
-                                <option value="" @selected(old('mail_encryption', $settings['mail_encryption']) === '')>Tanpa</option>
-                            </select>
-                            @error('mail_encryption')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="mail_username">Email Gmail</label>
-                            <input type="email" class="form-control @error('mail_username') is-invalid @enderror" id="mail_username" name="mail_username" value="{{ old('mail_username', $settings['mail_username']) }}" placeholder="nama@gmail.com">
-                            @error('mail_username')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="mail_password">App Password Gmail</label>
-                            <input type="password" class="form-control @error('mail_password') is-invalid @enderror" id="mail_password" name="mail_password" placeholder="{{ filled($settings['mail_password']) ? '•••••••• (kosongkan jika tidak diubah)' : 'Masukkan App Password' }}">
-                            @error('mail_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            <div class="form-text">Gunakan App Password dari Google (akun Gmail harus aktif 2FA). Kosongkan jika tidak ingin mengubah password yang sudah tersimpan.</div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="mail_from_address">Alamat Pengirim</label>
-                            <input type="email" class="form-control @error('mail_from_address') is-invalid @enderror" id="mail_from_address" name="mail_from_address" value="{{ old('mail_from_address', $settings['mail_from_address']) }}" placeholder="Sama dengan email Gmail">
-                            @error('mail_from_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-
-                        <div class="col-md-6">
-                            <label class="form-label" for="mail_from_name">Nama Pengirim</label>
-                            <input type="text" class="form-control @error('mail_from_name') is-invalid @enderror" id="mail_from_name" name="mail_from_name" value="{{ old('mail_from_name', $settings['mail_from_name'] ?? tenant_app_name()) }}">
-                            @error('mail_from_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        <div class="tab-content tab-content-modern">
+            <div class="tab-pane fade show active" id="panel-email" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="mail_enabled" name="mail_enabled" value="1" @checked(old('mail_enabled', $settings['mail_enabled']) == '1')>
+                            <label class="form-check-label" for="mail_enabled">Aktifkan notifikasi email</label>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane fade" id="panel-wa" role="tabpanel">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="wa_enabled" name="wa_enabled" value="1" @checked(old('wa_enabled', $settings['wa_enabled']) == '1')>
-                                <label class="form-check-label" for="wa_enabled">Aktifkan notifikasi WhatsApp</label>
-                            </div>
-                            <div class="form-text">Notifikasi WA hanya dikirim jika fitur ini aktif dan nomor WhatsApp tenant sudah terhubung.</div>
-                        </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="mail_host">SMTP Host</label>
+                        <input type="text" class="form-control @error('mail_host') is-invalid @enderror" id="mail_host" name="mail_host" value="{{ old('mail_host', $settings['mail_host']) }}" placeholder="smtp.gmail.com">
+                        @error('mail_host')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
-                </div>
 
-                <div class="tab-pane fade" id="panel-payroll" role="tabpanel">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="payroll_overtime_hourly_rate">Tarif Lembur per Jam (Rp)</label>
-                            <input type="number" class="form-control @error('payroll_overtime_hourly_rate') is-invalid @enderror" id="payroll_overtime_hourly_rate" name="payroll_overtime_hourly_rate" value="{{ old('payroll_overtime_hourly_rate', $settings['payroll_overtime_hourly_rate'] ?? 50000) }}" min="0" step="1">
-                            @error('payroll_overtime_hourly_rate')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            <div class="form-text">Digunakan saat menghitung upah lembur disetujui dalam proses gaji.</div>
-                        </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="mail_port">Port</label>
+                        <input type="number" class="form-control @error('mail_port') is-invalid @enderror" id="mail_port" name="mail_port" value="{{ old('mail_port', $settings['mail_port']) }}">
+                        @error('mail_port')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label" for="mail_encryption">Enkripsi</label>
+                        <select class="form-select @error('mail_encryption') is-invalid @enderror" id="mail_encryption" name="mail_encryption">
+                            <option value="tls" @selected(old('mail_encryption', $settings['mail_encryption']) === 'tls')>TLS</option>
+                            <option value="ssl" @selected(old('mail_encryption', $settings['mail_encryption']) === 'ssl')>SSL</option>
+                            <option value="" @selected(old('mail_encryption', $settings['mail_encryption']) === '')>Tanpa</option>
+                        </select>
+                        @error('mail_encryption')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="mail_username">Email Gmail</label>
+                        <input type="email" class="form-control @error('mail_username') is-invalid @enderror" id="mail_username" name="mail_username" value="{{ old('mail_username', $settings['mail_username']) }}" placeholder="nama@gmail.com">
+                        @error('mail_username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="mail_password">App Password Gmail</label>
+                        <input type="password" class="form-control @error('mail_password') is-invalid @enderror" id="mail_password" name="mail_password" placeholder="{{ filled($settings['mail_password']) ? '•••••••• (kosongkan jika tidak diubah)' : 'Masukkan App Password' }}">
+                        @error('mail_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="form-text">Gunakan App Password dari Google (akun Gmail harus aktif 2FA). Kosongkan jika tidak ingin mengubah password yang sudah tersimpan.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="mail_from_address">Alamat Pengirim</label>
+                        <input type="email" class="form-control @error('mail_from_address') is-invalid @enderror" id="mail_from_address" name="mail_from_address" value="{{ old('mail_from_address', $settings['mail_from_address']) }}" placeholder="Sama dengan email Gmail">
+                        @error('mail_from_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="mail_from_name">Nama Pengirim</label>
+                        <input type="text" class="form-control @error('mail_from_name') is-invalid @enderror" id="mail_from_name" name="mail_from_name" value="{{ old('mail_from_name', $settings['mail_from_name'] ?? tenant_app_name()) }}">
+                        @error('mail_from_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                 </div>
             </div>
 
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary"><i class="bx bx-save me-1"></i> Simpan</button>
+            <div class="tab-pane fade" id="panel-wa" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="wa_enabled" name="wa_enabled" value="1" @checked(old('wa_enabled', $settings['wa_enabled']) == '1')>
+                            <label class="form-check-label" for="wa_enabled">Aktifkan notifikasi WhatsApp</label>
+                        </div>
+                        <div class="form-text">Notifikasi WA hanya dikirim jika fitur ini aktif dan nomor WhatsApp tenant sudah terhubung.</div>
+                    </div>
+                </div>
             </div>
-        </form>
-    </div>
-</div>
 
-<div class="card card-modern mt-4" id="wa-scan-panel"
+            <div class="tab-pane fade" id="panel-payroll" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="payroll_overtime_hourly_rate">Tarif Lembur per Jam (Rp)</label>
+                        <input type="number" class="form-control @error('payroll_overtime_hourly_rate') is-invalid @enderror" id="payroll_overtime_hourly_rate" name="payroll_overtime_hourly_rate" value="{{ old('payroll_overtime_hourly_rate', $settings['payroll_overtime_hourly_rate'] ?? 50000) }}" min="0" step="1">
+                        @error('payroll_overtime_hourly_rate')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <div class="form-text">Digunakan saat menghitung upah lembur disetujui dalam proses gaji.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <x-form-actions :cancel-url="route('dashboard')" cancel-label="Batal" />
+    </form>
+</x-form-card>
+
+<div class="card card-modern content-card mt-4" id="wa-scan-panel"
     data-connect-url="{{ route('settings.wa.connect') }}"
     data-status-url="{{ route('settings.wa.status') }}"
     data-disconnect-url="{{ route('settings.wa.disconnect') }}">
-    <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="mb-0"><i class="bx bxl-whatsapp me-1"></i> Koneksi WhatsApp</h5>
-        <span id="wa-status-badge" class="badge bg-secondary">Memuat...</span>
+    <div class="card-header content-card-header d-flex align-items-center justify-content-between">
+        <h5 class="content-card-title mb-0"><i class="bx bxl-whatsapp me-1"></i> Koneksi WhatsApp</h5>
+        <span id="wa-status-badge" class="badge badge-pill badge-pill--secondary">Memuat...</span>
     </div>
     <div class="card-body">
         @unless ($waGatewayConfigured)

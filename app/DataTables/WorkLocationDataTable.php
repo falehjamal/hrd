@@ -16,17 +16,17 @@ class WorkLocationDataTable
             ->addColumn('radius_display', fn (WorkLocation $loc) => $loc->radius_meters.' m')
             ->addColumn('default_badge', function (WorkLocation $loc) {
                 if ($loc->is_default) {
-                    return '<span class="badge bg-label-primary">Default</span>';
+                    return '<span class="badge badge-pill badge-pill--primary">Default</span>';
                 }
 
                 return '';
             })
             ->addColumn('status_badge', function (WorkLocation $loc) {
                 if ($loc->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (WorkLocation $loc) {
                 return view('partials.datatables.work-location-actions', compact('loc'))->render();

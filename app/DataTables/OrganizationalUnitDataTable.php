@@ -15,10 +15,10 @@ class OrganizationalUnitDataTable
             ->addColumn('parent_name', fn (OrganizationalUnit $unit) => $unit->parent?->name ?? '-')
             ->addColumn('status_badge', function (OrganizationalUnit $unit) {
                 if ($unit->is_active) {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (OrganizationalUnit $unit) {
                 return view('partials.datatables.organizational-unit-actions', compact('unit'))->render();

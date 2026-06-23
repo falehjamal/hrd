@@ -27,10 +27,10 @@ class EmployeeDataTable
             })
             ->addColumn('status_badge', function (Employee $employee) {
                 if ($employee->status === 'active') {
-                    return '<span class="badge bg-label-success">Aktif</span>';
+                    return '<span class="badge badge-pill badge-pill--success">Aktif</span>';
                 }
 
-                return '<span class="badge bg-label-secondary">Nonaktif</span>';
+                return '<span class="badge badge-pill badge-pill--secondary">Nonaktif</span>';
             })
             ->addColumn('action', function (Employee $employee) {
                 return view('partials.datatables.employee-actions', compact('employee'))->render();

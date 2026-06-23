@@ -3,17 +3,18 @@
 @section('title', 'Tambah Override Jadwal')
 
 @section('content')
-<div class="card card-modern">
-    <div class="card-header"><h5 class="mb-0">Tambah Override Jadwal</h5></div>
-    <div class="card-body">
-        <form action="{{ route('shift-overrides.store') }}" method="POST">
-            @csrf
-            @include('shift-overrides._form', ['override' => $override])
-            <div class="mt-4 d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Simpan</button>
-                <a href="{{ route('shift-overrides.index') }}" class="btn btn-outline-secondary">Batal</a>
-            </div>
-        </form>
-    </div>
-</div>
+<x-form-card
+    title="Tambah Override Jadwal"
+    :breadcrumbs="[
+        ['label' => 'Jadwal Shift', 'url' => route('shift-overrides.index')],
+        ['label' => 'Tambah Override Jadwal'],
+    ]"
+    back-url="{{ route('shift-overrides.index') }}"
+>
+    <form action="{{ route('shift-overrides.store') }}" method="POST">
+        @csrf
+        @include('shift-overrides._form', ['override' => $override])
+        <x-form-actions cancel-url="{{ route('shift-overrides.index') }}" class="mt-4" />
+    </form>
+</x-form-card>
 @endsection

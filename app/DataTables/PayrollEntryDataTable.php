@@ -31,10 +31,10 @@ class PayrollEntryDataTable
             })
             ->addColumn('status_badge', function (PayrollEntry $entry) {
                 if ($entry->is_skipped) {
-                    return '<span class="badge bg-label-secondary">Dilewati</span>';
+                    return '<span class="badge badge-pill badge-pill--secondary">Dilewati</span>';
                 }
 
-                return '<span class="badge bg-label-success">Diproses</span>';
+                return '<span class="badge badge-pill badge-pill--success">Diproses</span>';
             })
             ->addColumn('action', fn (PayrollEntry $entry) => view('partials.datatables.payroll-entry-actions', [
                 'entry' => $entry,
