@@ -21,6 +21,7 @@
     <thead>
         <tr>
             <th>Nama</th>
+            <th>Cabang</th>
             <th>Koordinat</th>
             <th>Radius</th>
             <th>Default</th>
@@ -38,6 +39,7 @@
         order: [[0, 'asc']],
         columns: [
             { data: 'name', name: 'name' },
+            { data: 'branch_name', name: 'branch.name', defaultContent: 'Global' },
             { data: 'coordinates', name: 'latitude', orderable: false, searchable: false },
             { data: 'radius_display', name: 'radius_meters', searchable: false },
             { data: 'default_badge', name: 'is_default', orderable: true, searchable: false },

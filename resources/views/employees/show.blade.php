@@ -62,6 +62,8 @@
                     <dd class="col-sm-8">{{ $employee->address ?? '-' }}</dd>
                     <dt class="col-sm-4">Unit Organisasi</dt>
                     <dd class="col-sm-8">{{ $employee->organizationalUnit?->name ?? '-' }}</dd>
+                    <dt class="col-sm-4">Cabang</dt>
+                    <dd class="col-sm-8">{{ $employee->branch?->name ?? '-' }}</dd>
                     <dt class="col-sm-4">Jabatan</dt>
                     <dd class="col-sm-8">{{ $employee->position?->name ?? '-' }}</dd>
                     <dt class="col-sm-4">Atasan</dt>

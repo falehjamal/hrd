@@ -32,6 +32,13 @@
             </a>
         </li>
 
+        <li class="menu-item {{ request()->routeIs('branches.*') ? 'active' : '' }}">
+            <a href="{{ route('branches.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-git-branch"></i>
+                <div>Data Cabang</div>
+            </a>
+        </li>
+
         <li class="menu-item {{ request()->routeIs('positions.*') ? 'active' : '' }}">
             <a href="{{ route('positions.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-briefcase"></i>

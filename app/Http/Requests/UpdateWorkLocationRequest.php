@@ -15,6 +15,7 @@ class UpdateWorkLocationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:150'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'radius_meters' => ['required', 'integer', 'min:10', 'max:5000'],

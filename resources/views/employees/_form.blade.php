@@ -121,6 +121,20 @@
         </select>
         @error('organizational_unit_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
+    @if ($branches->isNotEmpty())
+    <div class="col-md-6">
+        <label class="form-label" for="branch_id">Cabang</label>
+        <select class="form-select @error('branch_id') is-invalid @enderror" id="branch_id" name="branch_id">
+            <option value="">-- Pilih Cabang --</option>
+            @foreach ($branches as $branch)
+                <option value="{{ $branch->id }}" @selected(old('branch_id', $employee->branch_id ?? '') == $branch->id)>
+                    {{ $branch->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('branch_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    @endif
     <div class="col-md-6">
         <label class="form-label" for="position_id">Jabatan</label>
         <select class="form-select @error('position_id') is-invalid @enderror" id="position_id" name="position_id">

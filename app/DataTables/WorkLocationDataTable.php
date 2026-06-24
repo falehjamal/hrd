@@ -12,6 +12,7 @@ class WorkLocationDataTable
     public function json(): JsonResponse
     {
         return DataTables::eloquent($this->query())
+            ->addColumn('branch_name', fn (WorkLocation $loc) => $loc->branch?->name ?? 'Global')
             ->addColumn('coordinates', fn (WorkLocation $loc) => $loc->latitude.', '.$loc->longitude)
             ->addColumn('radius_display', fn (WorkLocation $loc) => $loc->radius_meters.' m')
             ->addColumn('default_badge', function (WorkLocation $loc) {
@@ -37,6 +38,9 @@ class WorkLocationDataTable
 
     protected function query(): Builder
     {
-        return WorkLocation::query()->orderByDesc('is_default')->orderBy('name');
+        return WorkLocation::query()
+            ->with('branch')
+            ->orderByDesc('is_default')
+            ->orderBy('name');
     }
 }

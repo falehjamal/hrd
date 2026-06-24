@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Employee;
 use App\Models\WorkLocation;
 
 class AttendanceGeofenceService
@@ -11,8 +12,38 @@ class AttendanceGeofenceService
         return WorkLocation::query()
             ->active()
             ->where('is_default', true)
+            ->whereNull('branch_id')
             ->first()
+            ?? WorkLocation::query()->active()->whereNull('branch_id')->orderBy('id')->first()
+            ?? WorkLocation::query()->active()->where('is_default', true)->first()
             ?? WorkLocation::query()->active()->orderBy('id')->first();
+    }
+
+    public function defaultLocationForBranch(int $branchId): ?WorkLocation
+    {
+        return WorkLocation::query()
+            ->active()
+            ->where('branch_id', $branchId)
+            ->where('is_default', true)
+            ->first()
+            ?? WorkLocation::query()
+                ->active()
+                ->where('branch_id', $branchId)
+                ->orderBy('id')
+                ->first();
+    }
+
+    public function locationForEmployee(Employee $employee): ?WorkLocation
+    {
+        if ($employee->branch_id) {
+            $branchLocation = $this->defaultLocationForBranch($employee->branch_id);
+
+            if ($branchLocation) {
+                return $branchLocation;
+            }
+        }
+
+        return $this->defaultLocation();
     }
 
     public function distanceMeters(float $lat1, float $lon1, float $lat2, float $lon2): int
@@ -30,9 +61,11 @@ class AttendanceGeofenceService
         return (int) round($earthRadius * $c);
     }
 
-    public function validateWithinGeofence(float $latitude, float $longitude): array
+    public function validateWithinGeofence(float $latitude, float $longitude, ?Employee $employee = null): array
     {
-        $location = $this->defaultLocation();
+        $location = $employee
+            ? $this->locationForEmployee($employee)
+            : $this->defaultLocation();
 
         if (! $location) {
             throw new \InvalidArgumentException('Lokasi kerja belum dikonfigurasi. Hubungi HR.');

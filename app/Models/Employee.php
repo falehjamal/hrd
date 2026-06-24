@@ -29,6 +29,7 @@ class Employee extends Model
         'address',
         'position_id',
         'organizational_unit_id',
+        'branch_id',
         'manager_id',
         'shift_id',
         'join_date',
@@ -70,6 +71,11 @@ class Employee extends Model
     public function organizationalUnit(): BelongsTo
     {
         return $this->belongsTo(OrganizationalUnit::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function manager(): BelongsTo

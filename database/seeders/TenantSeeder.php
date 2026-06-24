@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\Central\TenantUser;
 use App\Models\CompanyHoliday;
 use App\Models\DeductionType;
@@ -87,8 +88,9 @@ class TenantSeeder extends Seeder
         $this->migrateLegacyUsers($tenant);
         $this->seedShifts();
         $orgData = $this->seedOrganizationData();
-        $this->seedEmployees($adminUser, $orgData);
-        $this->seedOperationalData();
+        $branches = $this->seedBranches();
+        $this->seedEmployees($adminUser, $orgData, $branches);
+        $this->seedOperationalData($branches);
         $this->seedShiftSchedule();
         $this->seedLeaveData();
         $this->seedDeductionAndLoanData();
@@ -246,10 +248,50 @@ class TenantSeeder extends Seeder
         return compact('units', 'positions');
     }
 
-    protected function seedEmployees(User $adminUser, array $orgData): void
+    /**
+     * @return array<string, Branch>
+     */
+    protected function seedBranches(): array
+    {
+        $jakarta = Branch::query()->firstOrCreate(
+            ['code' => 'JKT'],
+            [
+                'name' => 'Kantor Pusat Jakarta',
+                'address' => 'Jl. Sudirman No. 1',
+                'city' => 'Jakarta',
+                'phone' => '021-1234567',
+                'is_active' => true,
+                'is_head_office' => true,
+            ]
+        );
+
+        $jakarta->update(['is_head_office' => true]);
+        Branch::query()->where('id', '!=', $jakarta->id)->update(['is_head_office' => false]);
+
+        $surabaya = Branch::query()->firstOrCreate(
+            ['code' => 'SBY'],
+            [
+                'name' => 'Cabang Surabaya',
+                'address' => 'Jl. Pemuda No. 10',
+                'city' => 'Surabaya',
+                'phone' => '031-7654321',
+                'is_active' => true,
+                'is_head_office' => false,
+            ]
+        );
+
+        return [
+            'jakarta' => $jakarta,
+            'surabaya' => $surabaya,
+        ];
+    }
+
+    protected function seedEmployees(User $adminUser, array $orgData, array $branches): void
     {
         $units = $orgData['units'];
         $positions = $orgData['positions'];
+        $jakarta = $branches['jakarta'];
+        $surabaya = $branches['surabaya'];
 
         $shiftPagi = Shift::query()->where('code', 'PAGI')->first();
         $shiftSiang = Shift::query()->where('code', 'SIANG')->first();
@@ -284,6 +326,7 @@ class TenantSeeder extends Seeder
                 'phone' => null,
                 'position_id' => $positions['direktur']->id,
                 'organizational_unit_id' => $units['direksi']->id,
+                'branch_id' => $jakarta->id,
                 'manager_id' => null,
                 'shift_id' => $shiftPagi->id,
                 'join_date' => now()->subYears(5),
@@ -302,6 +345,7 @@ class TenantSeeder extends Seeder
                 'phone' => null,
                 'position_id' => $positions['manager']->id,
                 'organizational_unit_id' => $units['hr']->id,
+                'branch_id' => $jakarta->id,
                 'manager_id' => $adminEmployee->id,
                 'shift_id' => $shiftPagi->id,
                 'join_date' => now()->subYears(3),
@@ -313,11 +357,11 @@ class TenantSeeder extends Seeder
         $this->ensureSalary($hrdEmployee, 9000000, 1000000);
 
         $employees = [
-            ['employee_code' => 'EMP001', 'name' => 'Budi Santoso', 'unit' => 'hr', 'position' => 'staff', 'manager' => 'HRD001', 'shift_id' => $shiftPagi->id, 'basic' => 5500000, 'allowance' => 500000],
-            ['employee_code' => 'EMP002', 'name' => 'Siti Rahayu', 'unit' => 'keuangan', 'position' => 'staff', 'manager' => 'ADM001', 'shift_id' => $shiftPagi->id, 'basic' => 6000000, 'allowance' => 750000],
-            ['employee_code' => 'EMP003', 'name' => 'Andi Wijaya', 'unit' => 'operasional', 'position' => 'supervisor', 'manager' => 'ADM001', 'shift_id' => $shiftSiang->id, 'basic' => 7000000, 'allowance' => 1000000],
-            ['employee_code' => 'EMP004', 'name' => 'Dewi Lestari', 'unit' => 'it', 'position' => 'staff', 'manager' => 'ADM001', 'shift_id' => $shiftPagi->id, 'basic' => 8000000, 'allowance' => 1500000],
-            ['employee_code' => 'EMP005', 'name' => 'Rizki Pratama', 'unit' => 'gudang', 'position' => 'staff', 'manager' => 'EMP003', 'shift_id' => $shiftMalam->id, 'basic' => 4800000, 'allowance' => 400000],
+            ['employee_code' => 'EMP001', 'name' => 'Budi Santoso', 'unit' => 'hr', 'position' => 'staff', 'manager' => 'HRD001', 'branch' => 'jakarta', 'shift_id' => $shiftPagi->id, 'basic' => 5500000, 'allowance' => 500000],
+            ['employee_code' => 'EMP002', 'name' => 'Siti Rahayu', 'unit' => 'keuangan', 'position' => 'staff', 'manager' => 'ADM001', 'branch' => 'jakarta', 'shift_id' => $shiftPagi->id, 'basic' => 6000000, 'allowance' => 750000],
+            ['employee_code' => 'EMP003', 'name' => 'Andi Wijaya', 'unit' => 'operasional', 'position' => 'supervisor', 'manager' => 'ADM001', 'branch' => 'jakarta', 'shift_id' => $shiftSiang->id, 'basic' => 7000000, 'allowance' => 1000000],
+            ['employee_code' => 'EMP004', 'name' => 'Dewi Lestari', 'unit' => 'it', 'position' => 'staff', 'manager' => 'ADM001', 'branch' => 'jakarta', 'shift_id' => $shiftPagi->id, 'basic' => 8000000, 'allowance' => 1500000],
+            ['employee_code' => 'EMP005', 'name' => 'Rizki Pratama', 'unit' => 'gudang', 'position' => 'staff', 'manager' => 'EMP003', 'branch' => 'surabaya', 'shift_id' => $shiftMalam->id, 'basic' => 4800000, 'allowance' => 400000],
         ];
 
         $employeeMap = [
@@ -336,6 +380,7 @@ class TenantSeeder extends Seeder
                     'phone' => null,
                     'position_id' => $positions[$data['position']]->id,
                     'organizational_unit_id' => $units[$data['unit']]->id,
+                    'branch_id' => $branches[$data['branch']]->id,
                     'manager_id' => $manager?->id,
                     'shift_id' => $data['shift_id'],
                     'join_date' => now()->subMonths(rand(6, 36)),
@@ -373,18 +418,34 @@ class TenantSeeder extends Seeder
         ]);
     }
 
-    protected function seedOperationalData(): void
+    protected function seedOperationalData(array $branches): void
     {
-        if (! WorkLocation::query()->exists()) {
-            WorkLocation::query()->create([
-                'name' => 'Kantor Pusat Demo',
+        $jakarta = $branches['jakarta'];
+        $surabaya = $branches['surabaya'];
+
+        WorkLocation::query()->updateOrCreate(
+            ['name' => 'Kantor Pusat Demo'],
+            [
+                'branch_id' => $jakarta->id,
                 'latitude' => -6.2000000,
                 'longitude' => 106.8166667,
                 'radius_meters' => 200,
                 'is_active' => true,
                 'is_default' => true,
-            ]);
-        }
+            ]
+        );
+
+        WorkLocation::query()->updateOrCreate(
+            ['name' => 'Kantor Surabaya Demo'],
+            [
+                'branch_id' => $surabaya->id,
+                'latitude' => -7.2574719,
+                'longitude' => 112.7520883,
+                'radius_meters' => 200,
+                'is_active' => true,
+                'is_default' => true,
+            ]
+        );
     }
 
     protected function seedShiftSchedule(): void

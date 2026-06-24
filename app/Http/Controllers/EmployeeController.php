@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\EmployeeDataTable;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Models\Branch;
 use App\Models\Employee;
 use App\Models\OrganizationalUnit;
 use App\Models\Position;
@@ -40,6 +41,7 @@ class EmployeeController extends Controller
         'address',
         'position_id',
         'organizational_unit_id',
+        'branch_id',
         'manager_id',
         'shift_id',
         'join_date',
@@ -48,7 +50,9 @@ class EmployeeController extends Controller
 
     public function index(): View
     {
-        return view('employees.index');
+        return view('employees.index', [
+            'branches' => Branch::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     public function data(EmployeeDataTable $dataTable): JsonResponse
@@ -125,7 +129,7 @@ class EmployeeController extends Controller
     public function show(Employee $employee): View
     {
         $employee->load([
-            'shift', 'user', 'position', 'organizationalUnit', 'manager', 'weeklyShifts.shift',
+            'shift', 'user', 'position', 'organizationalUnit', 'branch', 'manager', 'weeklyShifts.shift',
             'activeDeductions.deductionType', 'activeLoans',
         ]);
         $weeklyShifts = app(EmployeeWeeklyShiftService::class)->shiftsIndexedByDay($employee);
@@ -217,7 +221,7 @@ class EmployeeController extends Controller
     }
 
     /**
-     * @return array{shifts: Collection, positions: Collection, units: Collection, managers: Collection}
+     * @return array{shifts: Collection, positions: Collection, units: Collection, branches: Collection, managers: Collection}
      */
     private function formOptions(?Employee $exclude = null): array
     {
@@ -225,6 +229,7 @@ class EmployeeController extends Controller
             'shifts' => Shift::query()->active()->orderBy('name')->get(),
             'positions' => Position::query()->active()->orderBy('level')->orderBy('name')->get(),
             'units' => OrganizationalUnit::query()->active()->orderBy('name')->get(),
+            'branches' => Branch::query()->active()->orderBy('name')->get(),
             'managers' => Employee::query()
                 ->active()
                 ->when($exclude, fn ($q) => $q->where('id', '!=', $exclude->id))

@@ -35,6 +35,7 @@ class StoreEmployeeRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:500'],
             'position_id' => ['nullable', 'exists:positions,id'],
             'organizational_unit_id' => ['nullable', 'exists:organizational_units,id'],
+            'branch_id' => ['nullable', 'exists:branches,id'],
             'manager_id' => ['nullable', 'exists:employees,id'],
             'shift_id' => ['nullable', 'exists:shifts,id'],
             'join_date' => ['nullable', 'date'],

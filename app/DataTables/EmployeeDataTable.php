@@ -16,6 +16,7 @@ class EmployeeDataTable
                 return '<a href="'.route('employees.show', $employee).'" class="fw-medium">'.$employee->name.'</a>';
             })
             ->addColumn('unit_name', fn (Employee $employee) => $employee->organizationalUnit?->name ?? '-')
+            ->addColumn('branch_name', fn (Employee $employee) => $employee->branch?->name ?? '-')
             ->addColumn('position_name', fn (Employee $employee) => $employee->position?->name ?? '-')
             ->addColumn('shift_code', fn (Employee $employee) => $employee->shift?->code ?? '-')
             ->addColumn('salary_display', function (Employee $employee) {
@@ -48,7 +49,8 @@ class EmployeeDataTable
     protected function query(): Builder
     {
         return Employee::query()
-            ->with(['shift', 'activeSalary', 'position', 'organizationalUnit'])
-            ->when(request()->filled('status'), fn ($q) => $q->where('status', request('status')));
+            ->with(['shift', 'activeSalary', 'position', 'organizationalUnit', 'branch'])
+            ->when(request()->filled('status'), fn ($q) => $q->where('status', request('status')))
+            ->when(request()->filled('branch_id'), fn ($q) => $q->where('branch_id', request('branch_id')));
     }
 }

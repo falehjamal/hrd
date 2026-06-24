@@ -21,12 +21,13 @@ class AttendanceCheckInController extends Controller
     public function create(): View
     {
         $employee = auth()->user()->employee;
+        $employee->load('branch');
         $todayAttendance = Attendance::query()
             ->where('employee_id', $employee->id)
             ->whereDate('date', today())
             ->first();
 
-        $location = $this->geofence->defaultLocation();
+        $location = $this->geofence->locationForEmployee($employee);
         $todayShiftLabel = $this->shiftResolver->shiftLabelForDate($employee, today());
         $isDayOff = $this->shiftResolver->isDayOff($employee, today());
 

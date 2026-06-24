@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\WorkLocationDataTable;
 use App\Http\Requests\StoreWorkLocationRequest;
 use App\Http\Requests\UpdateWorkLocationRequest;
+use App\Models\Branch;
 use App\Models\WorkLocation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -24,13 +25,17 @@ class WorkLocationController extends Controller
 
     public function create(): View
     {
-        return view('work-locations.create');
+        return view('work-locations.create', [
+            'branches' => Branch::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     public function store(StoreWorkLocationRequest $request): RedirectResponse
     {
+        $branchId = $request->input('branch_id');
+
         if ($request->boolean('is_default')) {
-            WorkLocation::clearDefaultExcept();
+            WorkLocation::clearDefaultExcept(null, $branchId ? (int) $branchId : null);
         }
 
         WorkLocation::query()->create([
@@ -44,13 +49,18 @@ class WorkLocationController extends Controller
 
     public function edit(WorkLocation $workLocation): View
     {
-        return view('work-locations.edit', ['workLocation' => $workLocation]);
+        return view('work-locations.edit', [
+            'workLocation' => $workLocation,
+            'branches' => Branch::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     public function update(UpdateWorkLocationRequest $request, WorkLocation $workLocation): RedirectResponse
     {
+        $branchId = $request->input('branch_id', $workLocation->branch_id);
+
         if ($request->boolean('is_default')) {
-            WorkLocation::clearDefaultExcept($workLocation->id);
+            WorkLocation::clearDefaultExcept($workLocation->id, $branchId ? (int) $branchId : null);
         }
 
         $workLocation->update([

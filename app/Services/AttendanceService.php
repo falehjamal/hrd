@@ -102,7 +102,7 @@ class AttendanceService
 
     public function checkInGps(Employee $employee, float $latitude, float $longitude, UploadedFile $photo, int $userId): Attendance
     {
-        $geofence = $this->geofence->validateWithinGeofence($latitude, $longitude);
+        $geofence = $this->geofence->validateWithinGeofence($latitude, $longitude, $employee);
         $today = today()->format('Y-m-d');
 
         $attendance = Attendance::query()
@@ -168,7 +168,7 @@ class AttendanceService
 
     public function checkOutGps(Employee $employee, float $latitude, float $longitude, ?UploadedFile $photo, int $userId): Attendance
     {
-        $this->geofence->validateWithinGeofence($latitude, $longitude);
+        $this->geofence->validateWithinGeofence($latitude, $longitude, $employee);
 
         $attendance = Attendance::query()
             ->where('employee_id', $employee->id)

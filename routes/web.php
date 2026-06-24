@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttendanceCheckInController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CompanyHolidayController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeductionTypeController;
@@ -63,6 +64,7 @@ Route::middleware('auth')->group(function () {
         Route::get('employees/search', [EmployeeController::class, 'search'])->name('employees.search');
         Route::get('positions/data', [PositionController::class, 'data'])->name('positions.data');
         Route::get('organizational-units/data', [OrganizationalUnitController::class, 'data'])->name('organizational-units.data');
+        Route::get('branches/data', [BranchController::class, 'data'])->name('branches.data');
         Route::get('organization-structure', [OrganizationStructureController::class, 'index'])->name('organization-structure.index');
         Route::get('salaries/data', [EmployeeSalaryController::class, 'dataAll'])->name('salaries.data');
         Route::get('employees/{employee}/salaries/data', [EmployeeSalaryController::class, 'dataForEmployee'])->name('employees.salaries.data');
@@ -70,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::put('employees/{employee}/weekly-shifts', [EmployeeWeeklyShiftController::class, 'update'])->name('employees.weekly-shifts.update');
         Route::resource('positions', PositionController::class)->except(['show']);
         Route::resource('organizational-units', OrganizationalUnitController::class)->except(['show']);
+        Route::resource('branches', BranchController::class)->except(['show']);
         Route::resource('employees', EmployeeController::class);
         Route::resource('employees.salaries', EmployeeSalaryController::class)->except(['show', 'index'])->shallow();
         Route::get('salaries', [EmployeeSalaryController::class, 'indexAll'])->name('salaries.index');
