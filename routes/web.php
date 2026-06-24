@@ -106,6 +106,7 @@ Route::middleware('auth')->group(function () {
         ->where('type', 'check-in|check-out');
     Route::get('leave-requests/data', [LeaveRequestController::class, 'data'])->name('leave-requests.data');
     Route::get('leave-requests/calculate-days', [LeaveRequestController::class, 'calculateDays'])->name('leave-requests.calculate-days');
+    Route::get('overtime-requests/data', [OvertimeRequestController::class, 'data'])->name('overtime-requests.data');
 
     Route::middleware('employee.linked')->group(function () {
         Route::get('absen', [AttendanceCheckInController::class, 'create'])->name('attendances.check-in');
