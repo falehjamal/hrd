@@ -86,24 +86,39 @@ Route::middleware('auth')->group(function () {
         Route::patch('payroll-periods/{payroll_period}/finalize', [PayrollPeriodController::class, 'finalize'])->name('payroll-periods.finalize');
         Route::delete('payroll-periods/{payroll_period}', [PayrollPeriodController::class, 'destroy'])->name('payroll-periods.destroy');
         Route::get('payroll-periods', [PayrollPeriodController::class, 'index'])->name('payroll-periods.index');
+
+        Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
+        Route::resource('shifts', ShiftController::class)->except(['show']);
+
+        Route::get('work-locations/data', [WorkLocationController::class, 'data'])->name('work-locations.data');
+        Route::resource('work-locations', WorkLocationController::class)->except(['show']);
+
+        Route::get('attendances/data', [AttendanceController::class, 'data'])->name('attendances.data');
+        Route::get('attendances/resolved-shift', [AttendanceController::class, 'resolvedShift'])->name('attendances.resolved-shift');
+        Route::get('attendances/{attendance}/photo/{type}', [AttendanceController::class, 'photo'])
+            ->name('attendances.photo')
+            ->where('type', 'check-in|check-out');
+        Route::resource('attendances', AttendanceController::class)->except(['show']);
+
+        Route::get('shift-overrides/calendar', [ShiftOverrideController::class, 'calendar'])->name('shift-overrides.calendar');
+        Route::get('shift-overrides/day-detail', [ShiftOverrideController::class, 'dayDetail'])->name('shift-overrides.day-detail');
+        Route::get('shift-overrides/data', [ShiftOverrideController::class, 'data'])->name('shift-overrides.data');
+        Route::resource('shift-overrides', ShiftOverrideController::class)->except(['show']);
+
+        Route::get('company-holidays/data', [CompanyHolidayController::class, 'index'])->name('company-holidays.data');
+        Route::post('company-holidays', [CompanyHolidayController::class, 'store'])->name('company-holidays.store');
+        Route::put('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'update'])->name('company-holidays.update');
+        Route::delete('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'destroy'])->name('company-holidays.destroy');
+
+        Route::get('employees/{employee}/photo', [EmployeeController::class, 'photo'])->name('employees.photo');
+
+        Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
+        Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/whatsapp/connect', [WhatsAppSessionController::class, 'connect'])->name('settings.wa.connect');
+        Route::get('/settings/whatsapp/status', [WhatsAppSessionController::class, 'status'])->name('settings.wa.status');
+        Route::delete('/settings/whatsapp/disconnect', [WhatsAppSessionController::class, 'disconnect'])->name('settings.wa.disconnect');
     });
 
-    Route::get('shifts/data', [ShiftController::class, 'data'])->name('shifts.data');
-
-    Route::get('work-locations/data', [WorkLocationController::class, 'data'])->name('work-locations.data');
-    Route::get('attendances/data', [AttendanceController::class, 'data'])->name('attendances.data');
-    Route::get('attendances/resolved-shift', [AttendanceController::class, 'resolvedShift'])->name('attendances.resolved-shift');
-    Route::get('shift-overrides/calendar', [ShiftOverrideController::class, 'calendar'])->name('shift-overrides.calendar');
-    Route::get('shift-overrides/day-detail', [ShiftOverrideController::class, 'dayDetail'])->name('shift-overrides.day-detail');
-    Route::get('shift-overrides/data', [ShiftOverrideController::class, 'data'])->name('shift-overrides.data');
-    Route::get('company-holidays/data', [CompanyHolidayController::class, 'index'])->name('company-holidays.data');
-    Route::post('company-holidays', [CompanyHolidayController::class, 'store'])->name('company-holidays.store');
-    Route::put('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'update'])->name('company-holidays.update');
-    Route::delete('company-holidays/{company_holiday}', [CompanyHolidayController::class, 'destroy'])->name('company-holidays.destroy');
-    Route::get('employees/{employee}/photo', [EmployeeController::class, 'photo'])->name('employees.photo');
-    Route::get('attendances/{attendance}/photo/{type}', [AttendanceController::class, 'photo'])
-        ->name('attendances.photo')
-        ->where('type', 'check-in|check-out');
     Route::get('leave-requests/data', [LeaveRequestController::class, 'data'])->name('leave-requests.data');
     Route::get('leave-requests/calculate-days', [LeaveRequestController::class, 'calculateDays'])->name('leave-requests.calculate-days');
     Route::get('overtime-requests/data', [OvertimeRequestController::class, 'data'])->name('overtime-requests.data');
@@ -116,24 +131,12 @@ Route::middleware('auth')->group(function () {
         Route::get('payslips', [PayslipController::class, 'index'])->name('payslips.index');
     });
 
-    Route::resource('work-locations', WorkLocationController::class)->except(['show']);
-    Route::resource('attendances', AttendanceController::class)->except(['show']);
     Route::resource('overtime-requests', OvertimeRequestController::class)->except(['show', 'edit', 'update']);
     Route::resource('leave-requests', LeaveRequestController::class)->except(['show', 'edit', 'update']);
     Route::patch('leave-requests/{leave_request}/approve', [LeaveRequestController::class, 'approve'])->name('leave-requests.approve');
     Route::patch('leave-requests/{leave_request}/reject', [LeaveRequestController::class, 'reject'])->name('leave-requests.reject');
     Route::patch('overtime-requests/{overtime_request}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime-requests.approve');
     Route::patch('overtime-requests/{overtime_request}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime-requests.reject');
-
-    Route::resource('shift-overrides', ShiftOverrideController::class)->except(['show']);
-
-    Route::resource('shifts', ShiftController::class);
-
-    Route::get('/settings', [SettingController::class, 'edit'])->name('settings.edit');
-    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
-    Route::post('/settings/whatsapp/connect', [WhatsAppSessionController::class, 'connect'])->name('settings.wa.connect');
-    Route::get('/settings/whatsapp/status', [WhatsAppSessionController::class, 'status'])->name('settings.wa.status');
-    Route::delete('/settings/whatsapp/disconnect', [WhatsAppSessionController::class, 'disconnect'])->name('settings.wa.disconnect');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

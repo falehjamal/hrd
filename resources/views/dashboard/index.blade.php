@@ -8,7 +8,7 @@
 {{-- Hero Welcome --}}
 <div class="dashboard-hero mb-4">
     <div class="dashboard-hero-content">
-        <span class="dashboard-hero-badge">HR Connect</span>
+        <span class="dashboard-hero-badge">{{ tenant_app_name() }}</span>
         <h2 class="dashboard-hero-title">Selamat datang kembali, {{ auth()->user()->name }}!</h2>
         <p class="dashboard-hero-text">
             @if (auth()->user()->isHrUser())
@@ -180,8 +180,8 @@
                     </div>
                 </div>
                 @if (auth()->user()->isHrUser())
-                    <a href="{{ route('employees.index') }}" class="btn btn-light btn-sm align-self-start mt-4">
-                        Lihat Statistik Detail <i class="bx bx-right-arrow-alt ms-1"></i>
+                    <a href="{{ route('attendances.index') }}" class="btn btn-light btn-sm align-self-start mt-4">
+                        Lihat Absensi <i class="bx bx-right-arrow-alt ms-1"></i>
                     </a>
                 @endif
             </div>

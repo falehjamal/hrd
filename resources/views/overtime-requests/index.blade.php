@@ -19,23 +19,27 @@
         </a>
     </x-slot:actions>
     <x-slot:filters>
-        <div class="filter-toolbar row g-2 align-items-end">
+        <div class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                <input type="date" id="filter-date-from" class="form-control form-control-sm" />
+                <label class="form-label" for="filter-date-from">Dari Tanggal</label>
+                <input type="date" id="filter-date-from" class="form-control" />
             </div>
             <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Sampai Tanggal</label>
-                <input type="date" id="filter-date-to" class="form-control form-control-sm" />
+                <label class="form-label" for="filter-date-to">Sampai Tanggal</label>
+                <input type="date" id="filter-date-to" class="form-control" />
             </div>
             <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Status</label>
-                <select id="filter-status" class="form-select form-select-sm">
+                <label class="form-label" for="filter-status">Status</label>
+                <select id="filter-status" class="form-select">
                     <option value="">Semua</option>
                     @foreach (\App\Models\OvertimeRequest::statusLabels() as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="col-md-3">
+                <button type="button" id="btn-apply-filter" class="btn btn-primary">Terapkan</button>
+                <button type="button" id="btn-reset-filter" class="btn btn-outline-secondary">Reset</button>
             </div>
         </div>
     </x-slot:filters>
@@ -66,7 +70,7 @@
         { data: 'status_badge', name: 'status', searchable: false },
         { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
     ];
-    window.initServerDataTable('#overtime-table', {
+    const table = window.initServerDataTable('#overtime-table', {
         ajax: {
             url: '{{ route('overtime-requests.data') }}',
             data: (d) => {
@@ -78,10 +82,12 @@
         order: [[{{ $isEmployee ? 0 : 1 }}, 'desc']],
         columns,
     });
-    ['filter-date-from', 'filter-date-to', 'filter-status'].forEach((id) => {
-        document.getElementById(id)?.addEventListener('change', () => {
-            window.jQuery('#overtime-table').DataTable().ajax.reload();
-        });
+    document.getElementById('btn-apply-filter')?.addEventListener('click', () => table.ajax.reload());
+    document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
+        document.getElementById('filter-date-from').value = '';
+        document.getElementById('filter-date-to').value = '';
+        document.getElementById('filter-status').value = '';
+        table.ajax.reload();
     });
 </script>
 @endpush

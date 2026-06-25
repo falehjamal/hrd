@@ -107,7 +107,7 @@
 
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Operasional</span></li>
 
-        @if (auth()->user()->employee)
+        @if (auth()->user()->hasActiveEmployeeLink())
         <li class="menu-item {{ request()->routeIs('attendances.check-in*') ? 'active' : '' }}">
             <a href="{{ route('attendances.check-in') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-current-location"></i>
@@ -117,7 +117,7 @@
 
         <li class="menu-item {{ request()->routeIs('payslips.*') ? 'active' : '' }}">
             <a href="{{ route('payslips.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <i class="menu-icon tf-icons bx bx-file"></i>
                 <div>Slip Gaji</div>
             </a>
         </li>
@@ -155,7 +155,7 @@
 
         <li class="menu-item {{ request()->routeIs('leave-requests.*') ? 'active' : '' }}">
             <a href="{{ route('leave-requests.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-calendar-check"></i>
+                <i class="menu-icon tf-icons bx bx-plane-alt"></i>
                 <div>Cuti</div>
             </a>
         </li>

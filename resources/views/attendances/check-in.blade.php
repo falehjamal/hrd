@@ -6,6 +6,11 @@
 <x-form-card
     title="Absen Saya"
     :subtitle="$employee->employee_code.' · '.today()->translatedFormat('l, d F Y')"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Absen Saya', 'url' => route('attendances.check-in')],
+    ]"
+    back-url="{{ route('dashboard') }}"
 >
     <div class="row justify-content-center">
         <div class="col-lg-8">

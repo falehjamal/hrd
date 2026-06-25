@@ -29,18 +29,40 @@
     </div>
 </div>
 
-<div class="card card-modern">
-    <div class="card-header datatable-card-header d-flex justify-content-between align-items-center">
-        <div>
-            <h5 class="datatable-card-title mb-0">Manajemen Tenant</h5>
-            <p class="datatable-card-subtitle mb-0">Pantau database, status aktif, dan login terakhir</p>
-        </div>
-        <a href="{{ route('platform.tenants.create') }}" class="btn btn-primary btn-sm">
-            <i class="bx bx-plus me-1"></i> Tenant Baru
+<x-datatable-card tableId="tenants-preview-table" title="Tenant Terbaru" subtitle="Preview tenant terdaftar">
+    <x-slot:headerActions>
+        <a href="{{ route('platform.tenants.index') }}" class="btn btn-sm btn-outline-primary">
+            Lihat Semua <i class="bx bx-right-arrow-alt ms-1"></i>
         </a>
-    </div>
-    <div class="card-body">
-        <a href="{{ route('platform.tenants.index') }}" class="btn btn-outline-primary">Lihat Semua Tenant</a>
-    </div>
-</div>
+    </x-slot:headerActions>
+    <thead>
+        <tr>
+            <th>Perusahaan</th>
+            <th>ID / DB</th>
+            <th>Status</th>
+            <th>User</th>
+            <th>Login Terakhir</th>
+            <th class="no-export">Aksi</th>
+        </tr>
+    </thead>
+</x-datatable-card>
 @endsection
+
+@push('datatable-scripts')
+<script type="module">
+    window.initServerDataTable('#tenants-preview-table', {
+        ajax: { url: '{{ route('platform.tenants.data') }}' },
+        pageLength: 5,
+        lengthChange: false,
+        order: [[0, 'asc']],
+        columns: [
+            { data: 'company_name', name: 'name', orderable: true, searchable: true },
+            { data: 'database_name', name: 'id', orderable: true, searchable: true },
+            { data: 'status_badge', name: 'status', orderable: true, searchable: false },
+            { data: 'users_count_display', name: 'tenant_users_count', searchable: false },
+            { data: 'last_login_display', name: 'last_login_at', orderable: true, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
+        ],
+    });
+</script>
+@endpush

@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->role === 'hr';
     }
+
+    public function hasActiveEmployeeLink(): bool
+    {
+        return $this->linkedEmployee()->exists();
+    }
 }

@@ -3,8 +3,9 @@
 @section('title', 'Jadwal Shift')
 
 @section('content')
-<x-index-page
-    table-id="__shift-overrides-shell"
+@include('partials.alerts')
+
+<x-page-header
     title="Jadwal Shift"
     subtitle="Kalender jadwal kerja, libur, cuti, dan override per tanggal"
     :breadcrumbs="[
@@ -20,96 +21,96 @@
             <i class="bx bx-plus me-1"></i> Tambah Override
         </a>
     </x-slot:actions>
+</x-page-header>
 
-    <x-slot:stats>
-        <ul class="nav nav-pills shift-cal-tabs mb-3" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-calendar" type="button" role="tab">
-                    <i class="bx bx-calendar me-1"></i> Kalender
-                </button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-list" type="button" role="tab">
-                    <i class="bx bx-list-ul me-1"></i> Daftar Override
-                </button>
-            </li>
-        </ul>
+<ul class="nav nav-pills shift-cal-tabs mb-3" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-calendar" type="button" role="tab">
+            <i class="bx bx-calendar me-1"></i> Kalender
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-list" type="button" role="tab">
+            <i class="bx bx-list-ul me-1"></i> Daftar Override
+        </button>
+    </li>
+</ul>
 
-        <div class="tab-content p-0 bg-transparent">
-            <div class="tab-pane fade show active" id="tab-calendar" role="tabpanel">
-                <div class="card card-modern shift-cal-card">
-                    <div class="card-body">
-                        <div class="shift-cal-toolbar">
-                            <div class="shift-cal-toolbar-filter">
-                                <label class="form-label small text-muted mb-1" for="cal-filter-employee">Karyawan</label>
-                                <select id="cal-filter-employee" class="form-select" style="width: 100%">
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                            <div class="shift-cal-monthnav">
-                                <button type="button" class="btn btn-icon btn-outline-secondary rounded-circle" id="cal-prev-month" aria-label="Bulan sebelumnya">
-                                    <i class="bx bx-chevron-left"></i>
-                                </button>
-                                <h5 class="shift-cal-month-label mb-0" id="cal-month-label">—</h5>
-                                <button type="button" class="btn btn-icon btn-outline-secondary rounded-circle" id="cal-next-month" aria-label="Bulan berikutnya">
-                                    <i class="bx bx-chevron-right"></i>
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary shift-cal-today-btn" id="cal-today">
-                                    <i class="bx bx-target-lock me-1"></i> Hari Ini
-                                </button>
-                            </div>
-                        </div>
+<div class="tab-content p-0 bg-transparent">
+    <div class="tab-pane fade show active" id="tab-calendar" role="tabpanel">
+        <div class="card card-modern shift-cal-card">
+            <div class="card-body">
+                <div class="shift-cal-toolbar">
+                    <div class="shift-cal-toolbar-filter">
+                        <label class="form-label small text-muted mb-1" for="cal-filter-employee">Karyawan</label>
+                        <select id="cal-filter-employee" class="form-select" style="width: 100%">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                    <div class="shift-cal-monthnav">
+                        <button type="button" class="btn btn-icon btn-outline-secondary rounded-circle" id="cal-prev-month" aria-label="Bulan sebelumnya">
+                            <i class="bx bx-chevron-left"></i>
+                        </button>
+                        <h5 class="shift-cal-month-label mb-0" id="cal-month-label">—</h5>
+                        <button type="button" class="btn btn-icon btn-outline-secondary rounded-circle" id="cal-next-month" aria-label="Bulan berikutnya">
+                            <i class="bx bx-chevron-right"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary shift-cal-today-btn" id="cal-today">
+                            <i class="bx bx-target-lock me-1"></i> Hari Ini
+                        </button>
+                    </div>
+                </div>
 
-                        <div class="shift-cal-legend" id="cal-legend"></div>
+                <div class="shift-cal-legend" id="cal-legend"></div>
 
-                        <div class="shift-calendar" id="shift-calendar">
-                            <div class="shift-cal-weekdays" id="cal-weekdays"></div>
-                            <div class="shift-cal-grid" id="cal-grid">
-                                <div class="shift-cal-loading">
-                                    <span class="spinner-border spinner-border-sm me-2"></span> Memuat kalender…
-                                </div>
-                            </div>
+                <div class="shift-calendar" id="shift-calendar">
+                    <div class="shift-cal-weekdays" id="cal-weekdays"></div>
+                    <div class="shift-cal-grid" id="cal-grid">
+                        <div class="shift-cal-loading">
+                            <span class="spinner-border spinner-border-sm me-2"></span> Memuat kalender…
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="tab-pane fade" id="tab-list" role="tabpanel">
-                <x-datatable-card tableId="shift-overrides-table" title="Daftar Override">
-                    <x-slot:filters>
-                        <div class="filter-toolbar row g-2 align-items-end">
-                            <div class="col-md-4">
-                                <label class="form-label small text-muted mb-1">Karyawan</label>
-                                <select id="filter-employee" class="form-select form-select-sm" style="width: 100%">
-                                    <option value=""></option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                                <input type="date" id="filter-date-from" class="form-control form-control-sm" />
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label small text-muted mb-1">Sampai Tanggal</label>
-                                <input type="date" id="filter-date-to" class="form-control form-control-sm" />
-                            </div>
-                        </div>
-                    </x-slot:filters>
-                    <thead>
-                        <tr>
-                            <th>Karyawan</th>
-                            <th>Tanggal</th>
-                            <th>Shift</th>
-                            <th>Catatan</th>
-                            <th class="no-export">Aksi</th>
-                        </tr>
-                    </thead>
-                </x-datatable-card>
-            </div>
         </div>
-    </x-slot:stats>
+    </div>
 
-    <thead class="d-none"><tr><th></th></tr></thead>
-</x-index-page>
+    <div class="tab-pane fade" id="tab-list" role="tabpanel">
+        <x-datatable-card tableId="shift-overrides-table" title="Daftar Override">
+            <x-slot:filters>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label" for="filter-employee">Karyawan</label>
+                        <select id="filter-employee" class="form-select" style="width: 100%">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="filter-date-from">Dari Tanggal</label>
+                        <input type="date" id="filter-date-from" class="form-control" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="filter-date-to">Sampai Tanggal</label>
+                        <input type="date" id="filter-date-to" class="form-control" />
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="btn-apply-shift-filter" class="btn btn-primary">Terapkan</button>
+                        <button type="button" id="btn-reset-shift-filter" class="btn btn-outline-secondary">Reset</button>
+                    </div>
+                </div>
+            </x-slot:filters>
+            <thead>
+                <tr>
+                    <th>Karyawan</th>
+                    <th>Tanggal</th>
+                    <th>Shift</th>
+                    <th>Catatan</th>
+                    <th class="no-export">Aksi</th>
+                </tr>
+            </thead>
+        </x-datatable-card>
+    </div>
+</div>
 
 @include('shift-overrides.calendar-modals')
 @endsection
@@ -117,12 +118,11 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-<style>.datatable-card:has(#__shift-overrides-shell){display:none!important}</style>
 @endpush
 
 @push('datatable-scripts')
 <script type="module">
-    window.initServerDataTable('#shift-overrides-table', {
+    const table = window.initServerDataTable('#shift-overrides-table', {
         ajax: {
             url: '{{ route('shift-overrides.data') }}',
             data: (d) => {
@@ -140,10 +140,18 @@
             { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
         ],
     });
-    ['filter-date-from', 'filter-date-to'].forEach((id) => {
-        document.getElementById(id)?.addEventListener('change', () => {
-            window.jQuery('#shift-overrides-table').DataTable().ajax.reload();
-        });
+    document.getElementById('btn-apply-shift-filter')?.addEventListener('click', () => table.ajax.reload());
+    document.getElementById('btn-reset-shift-filter')?.addEventListener('click', () => {
+        const employee = document.getElementById('filter-employee');
+        const dateFrom = document.getElementById('filter-date-from');
+        const dateTo = document.getElementById('filter-date-to');
+        if (employee) employee.value = '';
+        if (dateFrom) dateFrom.value = '';
+        if (dateTo) dateTo.value = '';
+        if (employee && window.jQuery?.fn?.select2) {
+            window.jQuery(employee).val(null).trigger('change');
+        }
+        table.ajax.reload();
     });
 </script>
 @endpush

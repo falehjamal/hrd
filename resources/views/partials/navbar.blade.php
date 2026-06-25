@@ -5,17 +5,9 @@
         </a>
     </div>
 
-    @include('partials.navbar-search')
-
     <div class="navbar-nav-right d-flex align-items-center ms-auto" id="navbar-collapse">
         <ul class="navbar-nav flex-row align-items-center gap-1">
             @include('partials.theme-toggle')
-            <li class="nav-item">
-                <a class="nav-link navbar-icon-btn" href="javascript:void(0);" aria-label="Notifikasi">
-                    <i class="bx bx-bell"></i>
-                    <span class="navbar-notification-dot"></span>
-                </a>
-            </li>
             <li class="nav-item d-none d-sm-block">
                 <a class="nav-link navbar-icon-btn" href="{{ auth()->user()->isHrUser() ? route('settings.edit') : route('profile.edit') }}" aria-label="Pengaturan">
                     <i class="bx bx-cog"></i>

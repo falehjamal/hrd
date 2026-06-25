@@ -31,8 +31,11 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="mb-3 form-password-toggle">
-                            <label class="form-label" for="password">Password</label>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label mb-0" for="password">Password</label>
+                                <a href="{{ route('password.request') }}" class="text-muted small">Lupa password?</a>
+                            </div>
                             <div class="input-group input-group-merge">
                                 <input type="password" id="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" required />
                                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>

@@ -19,18 +19,18 @@
         </a>
     </x-slot:actions>
     <x-slot:filters>
-        <div class="filter-toolbar row g-2 align-items-end">
+        <div class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Dari Tanggal</label>
-                <input type="date" id="filter-date-from" class="form-control form-control-sm" />
+                <label class="form-label" for="filter-date-from">Dari Tanggal</label>
+                <input type="date" id="filter-date-from" class="form-control" />
             </div>
             <div class="col-md-3">
-                <label class="form-label small text-muted mb-1">Sampai Tanggal</label>
-                <input type="date" id="filter-date-to" class="form-control form-control-sm" />
+                <label class="form-label" for="filter-date-to">Sampai Tanggal</label>
+                <input type="date" id="filter-date-to" class="form-control" />
             </div>
             <div class="col-md-2">
-                <label class="form-label small text-muted mb-1">Status</label>
-                <select id="filter-status" class="form-select form-select-sm">
+                <label class="form-label" for="filter-status">Status</label>
+                <select id="filter-status" class="form-select">
                     <option value="">Semua</option>
                     @foreach (\App\Models\Attendance::statusLabels() as $value => $label)
                         <option value="{{ $value }}">{{ $label }}</option>
@@ -38,13 +38,17 @@
                 </select>
             </div>
             <div class="col-md-4">
-                <label class="form-label small text-muted mb-1">Karyawan</label>
-                <select id="filter-employee" class="form-select form-select-sm">
+                <label class="form-label" for="filter-employee">Karyawan</label>
+                <select id="filter-employee" class="form-select">
                     <option value="">Semua</option>
                     @foreach ($employees as $emp)
                         <option value="{{ $emp->id }}">{{ $emp->employee_code }} — {{ $emp->name }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div class="col-md-12 col-lg-auto">
+                <button type="button" id="btn-apply-filter" class="btn btn-primary">Terapkan</button>
+                <button type="button" id="btn-reset-filter" class="btn btn-outline-secondary">Reset</button>
             </div>
         </div>
     </x-slot:filters>
@@ -66,7 +70,7 @@
 
 @push('datatable-scripts')
 <script type="module">
-    window.initServerDataTable('#attendances-table', {
+    const table = window.initServerDataTable('#attendances-table', {
         ajax: {
             url: '{{ route('attendances.data') }}',
             data: (d) => {
@@ -89,10 +93,13 @@
             { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' },
         ],
     });
-    ['filter-date-from', 'filter-date-to', 'filter-status', 'filter-employee'].forEach((id) => {
-        document.getElementById(id)?.addEventListener('change', () => {
-            window.jQuery('#attendances-table').DataTable().ajax.reload();
-        });
+    document.getElementById('btn-apply-filter')?.addEventListener('click', () => table.ajax.reload());
+    document.getElementById('btn-reset-filter')?.addEventListener('click', () => {
+        document.getElementById('filter-date-from').value = '';
+        document.getElementById('filter-date-to').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-employee').value = '';
+        table.ajax.reload();
     });
 </script>
 @endpush

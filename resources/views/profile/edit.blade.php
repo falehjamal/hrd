@@ -19,7 +19,14 @@
     </div>
 @endif
 
-<x-page-header title="Profil Saya" subtitle="Kelola informasi akun dan keamanan login">
+<x-page-header
+    title="Profil Saya"
+    subtitle="Kelola informasi akun dan keamanan login"
+    :breadcrumbs="[
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Profil Saya', 'url' => route('profile.edit')],
+    ]"
+>
 </x-page-header>
 
 <div class="row g-4">
