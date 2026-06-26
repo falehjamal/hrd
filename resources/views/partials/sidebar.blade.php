@@ -155,7 +155,7 @@
 
         <li class="menu-item {{ request()->routeIs('leave-requests.*') ? 'active' : '' }}">
             <a href="{{ route('leave-requests.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-plane-alt"></i>
+                <i class="menu-icon tf-icons bx bx-calendar-minus"></i>
                 <div>Cuti</div>
             </a>
         </li>
