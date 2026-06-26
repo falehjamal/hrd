@@ -66,8 +66,13 @@
         @endif
     </div>
     <div class="col-12">
-        <label class="form-label" for="notes">Catatan</label>
-        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2">{{ old('notes', $attendance->notes ?? '') }}</textarea>
+        <label class="form-label" for="activity_notes">Catatan Aktivitas</label>
+        <textarea class="form-control @error('activity_notes') is-invalid @enderror" id="activity_notes" name="activity_notes" rows="3" placeholder="Pekerjaan yang dilakukan karyawan hari ini">{{ old('activity_notes', $attendance->activity_notes ?? '') }}</textarea>
+        @error('activity_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="notes">Catatan HR</label>
+        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2" placeholder="Catatan internal / koreksi">{{ old('notes', $attendance->notes ?? '') }}</textarea>
         @error('notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>

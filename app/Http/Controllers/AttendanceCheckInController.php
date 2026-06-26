@@ -45,7 +45,8 @@ class AttendanceCheckInController extends Controller
                     (float) $request->latitude,
                     (float) $request->longitude,
                     $request->file('photo'),
-                    (int) $request->user()->id
+                    (int) $request->user()->id,
+                    $request->input('activity_notes')
                 );
                 $message = 'Absen pulang berhasil dicatat.';
             } else {

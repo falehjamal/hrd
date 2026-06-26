@@ -38,6 +38,7 @@ class AttendanceService
             'source' => Attendance::SOURCE_MANUAL,
             'status' => $status,
             'notes' => $data['notes'] ?? null,
+            'activity_notes' => $data['activity_notes'] ?? null,
             'created_by' => $userId,
             'updated_by' => $userId,
         ]);
@@ -80,6 +81,9 @@ class AttendanceService
             'check_out_at' => $checkOutAt,
             'status' => $status,
             'notes' => $data['notes'] ?? $attendance->notes,
+            'activity_notes' => array_key_exists('activity_notes', $data)
+                ? $data['activity_notes']
+                : $attendance->activity_notes,
             'updated_by' => $userId,
         ]);
 
@@ -166,7 +170,7 @@ class AttendanceService
         return $attendance->fresh();
     }
 
-    public function checkOutGps(Employee $employee, float $latitude, float $longitude, ?UploadedFile $photo, int $userId): Attendance
+    public function checkOutGps(Employee $employee, float $latitude, float $longitude, ?UploadedFile $photo, int $userId, ?string $activityNotes = null): Attendance
     {
         $this->geofence->validateWithinGeofence($latitude, $longitude, $employee);
 
@@ -187,6 +191,7 @@ class AttendanceService
             'check_out_at' => now(),
             'check_out_latitude' => $latitude,
             'check_out_longitude' => $longitude,
+            'activity_notes' => $activityNotes,
             'updated_by' => $userId,
         ]);
 

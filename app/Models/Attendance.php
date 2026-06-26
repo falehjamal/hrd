@@ -38,6 +38,7 @@ class Attendance extends Model
         'status',
         'leave_request_id',
         'notes',
+        'activity_notes',
         'created_by',
         'updated_by',
     ];

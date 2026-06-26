@@ -68,6 +68,20 @@
 
                     <p id="gps-status" class="small text-muted mb-3">Meminta izin lokasi...</p>
 
+                    @if ($todayAttendance?->check_in_at && ! $todayAttendance?->check_out_at)
+                        <div class="mb-3">
+                            <label class="form-label" for="activity_notes">Catatan Aktivitas (opsional)</label>
+                            <textarea
+                                class="form-control @error('activity_notes') is-invalid @enderror"
+                                id="activity_notes"
+                                name="activity_notes"
+                                rows="3"
+                                placeholder="Contoh: Menyelesaikan laporan bulanan, rapat tim, follow-up klien..."
+                            >{{ old('activity_notes') }}</textarea>
+                            @error('activity_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    @endif
+
                     <button type="submit" class="btn btn-primary btn-lg w-100" id="submit-btn" disabled>
                         @if ($todayAttendance?->check_in_at && !$todayAttendance?->check_out_at)
                             <i class="bx bx-log-out me-1"></i> Absen Pulang
@@ -77,7 +91,15 @@
                     </button>
                 </form>
             @elseif ($todayAttendance?->check_out_at)
-                <p class="text-success text-center mb-0"><i class="bx bx-check-circle"></i> Absensi hari ini sudah lengkap.</p>
+                <p class="text-success text-center mb-3"><i class="bx bx-check-circle"></i> Absensi hari ini sudah lengkap.</p>
+                @if ($todayAttendance->activity_notes)
+                    <div class="card card-modern">
+                        <div class="card-body">
+                            <h6 class="card-title mb-2"><i class="bx bx-notepad me-1"></i> Catatan Aktivitas</h6>
+                            <p class="mb-0 text-muted">{{ $todayAttendance->activity_notes }}</p>
+                        </div>
+                    </div>
+                @endif
             @endif
         </div>
     </div>

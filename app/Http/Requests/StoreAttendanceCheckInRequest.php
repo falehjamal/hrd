@@ -18,6 +18,7 @@ class StoreAttendanceCheckInRequest extends FormRequest
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'photo' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'action' => ['required', 'in:check_in,check_out'],
+            'activity_notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
 }

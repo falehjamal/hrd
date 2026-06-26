@@ -59,6 +59,7 @@
             <th>Shift</th>
             <th>Masuk</th>
             <th>Pulang</th>
+            <th>Aktivitas</th>
             <th>Sumber</th>
             <th>Status</th>
             <th>Foto</th>
@@ -87,6 +88,7 @@
             { data: 'shift_display', name: 'shift_id', searchable: false },
             { data: 'check_in_display', name: 'check_in_at', searchable: false },
             { data: 'check_out_display', name: 'check_out_at', searchable: false },
+            { data: 'activity_notes_display', name: 'activity_notes' },
             { data: 'source_badge', name: 'source', searchable: false },
             { data: 'status_badge', name: 'status', searchable: false },
             { data: 'photo_links', name: 'check_in_photo_path', orderable: false, searchable: false },

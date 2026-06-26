@@ -5,6 +5,7 @@ namespace App\DataTables;
 use App\Models\Attendance;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class AttendanceDataTable
@@ -22,6 +23,16 @@ class AttendanceDataTable
             ->addColumn('date_display', fn (Attendance $row) => $row->date->format('d/m/Y'))
             ->addColumn('check_in_display', fn (Attendance $row) => $row->check_in_at?->format('H:i') ?? '-')
             ->addColumn('check_out_display', fn (Attendance $row) => $row->check_out_at?->format('H:i') ?? '-')
+            ->addColumn('activity_notes_display', function (Attendance $row) {
+                if (! $row->activity_notes) {
+                    return '-';
+                }
+
+                $text = e($row->activity_notes);
+                $short = e(Str::limit($row->activity_notes, 80));
+
+                return '<span title="'.$text.'">'.$short.'</span>';
+            })
             ->addColumn('shift_display', function (Attendance $row) {
                 if ($row->shift) {
                     return e($row->shift->code);
@@ -66,7 +77,10 @@ class AttendanceDataTable
                         ->orWhere('employee_code', 'like', "%{$keyword}%");
                 });
             })
-            ->rawColumns(['employee_display', 'source_badge', 'status_badge', 'photo_links', 'action'])
+            ->filterColumn('activity_notes_display', function ($query, $keyword) {
+                $query->where('activity_notes', 'like', "%{$keyword}%");
+            })
+            ->rawColumns(['employee_display', 'source_badge', 'status_badge', 'photo_links', 'activity_notes_display', 'action'])
             ->toJson();
     }
 

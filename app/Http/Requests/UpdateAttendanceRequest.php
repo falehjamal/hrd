@@ -22,6 +22,7 @@ class UpdateAttendanceRequest extends FormRequest
             'check_out_time' => ['nullable', 'date_format:H:i'],
             'status' => ['required', Rule::in(array_keys(Attendance::statusLabels()))],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'activity_notes' => ['nullable', 'string', 'max:2000'],
             'check_in_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
             'check_out_photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
         ];
