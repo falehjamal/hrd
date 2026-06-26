@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/datatables.js',
                 'resources/js/attendance-camera.js',
                 'resources/js/attendance-check-in.js',
+                'resources/js/work-location-gps.js',
                 'resources/js/shift-calendar.js',
                 'resources/js/ui-preferences.js',
                 'resources/js/wa-scan.js',

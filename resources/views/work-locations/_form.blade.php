@@ -19,6 +19,12 @@
         <div class="form-text">Kosongkan untuk lokasi global (fallback semua karyawan tanpa cabang).</div>
     </div>
     @endif
+    <div class="col-12">
+        <button type="button" class="btn btn-outline-primary btn-sm" id="btn-use-current-gps">
+            <i class="bx bx-current-location me-1"></i> Gunakan Lokasi GPS Saat Ini
+        </button>
+        <span id="gps-pick-status" class="small text-muted ms-2"></span>
+    </div>
     <div class="col-md-6">
         <label class="form-label" for="latitude">Latitude</label>
         <input type="number" step="any" class="form-control @error('latitude') is-invalid @enderror" id="latitude" name="latitude" value="{{ old('latitude', $workLocation->latitude ?? '') }}" required />
@@ -45,3 +51,7 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    @vite(['resources/js/work-location-gps.js'])
+@endpush
