@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -10,6 +11,32 @@ use Illuminate\Validation\Validator;
 
 class UpdateEmployeeRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return $this->input('_return_to') === 'show' ? 'employees.show' : 'employees.index';
+    }
+
+    protected function crudModalRedirectParameters(): array
+    {
+        if ($this->input('_return_to') === 'show') {
+            return ['employee' => $this->route('employee')];
+        }
+
+        return [];
+    }
+
+    protected function crudModalSessionKey(): string
+    {
+        return $this->input('_return_to') === 'show' ? 'open_employee_modal' : 'open_crud_modal';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('employee')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return $this->user()->isHrUser();

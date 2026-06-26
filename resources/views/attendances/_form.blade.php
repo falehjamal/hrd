@@ -8,7 +8,7 @@
         <select class="form-select @error('employee_id') is-invalid @enderror" id="employee_id" name="employee_id" required>
             <option value="">-- Pilih Karyawan --</option>
             @foreach ($employees as $emp)
-                <option value="{{ $emp->id }}" @selected(old('employee_id', $attendance->employee_id ?? '') == $emp->id)>
+                <option value="{{ $emp->id }}" @selected(old('employee_id', isset($attendance) ? $attendance->employee_id : '') == $emp->id)>
                     {{ $emp->employee_code }} — {{ $emp->name }}
                 </option>
             @endforeach
@@ -38,7 +38,7 @@
         <label class="form-label" for="status">Status</label>
         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
             @foreach ($statuses as $value => $label)
-                <option value="{{ $value }}" @selected(old('status', $attendance->status ?? \App\Models\Attendance::STATUS_PRESENT) === $value)>{{ $label }}</option>
+                <option value="{{ $value }}" @selected(old('status', isset($attendance) ? $attendance->status : \App\Models\Attendance::STATUS_PRESENT) === $value)>{{ $label }}</option>
             @endforeach
         </select>
         @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -67,12 +67,12 @@
     </div>
     <div class="col-12">
         <label class="form-label" for="activity_notes">Catatan Aktivitas</label>
-        <textarea class="form-control @error('activity_notes') is-invalid @enderror" id="activity_notes" name="activity_notes" rows="3" placeholder="Pekerjaan yang dilakukan karyawan hari ini">{{ old('activity_notes', $attendance->activity_notes ?? '') }}</textarea>
+        <textarea class="form-control @error('activity_notes') is-invalid @enderror" id="activity_notes" name="activity_notes" rows="3" placeholder="Pekerjaan yang dilakukan karyawan hari ini">{{ old('activity_notes', isset($attendance) ? $attendance->activity_notes : '') }}</textarea>
         @error('activity_notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
     <div class="col-12">
         <label class="form-label" for="notes">Catatan HR</label>
-        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2" placeholder="Catatan internal / koreksi">{{ old('notes', $attendance->notes ?? '') }}</textarea>
+        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="2" placeholder="Catatan internal / koreksi">{{ old('notes', isset($attendance) ? $attendance->notes : '') }}</textarea>
         @error('notes')<div class="invalid-feedback">{{ $message }}</div>@enderror
     </div>
 </div>

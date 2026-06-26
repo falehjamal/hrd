@@ -2,10 +2,23 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateWorkLocationRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'work-locations.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('work_location')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return true;

@@ -3,6 +3,7 @@
 @section('title', 'Proses Gaji')
 
 @section('content')
+@include('partials.crud-open-modal')
 @include('partials.delete-modal')
 
 <x-index-page
@@ -16,9 +17,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('payroll-periods.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="payrollPeriodFormModal">
             <i class="bx bx-plus me-1"></i> Buat Periode
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -31,6 +32,18 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="payrollPeriodFormModal"
+    form-id="payroll-period-form"
+    route-prefix="payroll-periods"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Buat Periode Gaji"
+    subtitle-create="Generate draft payroll untuk bulan tertentu"
+    submit-create="Buat & Generate"
+>
+    @include('payroll-periods._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

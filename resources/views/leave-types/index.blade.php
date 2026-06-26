@@ -3,6 +3,7 @@
 @section('title', 'Jenis Cuti')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="leave-types-table"
     table-title="Daftar Jenis Cuti"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('leave-types.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="leaveTypeFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Jenis Cuti
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -29,6 +30,20 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="leaveTypeFormModal"
+    form-id="leave-type-form"
+    route-prefix="leave-types"
+    resource-key="leave_type"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Jenis Cuti"
+    title-edit="Edit Jenis Cuti"
+    subtitle-create="Lengkapi informasi jenis cuti karyawan."
+    submit-create="Simpan Jenis Cuti"
+>
+    @include('leave-types._form', ['leaveType' => null])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

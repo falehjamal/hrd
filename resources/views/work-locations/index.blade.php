@@ -3,6 +3,7 @@
 @section('title', 'Lokasi Kerja')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="work-locations-table"
     table-title="Daftar Lokasi Kerja"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('work-locations.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="workLocationFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Lokasi
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -30,6 +31,20 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="workLocationFormModal"
+    form-id="work-location-form"
+    route-prefix="work-locations"
+    resource-key="work_location"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Lokasi Kerja"
+    title-edit="Edit Lokasi Kerja"
+    subtitle-create="Lengkapi koordinat GPS dan radius geofence."
+    submit-create="Simpan Lokasi"
+>
+    @include('work-locations._form', ['workLocation' => null, 'branches' => $branches])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')
@@ -48,4 +63,5 @@
         ],
     });
 </script>
+@vite(['resources/js/work-location-gps.js'])
 @endpush

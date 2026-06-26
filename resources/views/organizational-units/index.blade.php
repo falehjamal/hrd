@@ -3,6 +3,7 @@
 @section('title', 'Unit Organisasi')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="organizational-units-table"
     table-title="Daftar Unit Organisasi"
@@ -17,9 +18,9 @@
         <a href="{{ route('organization-structure.index') }}" class="btn btn-outline-primary">
             <i class="bx bx-sitemap me-1"></i> Struktur
         </a>
-        <a href="{{ route('organizational-units.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="organizationalUnitFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Unit
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:stats>
         <div class="col-sm-6 col-xl-3">
@@ -62,6 +63,20 @@
         </div>
     </x-slot:footer>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="organizationalUnitFormModal"
+    form-id="organizational-unit-form"
+    route-prefix="organizational-units"
+    resource-key="organizational_unit"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Unit Organisasi"
+    title-edit="Edit Unit Organisasi"
+    subtitle-create="Lengkapi informasi unit organisasi."
+    submit-create="Simpan Unit"
+>
+    @include('organizational-units._form', ['unit' => null, 'parents' => $parents])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

@@ -2,10 +2,23 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreLeaveTypeRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'leave-types.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return 'create';
+    }
+
     public function authorize(): bool
     {
         return true;

@@ -2,12 +2,20 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\RequiredIf;
 
 class StoreShiftOverrideRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shift-overrides.index';
+    }
+
     public function authorize(): bool
     {
         return true;

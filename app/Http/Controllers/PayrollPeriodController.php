@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\PayrollEntryDataTable;
 use App\DataTables\PayrollPeriodDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StorePayrollPeriodRequest;
 use App\Models\PayrollEntry;
 use App\Models\PayrollPeriod;
@@ -14,13 +15,28 @@ use Illuminate\View\View;
 
 class PayrollPeriodController extends Controller
 {
+    use HandlesCrudModal;
+
     public function __construct(
         protected PayrollPeriodService $payrollPeriodService
     ) {}
 
+    protected function crudModalIndexRoute(): string
+    {
+        return 'payroll-periods.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return '';
+    }
+
     public function index(): View
     {
-        return view('payroll-periods.index');
+        $currentYear = (int) date('Y');
+        $years = range($currentYear - 2, $currentYear + 1);
+
+        return view('payroll-periods.index', compact('years'));
     }
 
     public function data(): JsonResponse
@@ -28,12 +44,9 @@ class PayrollPeriodController extends Controller
         return (new PayrollPeriodDataTable)->json();
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        $currentYear = (int) date('Y');
-        $years = range($currentYear - 2, $currentYear + 1);
-
-        return view('payroll-periods.create', compact('years'));
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StorePayrollPeriodRequest $request): RedirectResponse
@@ -46,7 +59,10 @@ class PayrollPeriodController extends Controller
                 $request->notes
             );
         } catch (\InvalidArgumentException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+            return redirect()->route('payroll-periods.index')
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->with('open_crud_modal', 'create');
         }
 
         return redirect()

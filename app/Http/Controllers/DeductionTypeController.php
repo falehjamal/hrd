@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\DeductionTypeDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreDeductionTypeRequest;
 use App\Http\Requests\UpdateDeductionTypeRequest;
 use App\Models\DeductionType;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class DeductionTypeController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'deduction-types.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'deduction_type';
+    }
+
     public function index(): View
     {
         return view('deduction-types.index');
@@ -22,9 +35,14 @@ class DeductionTypeController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(DeductionType $deductionType): JsonResponse
     {
-        return view('deduction-types.create');
+        return $this->crudModalJson($deductionType);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreDeductionTypeRequest $request): RedirectResponse
@@ -37,9 +55,9 @@ class DeductionTypeController extends Controller
         return redirect()->route('deduction-types.index')->with('success', 'Jenis pemotongan berhasil ditambahkan.');
     }
 
-    public function edit(DeductionType $deductionType): View
+    public function edit(DeductionType $deductionType): RedirectResponse
     {
-        return view('deduction-types.edit', compact('deductionType'));
+        return $this->crudModalEditRedirect($deductionType);
     }
 
     public function update(UpdateDeductionTypeRequest $request, DeductionType $deductionType): RedirectResponse

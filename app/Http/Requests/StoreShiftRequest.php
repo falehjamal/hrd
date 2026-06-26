@@ -2,11 +2,23 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreShiftRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shifts.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return 'create';
+    }
+
     public function authorize(): bool
     {
         return true;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\LeaveTypeDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreLeaveTypeRequest;
 use App\Http\Requests\UpdateLeaveTypeRequest;
 use App\Models\LeaveType;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class LeaveTypeController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'leave-types.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'leave_type';
+    }
+
     public function index(): View
     {
         return view('leave-types.index');
@@ -22,9 +35,14 @@ class LeaveTypeController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(LeaveType $leaveType): JsonResponse
     {
-        return view('leave-types.create');
+        return $this->crudModalJson($leaveType);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreLeaveTypeRequest $request): RedirectResponse
@@ -38,9 +56,9 @@ class LeaveTypeController extends Controller
         return redirect()->route('leave-types.index')->with('success', 'Jenis cuti berhasil ditambahkan.');
     }
 
-    public function edit(LeaveType $leaveType): View
+    public function edit(LeaveType $leaveType): RedirectResponse
     {
-        return view('leave-types.edit', ['leaveType' => $leaveType]);
+        return $this->crudModalEditRedirect($leaveType);
     }
 
     public function update(UpdateLeaveTypeRequest $request, LeaveType $leaveType): RedirectResponse

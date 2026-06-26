@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use App\Models\OrganizationalUnit;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,18 @@ use Illuminate\Validation\Validator;
 
 class UpdateOrganizationalUnitRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'organizational-units.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('organizational_unit')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return $this->user()->isHrUser();

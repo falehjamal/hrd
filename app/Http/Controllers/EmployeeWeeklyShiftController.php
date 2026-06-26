@@ -4,20 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateEmployeeWeeklyShiftRequest;
 use App\Models\Employee;
-use App\Models\Shift;
 use App\Services\EmployeeWeeklyShiftService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 class EmployeeWeeklyShiftController extends Controller
 {
-    public function edit(Employee $employee): View
+    public function edit(Employee $employee): RedirectResponse
     {
-        $employee->load('shift');
-        $shifts = Shift::query()->active()->orderBy('name')->get();
-        $weeklyShifts = app(EmployeeWeeklyShiftService::class)->shiftsIndexedByDay($employee);
-
-        return view('employees.weekly-shifts.edit', compact('employee', 'shifts', 'weeklyShifts'));
+        return redirect()
+            ->route('employees.show', $employee)
+            ->with('open_weekly_shift_modal', '1');
     }
 
     public function update(UpdateEmployeeWeeklyShiftRequest $request, Employee $employee): RedirectResponse

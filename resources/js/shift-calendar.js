@@ -8,6 +8,39 @@
     }
 
     const cfg = window.shiftCalendarConfig;
+    const overrideModalId = cfg.overrideModalId || 'shiftOverrideFormModal';
+    const overrideModal = () => document.getElementById(overrideModalId);
+
+    const openOverrideCreate = (defaults = {}) => {
+        const modalEl = overrideModal();
+        modalEl?._crudOpenCreate?.();
+        const form = modalEl?.querySelector('[data-crud-form]');
+        if (!form) {
+            return;
+        }
+        if (defaults.employee_id) {
+            const employeeField = form.querySelector('[name="employee_id"]');
+            if (employeeField) {
+                employeeField.value = String(defaults.employee_id);
+            }
+        }
+        if (defaults.date) {
+            const dateField = form.querySelector('[name="date"]');
+            if (dateField) {
+                dateField.value = defaults.date;
+            }
+        }
+        form.dispatchEvent(new CustomEvent('crud-form:filled', { detail: { record: defaults } }));
+    };
+
+    const overrideEditButton = (id, label = 'Edit') =>
+        `<button type="button" class="btn btn-xs btn-sm btn-outline-primary" data-crud-edit data-crud-target="${overrideModalId}" data-crud-edit-url="${cfg.showOverrideUrl}/${id}">${label}</button>`;
+
+    const overrideCreateButton = (date, employeeId = '') =>
+        `<button type="button" class="btn btn-primary" data-shift-override-create data-date="${date}"${employeeId ? ` data-employee-id="${employeeId}"` : ''}>
+            <i class="bx bx-plus me-1"></i> Tambah Override
+        </button>`;
+
     const now = new Date();
     const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -158,9 +191,7 @@
         els.dayModalBody.innerHTML = html;
         els.dayModalFooter.innerHTML = `
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
-            <a href="${cfg.createOverrideUrl}?date=${data.date}" class="btn btn-primary">
-                <i class="bx bx-plus me-1"></i> Tambah Override
-            </a>`;
+            ${overrideCreateButton(data.date)}`;
     };
 
     const renderEmployeeList = (title, items, icon, colorClass) => {
@@ -174,7 +205,7 @@
                         <span class="fw-medium">${escapeHtml(item.employee_code)}</span> — ${escapeHtml(item.employee_name)}
                         ${item.notes ? `<br><small class="text-muted">${escapeHtml(item.notes)}</small>` : ''}
                     </div>
-                    ${item.override_id ? `<a href="${cfg.editOverrideUrl}/${item.override_id}/edit" class="btn btn-xs btn-sm btn-outline-primary">Edit</a>` : ''}
+                    ${item.override_id ? overrideEditButton(item.override_id) : ''}
                 </li>`
             )
             .join('');
@@ -195,7 +226,7 @@
                         <br><span class="badge bg-label-primary">${escapeHtml(item.shift)}</span>
                         ${item.notes ? `<br><small class="text-muted">${escapeHtml(item.notes)}</small>` : ''}
                     </div>
-                    <a href="${cfg.editOverrideUrl}/${item.override_id}/edit" class="btn btn-xs btn-sm btn-outline-primary">Edit</a>
+                    <div>${overrideEditButton(item.override_id)}</div>
                 </li>`
             )
             .join('');
@@ -266,10 +297,10 @@
         let footer = '<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>';
 
         if (data.override?.id) {
-            footer += `<a href="${cfg.editOverrideUrl}/${data.override.id}/edit" class="btn btn-outline-primary">Edit Override</a>`;
+            footer += overrideEditButton(data.override.id, 'Edit Override');
         }
 
-        footer += `<a href="${cfg.createOverrideUrl}?employee_id=${data.employee.id}&date=${data.date}" class="btn btn-primary">Tambah Override</a>`;
+        footer += overrideCreateButton(data.date, data.employee?.id || '');
 
         if (data.attendance?.id) {
             footer += `<a href="${cfg.attendanceUrl}/${data.attendance.id}/edit" class="btn btn-outline-info">Lihat Absensi</a>`;
@@ -510,4 +541,18 @@
 
     initSelect2();
     loadCalendar();
+
+    document.body.addEventListener('click', (event) => {
+        const createBtn = event.target.closest('[data-shift-override-create]');
+        if (!createBtn) {
+            return;
+        }
+
+        event.preventDefault();
+        window.bootstrap.Modal.getInstance(els.dayModal)?.hide();
+        openOverrideCreate({
+            employee_id: createBtn.dataset.employeeId || '',
+            date: createBtn.dataset.date || '',
+        });
+    });
 })();

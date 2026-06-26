@@ -3,6 +3,7 @@
 @section('title', 'Absensi')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="attendances-table"
     table-title="Daftar Absensi"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('attendances.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="attendanceFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Absensi
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
@@ -67,6 +68,23 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="attendanceFormModal"
+    form-id="attendance-form"
+    route-prefix="attendances"
+    resource-key="attendance"
+    :open-modal="$openCrudModal ?? null"
+    size="lg"
+    enctype="multipart/form-data"
+    title-create="Tambah Absensi"
+    title-edit="Edit Absensi"
+    subtitle-create="Input absensi manual dengan foto masuk."
+    submit-create="Simpan Absensi"
+    submit-edit="Simpan Perubahan"
+>
+    @include('attendances._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

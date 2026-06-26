@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ShiftOverrideDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreShiftOverrideRequest;
 use App\Http\Requests\UpdateShiftOverrideRequest;
 use App\Models\Employee;
@@ -16,11 +17,24 @@ use Illuminate\View\View;
 
 class ShiftOverrideController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shift-overrides.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'shift_override';
+    }
+
     public function index(): View
     {
-        $employees = Employee::query()->active()->orderBy('name')->get(['id', 'employee_code', 'name']);
-
-        return view('shift-overrides.index', compact('employees'));
+        return view('shift-overrides.index', [
+            'employees' => Employee::query()->active()->orderBy('name')->get(),
+            'shifts' => Shift::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     public function calendar(Request $request, ShiftCalendarService $calendar): JsonResponse
@@ -56,16 +70,19 @@ class ShiftOverrideController extends Controller
         return (new ShiftOverrideDataTable)->json();
     }
 
-    public function create(Request $request): View
+    public function show(EmployeeShiftOverride $shiftOverride): JsonResponse
     {
-        $employees = Employee::query()->active()->orderBy('name')->get();
-        $shifts = Shift::query()->active()->orderBy('name')->get();
-        $override = new EmployeeShiftOverride([
-            'employee_id' => $request->query('employee_id'),
-            'date' => $request->query('date'),
-        ]);
+        $data = $shiftOverride->toArray();
+        $data['is_day_off'] = $shiftOverride->shift_id === null;
 
-        return view('shift-overrides.create', compact('employees', 'shifts', 'override'));
+        return response()->json([
+            'shift_override' => $data,
+        ]);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreShiftOverrideRequest $request): RedirectResponse
@@ -75,17 +92,9 @@ class ShiftOverrideController extends Controller
         return redirect()->route('shift-overrides.index')->with('success', 'Override jadwal berhasil ditambahkan.');
     }
 
-    public function edit(EmployeeShiftOverride $shiftOverride): View
+    public function edit(EmployeeShiftOverride $shiftOverride): RedirectResponse
     {
-        $shiftOverride->load('employee');
-        $employees = Employee::query()->active()->orderBy('name')->get();
-        $shifts = Shift::query()->active()->orderBy('name')->get();
-
-        return view('shift-overrides.edit', [
-            'override' => $shiftOverride,
-            'employees' => $employees,
-            'shifts' => $shifts,
-        ]);
+        return $this->crudModalEditRedirect($shiftOverride);
     }
 
     public function update(UpdateShiftOverrideRequest $request, EmployeeShiftOverride $shiftOverride): RedirectResponse

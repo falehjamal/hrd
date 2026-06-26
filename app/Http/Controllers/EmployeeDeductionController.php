@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\DataTables\EmployeeDeductionDataTable;
 use App\Http\Requests\StoreEmployeeDeductionRequest;
 use App\Http\Requests\UpdateEmployeeDeductionRequest;
-use App\Models\DeductionType;
 use App\Models\Employee;
 use App\Models\EmployeeDeduction;
 use Illuminate\Http\JsonResponse;
@@ -29,11 +28,11 @@ class EmployeeDeductionController extends Controller
         return (new EmployeeDeductionDataTable($employee->id))->json();
     }
 
-    public function create(Employee $employee): View
+    public function create(Employee $employee): RedirectResponse
     {
-        $deductionTypes = DeductionType::query()->active()->orderBy('code')->get();
-
-        return view('employees.deductions.create', compact('employee', 'deductionTypes'));
+        return redirect()
+            ->route('employees.show', $employee)
+            ->with('open_deduction_modal', 'create');
     }
 
     public function store(StoreEmployeeDeductionRequest $request, Employee $employee): RedirectResponse
@@ -55,16 +54,25 @@ class EmployeeDeductionController extends Controller
             ->with('success', 'Pemotongan berhasil ditambahkan.');
     }
 
-    public function edit(EmployeeDeduction $deduction): View
+    public function show(EmployeeDeduction $deduction): JsonResponse
     {
-        $deduction->load('employee');
-        $deductionTypes = DeductionType::query()->active()->orderBy('code')->get();
-
-        return view('employees.deductions.edit', [
-            'employee' => $deduction->employee,
-            'deduction' => $deduction,
-            'deductionTypes' => $deductionTypes,
+        return response()->json([
+            'deduction' => [
+                'id' => $deduction->id,
+                'deduction_type_id' => $deduction->deduction_type_id,
+                'amount' => $deduction->amount,
+                'effective_date' => $deduction->effective_date->format('Y-m-d'),
+                'notes' => $deduction->notes,
+                'is_active' => $deduction->is_active ? 1 : 0,
+            ],
         ]);
+    }
+
+    public function edit(EmployeeDeduction $deduction): RedirectResponse
+    {
+        return redirect()
+            ->route('employees.show', $deduction->employee_id)
+            ->with('open_deduction_modal', $deduction->id);
     }
 
     public function update(UpdateEmployeeDeductionRequest $request, EmployeeDeduction $deduction): RedirectResponse

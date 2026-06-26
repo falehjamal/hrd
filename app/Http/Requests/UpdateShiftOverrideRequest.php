@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use App\Models\EmployeeShiftOverride;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,18 @@ use Illuminate\Validation\Rules\RequiredIf;
 
 class UpdateShiftOverrideRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shift-overrides.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('shift_override')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return true;

@@ -3,6 +3,7 @@
 @section('title', 'Piutang Karyawan')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="employee-loans-table"
     table-title="Daftar Piutang"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('employee-loans.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="employeeLoanFormModal">
             <i class="bx bx-plus me-1"></i> Catat Piutang
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
@@ -47,6 +48,18 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="employeeLoanFormModal"
+    form-id="employee-loan-form"
+    route-prefix="employee-loans"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Catat Piutang"
+    subtitle-create="Form piutang / kasbon"
+    submit-create="Simpan"
+>
+    @include('employee-loans._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')
@@ -71,5 +84,37 @@
         ],
     });
     document.getElementById('btn-apply-loan-filter')?.addEventListener('click', () => table.ajax.reload());
+
+    const principalField = document.getElementById('principal_amount');
+    const installmentField = document.getElementById('installment_amount');
+    const previewText = document.getElementById('preview-text');
+
+    async function updatePreview() {
+        const principal = principalField?.value;
+        const installment = installmentField?.value;
+
+        if (!principal || !installment) {
+            previewText.textContent = 'Isi nominal pinjaman dan cicilan';
+            return;
+        }
+
+        const params = new URLSearchParams({ principal_amount: principal, installment_amount: installment });
+        const response = await fetch(`{{ route('employee-loans.preview') }}?${params.toString()}`);
+        const data = await response.json();
+
+        previewText.textContent = `${data.total_installments} cicilan (cicilan terakhir: Rp ${Number(data.last_installment_amount).toLocaleString('id-ID')})`;
+    }
+
+    [principalField, installmentField].forEach((el) => el?.addEventListener('input', updatePreview));
+    document.getElementById('employeeLoanFormModal')?.addEventListener('shown.bs.modal', () => {
+        const employeeId = new URLSearchParams(window.location.search).get('employee_id');
+        if (employeeId) {
+            document.getElementById('employee_id').value = employeeId;
+        }
+        updatePreview();
+    });
+    document.getElementById('employee-loan-form')?.addEventListener('crud-form:reset', () => {
+        previewText.textContent = 'Isi nominal pinjaman dan cicilan';
+    });
 </script>
 @endpush

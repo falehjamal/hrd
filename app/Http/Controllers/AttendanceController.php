@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\AttendanceDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
 use App\Models\Attendance;
@@ -18,15 +19,31 @@ use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
+    use HandlesCrudModal;
+
     public function __construct(
         protected AttendanceService $attendanceService
     ) {}
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'attendances.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'attendance';
+    }
 
     public function index(): View
     {
         $employees = Employee::query()->active()->orderBy('name')->get(['id', 'employee_code', 'name']);
 
-        return view('attendances.index', compact('employees'));
+        return view('attendances.index', [
+            'employees' => $employees,
+            'statuses' => Attendance::statusLabels(),
+            'attendance' => null,
+        ]);
     }
 
     public function data(AttendanceDataTable $dataTable): JsonResponse
@@ -49,12 +66,9 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        $employees = Employee::query()->active()->orderBy('name')->get();
-        $statuses = Attendance::statusLabels();
-
-        return view('attendances.create', compact('employees', 'statuses'));
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreAttendanceRequest $request): RedirectResponse
@@ -67,19 +81,36 @@ class AttendanceController extends Controller
                 (int) $request->user()->id
             );
         } catch (\InvalidArgumentException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+            return redirect()->route('attendances.index')
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->with('open_crud_modal', 'create');
         }
 
         return redirect()->route('attendances.index')->with('success', 'Absensi berhasil ditambahkan.');
     }
 
-    public function edit(Attendance $attendance): View
+    public function show(Attendance $attendance): JsonResponse
     {
         $attendance->load('employee');
-        $employees = Employee::query()->active()->orderBy('name')->get();
-        $statuses = Attendance::statusLabels();
 
-        return view('attendances.edit', compact('attendance', 'employees', 'statuses'));
+        return response()->json([
+            'attendance' => [
+                'id' => $attendance->id,
+                'employee_id' => $attendance->employee_id,
+                'date' => $attendance->date->format('Y-m-d'),
+                'check_in_time' => $attendance->check_in_at?->format('H:i'),
+                'check_out_time' => $attendance->check_out_at?->format('H:i'),
+                'status' => $attendance->status,
+                'notes' => $attendance->notes,
+                'activity_notes' => $attendance->activity_notes,
+            ],
+        ]);
+    }
+
+    public function edit(Attendance $attendance): RedirectResponse
+    {
+        return $this->crudModalEditRedirect($attendance);
     }
 
     public function update(UpdateAttendanceRequest $request, Attendance $attendance): RedirectResponse
@@ -93,7 +124,10 @@ class AttendanceController extends Controller
                 (int) $request->user()->id
             );
         } catch (\InvalidArgumentException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+            return redirect()->route('attendances.index')
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->with('open_crud_modal', $attendance->id);
         }
 
         return redirect()->route('attendances.index')->with('success', 'Absensi berhasil diperbarui.');

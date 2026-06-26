@@ -2,11 +2,24 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateLeaveTypeRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'leave-types.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('leave_type')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return true;

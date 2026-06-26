@@ -3,6 +3,7 @@
 @section('title', 'Jenis Pemotongan')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="deduction-types-table"
     table-title="Daftar Jenis Pemotongan"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('deduction-types.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="deductionTypeFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Jenis
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -27,6 +28,20 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="deductionTypeFormModal"
+    form-id="deduction-type-form"
+    route-prefix="deduction-types"
+    resource-key="deduction_type"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Jenis Pemotongan"
+    title-edit="Edit Jenis Pemotongan"
+    subtitle-create="Lengkapi informasi jenis pemotongan gaji."
+    submit-create="Simpan Jenis"
+>
+    @include('deduction-types._form', ['deductionType' => null])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

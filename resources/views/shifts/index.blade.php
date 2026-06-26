@@ -3,6 +3,7 @@
 @section('title', 'Data Shift')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="shifts-table"
     table-title="Daftar Shift"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('shifts.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="shiftFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Shift
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -30,6 +31,20 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="shiftFormModal"
+    form-id="shift-form"
+    route-prefix="shifts"
+    resource-key="shift"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Shift Baru"
+    title-edit="Edit Shift"
+    subtitle-create="Lengkapi informasi jadwal kerja shift."
+    submit-create="Simpan Shift"
+>
+    @include('shifts._form', ['shift' => null])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\WorkLocationDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreWorkLocationRequest;
 use App\Http\Requests\UpdateWorkLocationRequest;
 use App\Models\Branch;
@@ -13,9 +14,23 @@ use Illuminate\View\View;
 
 class WorkLocationController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'work-locations.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'work_location';
+    }
+
     public function index(): View
     {
-        return view('work-locations.index');
+        return view('work-locations.index', [
+            'branches' => Branch::query()->active()->orderBy('name')->get(),
+        ]);
     }
 
     public function data(WorkLocationDataTable $dataTable): JsonResponse
@@ -23,11 +38,14 @@ class WorkLocationController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(WorkLocation $workLocation): JsonResponse
     {
-        return view('work-locations.create', [
-            'branches' => Branch::query()->active()->orderBy('name')->get(),
-        ]);
+        return $this->crudModalJson($workLocation);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreWorkLocationRequest $request): RedirectResponse
@@ -47,12 +65,9 @@ class WorkLocationController extends Controller
         return redirect()->route('work-locations.index')->with('success', 'Lokasi kerja berhasil ditambahkan.');
     }
 
-    public function edit(WorkLocation $workLocation): View
+    public function edit(WorkLocation $workLocation): RedirectResponse
     {
-        return view('work-locations.edit', [
-            'workLocation' => $workLocation,
-            'branches' => Branch::query()->active()->orderBy('name')->get(),
-        ]);
+        return $this->crudModalEditRedirect($workLocation);
     }
 
     public function update(UpdateWorkLocationRequest $request, WorkLocation $workLocation): RedirectResponse

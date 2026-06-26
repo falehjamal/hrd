@@ -2,11 +2,24 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateBranchRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'branches.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('branch')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return $this->user()->isHrUser();

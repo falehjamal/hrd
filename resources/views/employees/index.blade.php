@@ -3,6 +3,7 @@
 @section('title', 'Data Karyawan')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="employees-table"
     table-title="Daftar Karyawan"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('employees.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="employeeFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Karyawan
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
@@ -61,6 +62,23 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="employeeFormModal"
+    form-id="employee-form"
+    route-prefix="employees"
+    resource-key="employee"
+    :open-modal="$openCrudModal ?? null"
+    size="xl"
+    enctype="multipart/form-data"
+    title-create="Tambah Karyawan"
+    title-edit="Edit Karyawan"
+    subtitle-create="Lengkapi data karyawan dan akun login."
+    submit-create="Simpan Karyawan"
+    submit-edit="Simpan Perubahan"
+>
+    @include('employees._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')
@@ -97,6 +115,30 @@
             branchFilter.value = '';
         }
         table.ajax.reload();
+    });
+
+    const employeeModal = document.getElementById('employeeFormModal');
+    const employeeForm = document.getElementById('employee-form');
+
+    employeeForm?.addEventListener('crud-form:filled', (event) => {
+        const record = event.detail?.record;
+        const preview = document.getElementById('photo-preview');
+        const wrap = document.getElementById('photo-preview-wrap');
+
+        if (record?.photo_url && preview) {
+            preview.src = record.photo_url;
+            wrap?.classList.remove('d-none');
+        }
+    });
+
+    employeeForm?.addEventListener('crud-form:reset', () => {
+        const preview = document.getElementById('photo-preview');
+        const wrap = document.getElementById('photo-preview-wrap');
+
+        if (preview) {
+            preview.src = '';
+        }
+        wrap?.classList.add('d-none');
     });
 </script>
 @endpush

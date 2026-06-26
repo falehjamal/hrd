@@ -3,6 +3,7 @@
 @section('title', 'Lembur')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="overtime-table"
     table-title="Daftar Pengajuan Lembur"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('overtime-requests.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="overtimeFormModal">
             <i class="bx bx-plus me-1"></i> Ajukan Lembur
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
@@ -55,6 +56,18 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="overtimeFormModal"
+    form-id="overtime-form"
+    route-prefix="overtime-requests"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Ajukan Lembur"
+    subtitle-create="Form pengajuan lembur"
+    submit-create="Kirim Pengajuan"
+>
+    @include('overtime-requests._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

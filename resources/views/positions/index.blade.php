@@ -3,6 +3,7 @@
 @section('title', 'Data Jabatan')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="positions-table"
     table-title="Daftar Jabatan"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('positions.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="positionFormModal">
             <i class="bx bx-plus me-1"></i> Tambah Jabatan
-        </a>
+        </button>
     </x-slot:actions>
     <thead>
         <tr>
@@ -29,6 +30,20 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="positionFormModal"
+    form-id="position-form"
+    route-prefix="positions"
+    resource-key="position"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Jabatan Baru"
+    title-edit="Edit Jabatan"
+    subtitle-create="Lengkapi informasi jabatan karyawan."
+    submit-create="Simpan Jabatan"
+>
+    @include('positions._form', ['position' => null])
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')

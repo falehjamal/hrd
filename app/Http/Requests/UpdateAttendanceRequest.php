@@ -2,12 +2,25 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use App\Models\Attendance;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateAttendanceRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'attendances.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('attendance')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return true;

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EmployeeLoanDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreEmployeeLoanRequest;
 use App\Models\Employee;
 use App\Models\EmployeeLoan;
@@ -14,13 +15,27 @@ use Illuminate\View\View;
 
 class EmployeeLoanController extends Controller
 {
+    use HandlesCrudModal;
+
     public function __construct(
         protected EmployeeLoanService $loanService
     ) {}
 
+    protected function crudModalIndexRoute(): string
+    {
+        return 'employee-loans.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return '';
+    }
+
     public function index(): View
     {
-        return view('employee-loans.index');
+        $employees = Employee::query()->active()->orderBy('name')->get();
+
+        return view('employee-loans.index', compact('employees'));
     }
 
     public function data(): JsonResponse
@@ -33,11 +48,14 @@ class EmployeeLoanController extends Controller
         return (new EmployeeLoanDataTable($employee->id))->json();
     }
 
-    public function create(): View
+    public function create(Request $request): RedirectResponse
     {
-        $employees = Employee::query()->active()->orderBy('name')->get();
+        $params = $request->filled('employee_id')
+            ? ['employee_id' => $request->employee_id]
+            : [];
 
-        return view('employee-loans.create', compact('employees'));
+        return redirect()->route('employee-loans.index', $params)
+            ->with('open_crud_modal', 'create');
     }
 
     public function store(StoreEmployeeLoanRequest $request): RedirectResponse
@@ -54,7 +72,10 @@ class EmployeeLoanController extends Controller
                 $request->user()
             );
         } catch (\InvalidArgumentException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+            return redirect()->route('employee-loans.index')
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->with('open_crud_modal', 'create');
         }
 
         return redirect()

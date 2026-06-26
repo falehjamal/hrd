@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('sneat/css/demo.css') }}" />
     <link rel="stylesheet" href="{{ asset('sneat/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     @include('partials.theme-boot')
-    @vite(['resources/css/app.css', 'resources/js/datatables.js'])
+    @vite(['resources/js/datatables.js', 'resources/css/app.css'])
     <script src="{{ asset('sneat/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('sneat/js/config.js') }}"></script>
     @stack('styles')

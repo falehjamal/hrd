@@ -28,9 +28,11 @@ class EmployeeSalaryController extends Controller
         return (new EmployeeSalaryDataTable($employee->id))->json();
     }
 
-    public function create(Employee $employee): View
+    public function create(Employee $employee): RedirectResponse
     {
-        return view('employees.salaries.create', compact('employee'));
+        return redirect()
+            ->route('employees.show', $employee)
+            ->with('open_salary_modal', 'create');
     }
 
     public function store(StoreEmployeeSalaryRequest $request, Employee $employee): RedirectResponse
@@ -50,14 +52,25 @@ class EmployeeSalaryController extends Controller
             ->with('success', 'Data gaji berhasil ditambahkan.');
     }
 
-    public function edit(EmployeeSalary $salary): View
+    public function show(EmployeeSalary $salary): JsonResponse
     {
-        $salary->load('employee');
-
-        return view('employees.salaries.edit', [
-            'employee' => $salary->employee,
-            'salary' => $salary,
+        return response()->json([
+            'salary' => [
+                'id' => $salary->id,
+                'effective_date' => $salary->effective_date->format('Y-m-d'),
+                'basic_salary' => $salary->basic_salary,
+                'fixed_allowance' => $salary->fixed_allowance,
+                'notes' => $salary->notes,
+                'is_active' => $salary->is_active ? 1 : 0,
+            ],
         ]);
+    }
+
+    public function edit(EmployeeSalary $salary): RedirectResponse
+    {
+        return redirect()
+            ->route('employees.show', $salary->employee_id)
+            ->with('open_salary_modal', $salary->id);
     }
 
     public function update(UpdateEmployeeSalaryRequest $request, EmployeeSalary $salary): RedirectResponse

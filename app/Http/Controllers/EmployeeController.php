@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\EmployeeDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Branch;
+use App\Models\DeductionType;
 use App\Models\Employee;
 use App\Models\OrganizationalUnit;
 use App\Models\Position;
@@ -26,9 +28,21 @@ use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
+    use HandlesCrudModal;
+
     public function __construct(
         private readonly EmployeePhotoService $employeePhotoService,
     ) {}
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'employees.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'employee';
+    }
 
     private const EMPLOYEE_FIELDS = [
         'employee_code',
@@ -52,6 +66,8 @@ class EmployeeController extends Controller
     {
         return view('employees.index', [
             'branches' => Branch::query()->active()->orderBy('name')->get(),
+            'employee' => new Employee,
+            ...$this->formOptions(),
         ]);
     }
 
@@ -84,9 +100,9 @@ class EmployeeController extends Controller
         ]);
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        return view('employees.create', $this->formOptions());
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreEmployeeRequest $request): RedirectResponse
@@ -126,8 +142,16 @@ class EmployeeController extends Controller
             ->with('success', $message);
     }
 
-    public function show(Employee $employee): View
+    public function show(Request $request, Employee $employee): View|JsonResponse
     {
+        if ($request->wantsJson()) {
+            $employee->load('user');
+
+            return response()->json([
+                'employee' => $this->employeeFormJson($employee),
+            ]);
+        }
+
         $employee->load([
             'shift', 'user', 'position', 'organizationalUnit', 'branch', 'manager', 'weeklyShifts.shift',
             'activeDeductions.deductionType', 'activeLoans',
@@ -142,17 +166,24 @@ class EmployeeController extends Controller
 
         $leaveBalances = app(EmployeeLeaveBalanceService::class)->ensureBalancesForYear($employee, $leaveYear);
 
-        return view('employees.show', compact('employee', 'weeklyShifts', 'leaveBalances', 'leaveYear'));
-    }
-
-    public function edit(Employee $employee): View
-    {
-        $employee->load('user');
-
-        return view('employees.edit', [
+        return view('employees.show', [
             'employee' => $employee,
+            'weeklyShifts' => $weeklyShifts,
+            'leaveBalances' => $leaveBalances,
+            'leaveYear' => $leaveYear,
+            'shifts' => Shift::query()->active()->orderBy('name')->get(),
+            'deductionTypes' => DeductionType::query()->active()->orderBy('code')->get(),
+            'deduction' => null,
+            'salary' => null,
+            'openWeeklyShiftModal' => session('open_weekly_shift_modal'),
+            'openLeaveBalanceModal' => session('open_leave_balance_modal'),
             ...$this->formOptions($employee),
         ]);
+    }
+
+    public function edit(Employee $employee): RedirectResponse
+    {
+        return $this->crudModalEditRedirect($employee);
     }
 
     public function update(UpdateEmployeeRequest $request, Employee $employee): RedirectResponse
@@ -184,6 +215,10 @@ class EmployeeController extends Controller
 
         if ($sendNotification) {
             $message .= ' Notifikasi telah dikirim.';
+        }
+
+        if ($request->input('_return_to') === 'show') {
+            return redirect()->route('employees.show', $employee)->with('success', $message);
         }
 
         return redirect()->route('employees.index')->with('success', $message);
@@ -218,6 +253,35 @@ class EmployeeController extends Controller
         return response($disk->get($path), 200, [
             'Content-Type' => $disk->mimeType($path),
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function employeeFormJson(Employee $employee): array
+    {
+        return [
+            'id' => $employee->id,
+            'employee_code' => $employee->employee_code,
+            'name' => $employee->name,
+            'email' => $employee->email,
+            'phone' => $employee->phone,
+            'national_id' => $employee->national_id,
+            'gender' => $employee->gender,
+            'birth_date' => $employee->birth_date?->format('Y-m-d'),
+            'address' => $employee->address,
+            'position_id' => $employee->position_id,
+            'organizational_unit_id' => $employee->organizational_unit_id,
+            'branch_id' => $employee->branch_id,
+            'manager_id' => $employee->manager_id,
+            'shift_id' => $employee->shift_id,
+            'join_date' => $employee->join_date?->format('Y-m-d'),
+            'status' => $employee->status,
+            'username' => $employee->user?->username,
+            'has_hr_access' => $employee->user?->isHrUser() ? 1 : 0,
+            'send_notification' => 0,
+            'photo_url' => $employee->photo_url,
+        ];
     }
 
     /**

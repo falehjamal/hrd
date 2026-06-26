@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\LeaveRequestDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\RejectLeaveRequest;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Models\Employee;
@@ -16,16 +17,37 @@ use Illuminate\View\View;
 
 class LeaveRequestController extends Controller
 {
+    use HandlesCrudModal;
+
     public function __construct(
         protected LeaveRequestService $leaveRequestService
     ) {}
 
+    protected function crudModalIndexRoute(): string
+    {
+        return 'leave-requests.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return '';
+    }
+
     public function index(): View
     {
-        $isEmployee = ! auth()->user()->isHrUser();
+        $user = auth()->user();
+        $isEmployee = ! $user->isHrUser();
         $leaveTypes = LeaveType::query()->active()->orderBy('code')->get(['id', 'code', 'name']);
+        $employees = $user->isHrUser()
+            ? Employee::query()->active()->orderBy('name')->get()
+            : collect();
 
-        return view('leave-requests.index', compact('isEmployee', 'leaveTypes'));
+        return view('leave-requests.index', [
+            'isEmployee' => $isEmployee,
+            'leaveTypes' => $leaveTypes,
+            'employees' => $employees,
+            'linkedEmployee' => $user->employee,
+        ]);
     }
 
     public function data(): JsonResponse
@@ -42,19 +64,9 @@ class LeaveRequestController extends Controller
         return (new LeaveRequestDataTable($employee->id))->json();
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        $user = auth()->user();
-        $employees = $user->isHrUser()
-            ? Employee::query()->active()->orderBy('name')->get()
-            : collect();
-        $leaveTypes = LeaveType::query()->active()->orderBy('code')->get();
-
-        return view('leave-requests.create', [
-            'employees' => $employees,
-            'linkedEmployee' => $user->employee,
-            'leaveTypes' => $leaveTypes,
-        ]);
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreLeaveRequest $request): RedirectResponse
@@ -65,7 +77,10 @@ class LeaveRequestController extends Controller
             : $user->employee;
 
         if (! $employee) {
-            return back()->withInput()->with('error', 'Karyawan tidak ditemukan.');
+            return redirect()->route('leave-requests.index')
+                ->withInput()
+                ->with('error', 'Karyawan tidak ditemukan.')
+                ->with('open_crud_modal', 'create');
         }
 
         try {
@@ -78,7 +93,10 @@ class LeaveRequestController extends Controller
                 $request->file('attachment')
             );
         } catch (\InvalidArgumentException $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+            return redirect()->route('leave-requests.index')
+                ->withInput()
+                ->with('error', $e->getMessage())
+                ->with('open_crud_modal', 'create');
         }
 
         return redirect()->route('leave-requests.index')->with('success', 'Pengajuan cuti berhasil dikirim.');

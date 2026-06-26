@@ -9,7 +9,6 @@ use App\Services\EmployeeLeaveBalanceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 
 class EmployeeLeaveBalanceController extends Controller
 {
@@ -17,18 +16,11 @@ class EmployeeLeaveBalanceController extends Controller
         protected EmployeeLeaveBalanceService $balanceService
     ) {}
 
-    public function edit(Request $request, Employee $employee): View
+    public function edit(Request $request, Employee $employee): RedirectResponse
     {
-        $year = (int) $request->input('year', now()->year);
-        $balances = $this->balanceService->ensureBalancesForYear($employee, $year);
-
-        foreach ($balances as $balance) {
-            $this->balanceService->syncUsedDays($balance);
-        }
-
-        $balances = $this->balanceService->ensureBalancesForYear($employee, $year);
-
-        return view('employees.leave-balances.edit', compact('employee', 'balances', 'year'));
+        return redirect()
+            ->route('employees.show', $employee)
+            ->with('open_leave_balance_modal', '1');
     }
 
     public function update(UpdateEmployeeLeaveBalancesRequest $request, Employee $employee): RedirectResponse

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\OrganizationalUnitDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreOrganizationalUnitRequest;
 use App\Http\Requests\UpdateOrganizationalUnitRequest;
 use App\Models\OrganizationalUnit;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class OrganizationalUnitController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'organizational-units.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'organizational_unit';
+    }
+
     public function index(): View
     {
         $total = OrganizationalUnit::query()->count();
@@ -24,6 +37,7 @@ class OrganizationalUnitController extends Controller
                 'inactive' => $total - $active,
                 'with_employees' => OrganizationalUnit::query()->has('employees')->count(),
             ],
+            'parents' => OrganizationalUnit::query()->orderBy('name')->get(),
         ]);
     }
 
@@ -32,11 +46,14 @@ class OrganizationalUnitController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(OrganizationalUnit $organizationalUnit): JsonResponse
     {
-        $parents = OrganizationalUnit::query()->active()->orderBy('name')->get();
+        return $this->crudModalJson($organizationalUnit);
+    }
 
-        return view('organizational-units.create', compact('parents'));
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreOrganizationalUnitRequest $request): RedirectResponse
@@ -50,18 +67,9 @@ class OrganizationalUnitController extends Controller
         return redirect()->route('organizational-units.index')->with('success', 'Unit organisasi berhasil ditambahkan.');
     }
 
-    public function edit(OrganizationalUnit $organizationalUnit): View
+    public function edit(OrganizationalUnit $organizationalUnit): RedirectResponse
     {
-        $parents = OrganizationalUnit::query()
-            ->active()
-            ->where('id', '!=', $organizationalUnit->id)
-            ->orderBy('name')
-            ->get();
-
-        return view('organizational-units.edit', [
-            'unit' => $organizationalUnit,
-            'parents' => $parents,
-        ]);
+        return $this->crudModalEditRedirect($organizationalUnit);
     }
 
     public function update(UpdateOrganizationalUnitRequest $request, OrganizationalUnit $organizationalUnit): RedirectResponse

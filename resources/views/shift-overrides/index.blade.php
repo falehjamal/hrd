@@ -3,6 +3,7 @@
 @section('title', 'Jadwal Shift')
 
 @section('content')
+@include('partials.crud-open-modal')
 @include('partials.alerts')
 
 <x-page-header
@@ -17,9 +18,9 @@
         <button type="button" class="btn btn-outline-secondary" id="btn-company-holidays">
             <i class="bx bx-calendar-star me-1"></i> Libur Perusahaan
         </button>
-        <a href="{{ route('shift-overrides.create') }}" class="btn btn-primary" id="btn-add-override">
+        <button type="button" class="btn btn-primary" data-crud-create="shiftOverrideFormModal" id="btn-add-override">
             <i class="bx bx-plus me-1"></i> Tambah Override
-        </a>
+        </button>
     </x-slot:actions>
 </x-page-header>
 
@@ -77,6 +78,11 @@
 
     <div class="tab-pane fade" id="tab-list" role="tabpanel">
         <x-datatable-card tableId="shift-overrides-table" title="Daftar Override">
+            <x-slot:headerActions>
+                <button type="button" class="btn btn-primary btn-sm" data-crud-create="shiftOverrideFormModal">
+                    <i class="bx bx-plus me-1"></i> Tambah Override
+                </button>
+            </x-slot:headerActions>
             <x-slot:filters>
                 <div class="row g-2 align-items-end">
                     <div class="col-md-4">
@@ -113,6 +119,20 @@
 </div>
 
 @include('shift-overrides.calendar-modals')
+
+<x-crud-form-modal
+    modal-id="shiftOverrideFormModal"
+    form-id="shift-override-form"
+    route-prefix="shift-overrides"
+    resource-key="shift_override"
+    :open-modal="$openCrudModal ?? null"
+    title-create="Tambah Override Jadwal"
+    title-edit="Edit Override Jadwal"
+    subtitle-create="Atur jadwal khusus karyawan pada tanggal tertentu."
+    submit-create="Simpan Override"
+>
+    @include('shift-overrides._form', ['override' => null, 'employees' => $employees, 'shifts' => $shifts])
+</x-crud-form-modal>
 @endsection
 
 @push('styles')
@@ -162,8 +182,8 @@
     window.shiftCalendarConfig = {
         calendarUrl: @json(route('shift-overrides.calendar')),
         dayDetailUrl: @json(route('shift-overrides.day-detail')),
-        createOverrideUrl: @json(route('shift-overrides.create')),
-        editOverrideUrl: @json(url('shift-overrides')),
+        showOverrideUrl: @json(url('shift-overrides')),
+        overrideModalId: 'shiftOverrideFormModal',
         attendanceUrl: @json(url('attendances')),
         companyHolidaysUrl: @json(route('company-holidays.data')),
         companyHolidayStoreUrl: @json(route('company-holidays.store')),
@@ -171,6 +191,31 @@
         employeeSearchUrl: @json(route('employees.search')),
         csrfToken: @json(csrf_token()),
     };
+</script>
+<script>
+    (function () {
+        const form = document.getElementById('shift-override-form');
+        if (!form) {
+            return;
+        }
+
+        const dayOff = form.querySelector('#is_day_off');
+        const shiftField = form.querySelector('#shift-field');
+        const shiftSelect = form.querySelector('#shift_id');
+
+        const toggleDayOff = () => {
+            const off = dayOff?.checked;
+            shiftField?.classList.toggle('d-none', off);
+            if (off && shiftSelect) {
+                shiftSelect.value = '';
+            }
+        };
+
+        dayOff?.addEventListener('change', toggleDayOff);
+        form.addEventListener('crud-form:filled', toggleDayOff);
+        form.addEventListener('crud-form:reset', toggleDayOff);
+        toggleDayOff();
+    })();
 </script>
 @vite(['resources/js/shift-calendar.js'])
 @endpush

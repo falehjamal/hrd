@@ -3,6 +3,7 @@
 @section('title', 'Cuti')
 
 @section('content')
+@include('partials.crud-open-modal')
 <x-index-page
     table-id="leave-requests-table"
     table-title="Daftar Pengajuan Cuti"
@@ -14,9 +15,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('leave-requests.create') }}" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-crud-create="leaveFormModal">
             <i class="bx bx-plus me-1"></i> Ajukan Cuti
-        </a>
+        </button>
     </x-slot:actions>
     <x-slot:filters>
         <div class="row g-2 align-items-end">
@@ -64,6 +65,19 @@
         </tr>
     </thead>
 </x-index-page>
+
+<x-crud-form-modal
+    modal-id="leaveFormModal"
+    form-id="leave-form"
+    route-prefix="leave-requests"
+    :open-modal="$openCrudModal ?? null"
+    enctype="multipart/form-data"
+    title-create="Ajukan Cuti"
+    subtitle-create="Form pengajuan cuti"
+    submit-create="Kirim Pengajuan"
+>
+    @include('leave-requests._form')
+</x-crud-form-modal>
 @endsection
 
 @push('datatable-scripts')
@@ -99,6 +113,39 @@
         document.getElementById('filter-status').value = '';
         document.getElementById('filter-leave-type').value = '';
         table.ajax.reload();
+    });
+
+    const employeeField = document.getElementById('employee_id');
+    const startField = document.getElementById('start_date');
+    const endField = document.getElementById('end_date');
+    const preview = document.getElementById('leave-days-preview');
+    const countEl = document.getElementById('leave-days-count');
+
+    async function updatePreview() {
+        const employeeId = employeeField?.value;
+        const startDate = startField?.value;
+        const endDate = endField?.value;
+
+        if (!employeeId || !startDate || !endDate) {
+            preview.style.display = 'none';
+            return;
+        }
+
+        const params = new URLSearchParams({ employee_id: employeeId, start_date: startDate, end_date: endDate });
+        const response = await fetch(`{{ route('leave-requests.calculate-days') }}?${params.toString()}`);
+        const data = await response.json();
+
+        countEl.textContent = data.total_days ?? 0;
+        preview.style.display = 'block';
+    }
+
+    [employeeField, startField, endField].forEach((el) => {
+        el?.addEventListener('change', updatePreview);
+    });
+
+    document.getElementById('leaveFormModal')?.addEventListener('shown.bs.modal', updatePreview);
+    document.getElementById('leave-form')?.addEventListener('crud-form:reset', () => {
+        preview.style.display = 'none';
     });
 </script>
 @endpush

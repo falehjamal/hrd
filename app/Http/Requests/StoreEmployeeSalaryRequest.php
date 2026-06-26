@@ -2,13 +2,38 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEmployeeSalaryRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'employees.show';
+    }
+
+    protected function crudModalRedirectParameters(): array
+    {
+        return ['employee' => $this->route('employee')];
+    }
+
+    protected function crudModalSessionKey(): string
+    {
+        return 'open_salary_modal';
+    }
+
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_active' => $this->boolean('is_active'),
+        ]);
     }
 
     public function rules(): array

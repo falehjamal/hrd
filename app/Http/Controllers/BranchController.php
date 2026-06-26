@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\BranchDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\Branch;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class BranchController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'branches.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'branch';
+    }
+
     public function index(): View
     {
         $total = Branch::query()->count();
@@ -32,9 +45,19 @@ class BranchController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(Branch $branch): JsonResponse
     {
-        return view('branches.create');
+        $data = $branch->toArray();
+        $data['is_head_office'] = $branch->is_head_office ? 1 : 0;
+
+        return response()->json([
+            'branch' => $data,
+        ]);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreBranchRequest $request): RedirectResponse
@@ -52,9 +75,9 @@ class BranchController extends Controller
         return redirect()->route('branches.index')->with('success', 'Cabang berhasil ditambahkan.');
     }
 
-    public function edit(Branch $branch): View
+    public function edit(Branch $branch): RedirectResponse
     {
-        return view('branches.edit', compact('branch'));
+        return $this->crudModalEditRedirect($branch);
     }
 
     public function update(UpdateBranchRequest $request, Branch $branch): RedirectResponse

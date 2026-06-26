@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\PositionDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StorePositionRequest;
 use App\Http\Requests\UpdatePositionRequest;
 use App\Models\Position;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class PositionController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'positions.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'position';
+    }
+
     public function index(): View
     {
         return view('positions.index');
@@ -22,9 +35,14 @@ class PositionController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(Position $position): JsonResponse
     {
-        return view('positions.create');
+        return $this->crudModalJson($position);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StorePositionRequest $request): RedirectResponse
@@ -37,9 +55,9 @@ class PositionController extends Controller
         return redirect()->route('positions.index')->with('success', 'Jabatan berhasil ditambahkan.');
     }
 
-    public function edit(Position $position): View
+    public function edit(Position $position): RedirectResponse
     {
-        return view('positions.edit', compact('position'));
+        return $this->crudModalEditRedirect($position);
     }
 
     public function update(UpdatePositionRequest $request, Position $position): RedirectResponse

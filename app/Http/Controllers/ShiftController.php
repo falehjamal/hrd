@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ShiftDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\StoreShiftRequest;
 use App\Http\Requests\UpdateShiftRequest;
 use App\Models\Shift;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class ShiftController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shifts.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return 'shift';
+    }
+
     public function index(): View
     {
         return view('shifts.index');
@@ -22,9 +35,14 @@ class ShiftController extends Controller
         return $dataTable->json();
     }
 
-    public function create(): View
+    public function show(Shift $shift): JsonResponse
     {
-        return view('shifts.create');
+        return $this->crudModalJson($shift);
+    }
+
+    public function create(): RedirectResponse
+    {
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreShiftRequest $request): RedirectResponse
@@ -37,9 +55,9 @@ class ShiftController extends Controller
         return redirect()->route('shifts.index')->with('success', 'Shift berhasil ditambahkan.');
     }
 
-    public function edit(Shift $shift): View
+    public function edit(Shift $shift): RedirectResponse
     {
-        return view('shifts.edit', compact('shift'));
+        return $this->crudModalEditRedirect($shift);
     }
 
     public function update(UpdateShiftRequest $request, Shift $shift): RedirectResponse

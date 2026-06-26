@@ -384,7 +384,7 @@
 
     .org-stat-card__icon--employees {
         background: rgba(105, 108, 255, 0.12);
-        color: #696cff;
+        color: var(--hrd-primary);
     }
 
     .org-stat-card__icon--departments {

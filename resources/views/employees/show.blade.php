@@ -4,6 +4,12 @@
 
 @section('content')
 @include('partials.alerts')
+@php
+    $openDeductionModal = session('open_deduction_modal');
+    $openSalaryModal = session('open_salary_modal');
+    $weeklyShiftModalOpen = ($openWeeklyShiftModal ?? null) || collect($errors->keys())->contains(fn ($key) => str_starts_with($key, 'shifts.'));
+    $leaveBalanceModalOpen = ($openLeaveBalanceModal ?? null) || collect($errors->keys())->contains(fn ($key) => str_starts_with($key, 'balances.') || $key === 'year');
+@endphp
 
 <x-page-header
     :title="$employee->name"
@@ -14,9 +20,9 @@
     ]"
 >
     <x-slot:actions>
-        <a href="{{ route('employees.edit', $employee) }}" class="btn btn-outline-primary">
+        <button type="button" class="btn btn-outline-primary" data-crud-edit data-crud-target="employeeFormModal" data-crud-edit-url="{{ route('employees.show', $employee) }}">
             <i class="bx bx-edit me-1"></i> Edit
-        </a>
+        </button>
         <a href="{{ route('employees.index') }}" class="btn btn-outline-secondary">
             <i class="bx bx-arrow-back me-1"></i> Kembali
         </a>
@@ -94,7 +100,7 @@
         <div class="card card-modern content-card mb-4">
             <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="content-card-title mb-0">Pola Shift Mingguan</h5>
-                <a href="{{ route('employees.weekly-shifts.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Pola</a>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#weeklyShiftFormModal">Atur Pola</button>
             </div>
             <div class="card-body">
                 <div class="d-flex flex-wrap gap-2">
@@ -119,7 +125,7 @@
         <div class="card card-modern content-card mb-4">
             <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="content-card-title mb-0">Akun Login</h5>
-                <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Edit Akun</a>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-crud-edit data-crud-target="employeeFormModal" data-crud-edit-url="{{ route('employees.show', $employee) }}">Edit Akun</button>
             </div>
             <div class="card-body">
                 @if ($employee->user)
@@ -134,7 +140,7 @@
                     <p class="small text-muted mb-0 mt-2">Karyawan dapat login dan menggunakan menu <strong>Absen Saya</strong>.</p>
                 @else
                     <p class="text-muted small mb-2">Karyawan belum memiliki akun login.</p>
-                    <a href="{{ route('employees.edit', $employee) }}" class="btn btn-sm btn-primary">Buat Akun via Edit</a>
+                    <button type="button" class="btn btn-sm btn-primary" data-crud-edit data-crud-target="employeeFormModal" data-crud-edit-url="{{ route('employees.show', $employee) }}">Buat Akun via Edit</button>
                 @endif
             </div>
         </div>
@@ -142,7 +148,7 @@
         <div class="card card-modern content-card mb-4">
             <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="content-card-title mb-0">Saldo Cuti {{ $leaveYear }}</h5>
-                <a href="{{ route('employees.leave-balances.edit', $employee) }}" class="btn btn-sm btn-outline-primary">Atur Kuota</a>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#leaveBalanceFormModal">Atur Kuota</button>
             </div>
             <div class="card-body">
                 @if ($leaveBalances->isEmpty())
@@ -190,9 +196,9 @@
         <div class="card card-modern content-card mb-4">
             <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="content-card-title mb-0">Pemotongan Aktif</h5>
-                <a href="{{ route('employees.deductions.create', $employee) }}" class="btn btn-sm btn-primary">
+                <button type="button" class="btn btn-sm btn-primary" data-crud-create="deductionFormModal">
                     <i class="bx bx-plus me-1"></i> Tambah
-                </a>
+                </button>
             </div>
             <div class="card-body">
                 @if ($employee->activeDeductions->isEmpty())
@@ -225,9 +231,9 @@
 
         <x-datatable-card tableId="employee-deductions-table" title="Riwayat Pemotongan">
             <x-slot:headerActions>
-                <a href="{{ route('employees.deductions.create', $employee) }}" class="btn btn-sm btn-primary">
+                <button type="button" class="btn btn-sm btn-primary" data-crud-create="deductionFormModal">
                     <i class="bx bx-plus me-1"></i> Tambah Pemotongan
-                </a>
+                </button>
             </x-slot:headerActions>
             <thead>
                 <tr>
@@ -243,7 +249,7 @@
         <div class="card card-modern content-card mb-4">
             <div class="card-header content-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="content-card-title mb-0">Piutang Aktif</h5>
-                <a href="{{ route('employee-loans.create') }}?employee_id={{ $employee->id }}" class="btn btn-sm btn-primary">
+                <a href="{{ route('employee-loans.create', ['employee_id' => $employee->id]) }}" class="btn btn-sm btn-primary">
                     <i class="bx bx-plus me-1"></i> Catat Piutang
                 </a>
             </div>
@@ -291,9 +297,9 @@
 
         <x-datatable-card tableId="employee-salaries-table" title="Riwayat Gaji">
             <x-slot:headerActions>
-                <a href="{{ route('employees.salaries.create', $employee) }}" class="btn btn-sm btn-primary">
+                <button type="button" class="btn btn-sm btn-primary" data-crud-create="salaryFormModal">
                     <i class="bx bx-plus me-1"></i> Tambah Gaji
-                </a>
+                </button>
             </x-slot:headerActions>
             <thead>
                 <tr>
@@ -308,6 +314,83 @@
         </x-datatable-card>
     </div>
 </div>
+
+<x-crud-form-modal
+    modal-id="deductionFormModal"
+    form-id="deduction-form"
+    route-prefix="deductions"
+    resource-key="deduction"
+    :store-url="route('employees.deductions.store', $employee)"
+    update-base-url="{{ url('deductions') }}"
+    :open-modal="$openDeductionModal ?? null"
+    title-create="Tambah Pemotongan"
+    title-edit="Edit Pemotongan"
+    subtitle-create="Catat pemotongan gaji karyawan."
+    submit-create="Simpan Pemotongan"
+    submit-edit="Simpan Perubahan"
+>
+    @include('employees.deductions._form')
+</x-crud-form-modal>
+
+<x-crud-form-modal
+    modal-id="salaryFormModal"
+    form-id="salary-form"
+    route-prefix="salaries"
+    resource-key="salary"
+    :store-url="route('employees.salaries.store', $employee)"
+    update-base-url="{{ url('salaries') }}"
+    :open-modal="$openSalaryModal ?? null"
+    title-create="Tambah Gaji"
+    title-edit="Edit Gaji"
+    subtitle-create="Tetapkan gaji pokok dan tunjangan karyawan."
+    submit-create="Simpan Gaji"
+    submit-edit="Simpan Perubahan"
+>
+    @include('employees.salaries._form')
+</x-crud-form-modal>
+
+<x-crud-form-modal
+    modal-id="employeeFormModal"
+    form-id="employee-form"
+    route-prefix="employees"
+    resource-key="employee"
+    :open-modal="session('open_employee_modal') ?? null"
+    size="xl"
+    enctype="multipart/form-data"
+    title-create="Edit Karyawan"
+    title-edit="Edit Karyawan"
+    subtitle-edit="Perbarui data karyawan dan akun login."
+    submit-edit="Simpan Perubahan"
+>
+    <input type="hidden" name="_return_to" value="show" />
+    @include('employees._form', ['employee' => $employee])
+</x-crud-form-modal>
+
+<x-static-form-modal
+    modal-id="weeklyShiftFormModal"
+    form-id="weekly-shift-form"
+    :action="route('employees.weekly-shifts.update', $employee)"
+    title="Pola Shift Mingguan"
+    :subtitle="'Shift default cadangan: '.($employee->shift ? $employee->shift->code.' - '.$employee->shift->name : 'belum diatur')"
+    submit="Simpan Pola"
+    size="lg"
+    :open="$weeklyShiftModalOpen"
+>
+    @include('employees.weekly-shifts._form')
+</x-static-form-modal>
+
+<x-static-form-modal
+    modal-id="leaveBalanceFormModal"
+    form-id="leave-balance-form"
+    :action="route('employees.leave-balances.update', $employee)"
+    title="Kuota Cuti"
+    :subtitle="$employee->employee_code.' — '.$employee->name.' ('.$leaveYear.')'"
+    submit="Simpan Kuota"
+    size="lg"
+    :open="$leaveBalanceModalOpen"
+>
+    @include('employees.leave-balances._form')
+</x-static-form-modal>
 @endsection
 
 @push('datatable-scripts')

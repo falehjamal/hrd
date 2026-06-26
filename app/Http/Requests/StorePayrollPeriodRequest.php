@@ -2,10 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePayrollPeriodRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'payroll-periods.index';
+    }
+
     public function authorize(): bool
     {
         return $this->user()->isHrUser();

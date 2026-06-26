@@ -2,11 +2,24 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\RedirectsCrudModalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class UpdateShiftRequest extends FormRequest
 {
+    use RedirectsCrudModalValidation;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'shifts.index';
+    }
+
+    protected function crudModalOpenId(): mixed
+    {
+        return $this->route('shift')?->getKey();
+    }
+
     public function authorize(): bool
     {
         return true;

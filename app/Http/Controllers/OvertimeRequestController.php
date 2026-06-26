@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\OvertimeRequestDataTable;
+use App\Http\Concerns\HandlesCrudModal;
 use App\Http\Requests\RejectOvertimeRequest;
 use App\Http\Requests\StoreOvertimeRequest;
 use App\Models\Employee;
@@ -14,11 +15,31 @@ use Illuminate\View\View;
 
 class OvertimeRequestController extends Controller
 {
+    use HandlesCrudModal;
+
+    protected function crudModalIndexRoute(): string
+    {
+        return 'overtime-requests.index';
+    }
+
+    protected function crudModalResourceKey(): string
+    {
+        return '';
+    }
+
     public function index(): View
     {
-        $isEmployee = ! auth()->user()->isHrUser();
+        $user = auth()->user();
+        $isEmployee = ! $user->isHrUser();
+        $employees = $user->isHrUser()
+            ? Employee::query()->active()->orderBy('name')->get()
+            : collect();
 
-        return view('overtime-requests.index', compact('isEmployee'));
+        return view('overtime-requests.index', [
+            'isEmployee' => $isEmployee,
+            'employees' => $employees,
+            'linkedEmployee' => $user->employee,
+        ]);
     }
 
     public function data(): JsonResponse
@@ -30,17 +51,9 @@ class OvertimeRequestController extends Controller
         return (new OvertimeRequestDataTable($employeeId))->json();
     }
 
-    public function create(): View
+    public function create(): RedirectResponse
     {
-        $user = auth()->user();
-        $employees = $user->isHrUser()
-            ? Employee::query()->active()->orderBy('name')->get()
-            : collect();
-
-        return view('overtime-requests.create', [
-            'employees' => $employees,
-            'linkedEmployee' => $user->employee,
-        ]);
+        return $this->crudModalCreateRedirect();
     }
 
     public function store(StoreOvertimeRequest $request): RedirectResponse
@@ -54,7 +67,10 @@ class OvertimeRequestController extends Controller
         $end = Carbon::parse($request->date.' '.$request->end_time);
 
         if ($end->lessThanOrEqualTo($start)) {
-            return back()->withInput()->with('error', 'Jam selesai harus setelah jam mulai.');
+            return redirect()->route('overtime-requests.index')
+                ->withInput()
+                ->with('error', 'Jam selesai harus setelah jam mulai.')
+                ->with('open_crud_modal', 'create');
         }
 
         $pendingExists = OvertimeRequest::query()
@@ -64,7 +80,10 @@ class OvertimeRequestController extends Controller
             ->exists();
 
         if ($pendingExists) {
-            return back()->withInput()->with('error', 'Sudah ada pengajuan lembur menunggu untuk tanggal ini.');
+            return redirect()->route('overtime-requests.index')
+                ->withInput()
+                ->with('error', 'Sudah ada pengajuan lembur menunggu untuk tanggal ini.')
+                ->with('open_crud_modal', 'create');
         }
 
         OvertimeRequest::query()->create([
