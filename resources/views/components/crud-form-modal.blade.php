@@ -18,13 +18,28 @@
 ])
 
 @php
+    use Illuminate\Support\Facades\Route;
+
     $isEdit = is_numeric($openModal);
     $resolvedStoreUrl = $storeUrl ?? route($routePrefix.'.store');
     $resolvedUpdatePrefix = $updateRoutePrefix ?? $routePrefix;
-    $formAction = $isEdit ? route($resolvedUpdatePrefix.'.update', $openModal) : $resolvedStoreUrl;
-    $editShowUrl = $isEdit ? route($resolvedUpdatePrefix.'.show', $openModal) : '';
-    $updatePlaceholderId = is_numeric($openModal) ? (int) $openModal : 1;
-    $resolvedUpdateBase = $updateBaseUrl ?? preg_replace('#/\d+$#', '', route($resolvedUpdatePrefix.'.update', $updatePlaceholderId));
+    $hasUpdateRoute = Route::has($resolvedUpdatePrefix.'.update');
+    $hasShowRoute = Route::has($resolvedUpdatePrefix.'.show');
+    $formAction = ($isEdit && $hasUpdateRoute)
+        ? route($resolvedUpdatePrefix.'.update', $openModal)
+        : $resolvedStoreUrl;
+    $editShowUrl = ($isEdit && $hasShowRoute)
+        ? route($resolvedUpdatePrefix.'.show', $openModal)
+        : '';
+
+    if ($updateBaseUrl) {
+        $resolvedUpdateBase = $updateBaseUrl;
+    } elseif ($hasUpdateRoute) {
+        $updatePlaceholderId = is_numeric($openModal) ? (int) $openModal : 1;
+        $resolvedUpdateBase = preg_replace('#/\d+$#', '', route($resolvedUpdatePrefix.'.update', $updatePlaceholderId));
+    } else {
+        $resolvedUpdateBase = url($routePrefix);
+    }
 @endphp
 
 <div class="modal fade crud-form-modal" id="{{ $modalId }}" tabindex="-1" aria-hidden="true"
