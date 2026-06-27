@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureHrUser;
 use App\Http\Middleware\EnsureLinkedEmployee;
+use App\Http\Middleware\EnsureReportViewer;
 use App\Http\Middleware\EnsureTenantIsActive;
 use App\Http\Middleware\InitializeTenancyFromSession;
 use Illuminate\Foundation\Application;
@@ -50,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'employee.linked' => EnsureLinkedEmployee::class,
             'hr.user' => EnsureHrUser::class,
+            'report.viewer' => EnsureReportViewer::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

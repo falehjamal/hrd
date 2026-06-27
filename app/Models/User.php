@@ -50,4 +50,20 @@ class User extends Authenticatable
     {
         return $this->linkedEmployee()->exists();
     }
+
+    public function isManager(): bool
+    {
+        $employee = $this->employee;
+
+        if (! $employee || $employee->status !== 'active') {
+            return false;
+        }
+
+        return $employee->subordinates()->active()->exists();
+    }
+
+    public function canViewReports(): bool
+    {
+        return $this->isHrUser() || $this->isManager();
+    }
 }

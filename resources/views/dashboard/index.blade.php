@@ -22,7 +22,7 @@
                 <a href="{{ route('employees.create') }}" class="btn btn-light btn-hero">
                     <i class="bx bx-user-plus me-1"></i> Karyawan Baru
                 </a>
-                <a href="{{ route('attendances.index') }}" class="btn btn-outline-light btn-hero">
+                <a href="{{ route('reports.index') }}" class="btn btn-outline-light btn-hero">
                     <i class="bx bx-bar-chart-alt-2 me-1"></i> Laporan Cepat
                 </a>
             @else
@@ -180,8 +180,8 @@
                     </div>
                 </div>
                 @if (auth()->user()->isHrUser())
-                    <a href="{{ route('attendances.index') }}" class="btn btn-light btn-sm align-self-start mt-4">
-                        Lihat Absensi <i class="bx bx-right-arrow-alt ms-1"></i>
+                    <a href="{{ route('reports.attendance') }}" class="btn btn-light btn-sm align-self-start mt-4">
+                        Lihat Laporan <i class="bx bx-right-arrow-alt ms-1"></i>
                     </a>
                 @endif
             </div>

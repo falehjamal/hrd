@@ -22,6 +22,7 @@ use App\Http\Controllers\PayrollPeriodController;
 use App\Http\Controllers\PayslipController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\ShiftOverrideController;
@@ -140,6 +141,19 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::middleware('report.viewer')->prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('attendance', [ReportController::class, 'attendance'])->name('attendance');
+        Route::get('attendance/data', [ReportController::class, 'attendanceData'])->name('attendance.data');
+        Route::get('attendance/summary', [ReportController::class, 'attendanceSummary'])->name('attendance.summary');
+        Route::get('leave', [ReportController::class, 'leave'])->name('leave');
+        Route::get('leave/data', [ReportController::class, 'leaveData'])->name('leave.data');
+        Route::get('leave/summary', [ReportController::class, 'leaveSummary'])->name('leave.summary');
+        Route::get('payroll', [ReportController::class, 'payroll'])->name('payroll');
+        Route::get('payroll/data', [ReportController::class, 'payrollData'])->name('payroll.data');
+        Route::get('payroll/summary', [ReportController::class, 'payrollSummary'])->name('payroll.summary');
+    });
 });
 
 require __DIR__.'/auth.php';

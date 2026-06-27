@@ -160,6 +160,15 @@
             </a>
         </li>
 
+        @if (auth()->user()->canViewReports())
+        <li class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+            <a href="{{ route('reports.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-bar-chart-alt-2"></i>
+                <div>Laporan</div>
+            </a>
+        </li>
+        @endif
+
         @if (auth()->user()->isHrUser())
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Sistem</span></li>
 
